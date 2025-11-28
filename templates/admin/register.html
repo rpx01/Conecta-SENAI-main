@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Conecta SENAI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAIEAYAAADIFSHsAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAHdElNRQfpBgoBOhQj05UdAAADXUlEQVRIx92UbUzUdQDHP7/73zXgyjs6uPA8Kg82BgyYFDLNbt1YuWkOcqvZow8V4pouXYLQA3OSTHCGBBtl6RuaY7nVKtwCshU2EQRbK7BJhweUHOw87gTugfv/f72IttYbhRe59Xn/3b6f74uvsFpdrqam4ccBIK2DWyGRSNAe1Y7LfFjblWdZcQg2VjjrHKcheGGmLFoJ39T19nuq4KX3ntyYHYLwZ9FCNRcGbEMlXiukD6c6zQegs7TH5KkG+6b7ku+RMFY08W1wC/gGAlnhT2B3y7PHVo3AYdtHLT0GKGzLed9mg5ncuReijXCuqzc02giKouwXO27Z/l/4A7oF8c23nYkSQwMiRInB6oac6uXLQHVp3fIcBI7MPhx5HlIqLenGHkh6LfF0wna4kj9S7/saPMnX+wIDkOlytFqC8MzVJ5SMPZC119FniQNzeNlQXB8U3MjOSimGla22kyYV8iYziqz1kLIjadSYD9Yf7+1NMIAMy0xZu1jxv0k0LQxA2W1ndAgEiCThEdXQ++LPRde3grt2fHw6G9JrUucSi8HhsP9iPgOaTyuWd4N6VkuTN0GdVN+UzeCd8uXOlsLkO/7yuQdgnWvVyhWfgjESHzQkgLPpodX29XBjbfBgeBBcwwVj91+Eu07pm3XNIDvp4dpSxf+ps0TkZvbJzyGp3DwSPw0Pltl2m0YhWj7/lrofpk74j83lQNgebYhtg5QSi874FTh+tX9grofAczOm6Hpo93b/4K6BkTf+qAiYYPm2JI8xH7xW31NzVdB6vH3voAKqqtZrJyE+M67SUACzVaEP59uBt0Upa5Y+gH7RCQN6dCDShE+8C2fN5yfcW+DS5cGLE3qIbpiv0Log2DZ7JPI6nM+8/N24EwwX9BVKEELd4bZYB3T6e8qvbYXgyzNfRrbDgZKGNd/ng9KiuMXHMF8Tq9X6YfrKzRMRJwxYhgq9jaBoSp2YgtChyCNqKihduoO6XQC8upQhxF8nKOWikwo6BMhLDDIB8ieZIMtBbGCdcAAdtPA0yC+kX+4E+hnCCxwV+3gMyCNDJIP4XXSwC3DJV2gDeZVR/CBcFJAKwi3a2QkyKrOpBfkbY0yDOMwenCDOiKMUA2EixP7LAf4nLHyAP3Cni9wZYp1/AkYRW5V0uSBfAAAAAElFTkSuQmCC">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid min-vh-100">
+        <div class="row min-vh-100">
+            <div class="col-md-6 login-branding-col d-none d-md-flex align-items-center justify-content-center">
+                <div class="text-center text-white">
+                    <img src="/img/senai-logo.png" alt="SENAI Logo" style="width: 150px; margin-bottom: 2rem;">
+                    <h2 class="display-4 fw-bold">Conecta SENAI</h2>
+                    <p class="lead">A sua plataforma integrada de gestão e agendamentos.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-center justify-content-center bg-light">
+                <div class="login-form-container">
+                    <div class="text-center mb-5 d-md-none">
+                        <img src="/img/senai-logo.png" alt="SENAI Logo" style="width: 120px;">
+                    </div>
+                    <h1 class="h3 mb-3 fw-normal">Crie sua Conta</h1>
+                    <p class="text-muted mb-4">Preencha os dados para se registrar no sistema.</p>
+
+                    <form id="form-registro" method="POST" action="/api/registrar" novalidate data-js-validate>
+                        <div class="alert alert-danger d-none mb-4" role="alert" aria-live="assertive" tabindex="-1" data-error-summary></div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome Completo" required aria-required="true" aria-describedby="nome-help nome-error" data-error-target="nome-error" data-required-message="Informe seu nome completo.">
+                            <label for="nome"><i class="bi bi-person me-2"></i>Nome Completo</label>
+                            <div id="nome-error" class="invalid-feedback">Por favor, informe seu nome completo.</div>
+                        </div>
+                        <div id="nome-help" class="form-text">Informe seu nome completo.</div>
+
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="seu@email.com" required aria-required="true" aria-describedby="email-help email-error" data-error-target="email-error" data-required-message="Informe um email válido." data-validate="email">
+                            <label for="email"><i class="bi bi-envelope me-2"></i>Email</label>
+                            <div id="email-error" class="invalid-feedback">Por favor, informe um email válido.</div>
+                        </div>
+                        <div id="email-help" class="form-text">Informe um endereço de email válido.</div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" inputmode="numeric" data-mask="cpf" data-validate="cpf" data-error-target="cpf-error" aria-describedby="cpf-help cpf-error">
+                            <label for="cpf"><i class="bi bi-card-text me-2"></i>CPF (opcional)</label>
+                            <div id="cpf-error" class="invalid-feedback">Informe um CPF válido.</div>
+                        </div>
+                        <div id="cpf-help" class="form-text">Este campo é opcional.</div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="dataNascimento" name="dataNascimento" placeholder="DD/MM/AAAA" inputmode="numeric" data-mask="date" data-validate="date" data-error-target="dataNascimento-error" aria-describedby="dataNascimento-help dataNascimento-error">
+                            <label for="dataNascimento"><i class="bi bi-calendar-date me-2"></i>Data de Nascimento (opcional)</label>
+                            <div id="dataNascimento-error" class="invalid-feedback">Informe uma data válida no formato DD/MM/AAAA.</div>
+                        </div>
+                        <div id="dataNascimento-help" class="form-text">Este campo é opcional.</div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="senha" name="senha" placeholder="Senha" required aria-required="true" 
+                                   aria-describedby="senha-help senha-error" data-error-target="senha-error" 
+                                   data-required-message="Informe uma senha válida."
+                                   data-validate="passwordStrength"
+                                   data-error-message="A senha não atende aos requisitos.">
+                            <label for="senha"><i class="bi bi-lock me-2"></i>Senha</label>
+                            <i class="bi bi-eye-slash password-toggle-icon" id="toggleSenha"></i>
+                            <div id="senha-error" class="invalid-feedback">A senha não atende aos requisitos.</div>
+                        </div>
+                        <div id="senha-help" class="form-text text-muted">A senha deve ter pelo menos 8 caracteres, incluindo letra maiúscula, letra minúscula, número e caractere especial.</div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="confirmarSenha" name="confirmarSenha" placeholder="Confirmar Senha" required aria-required="true" 
+                                   aria-describedby="confirmarSenha-help confirmarSenha-error" data-error-target="confirmarSenha-error" 
+                                   data-required-message="Confirme a senha informada."
+                                   data-validate="match"
+                                   data-validate-match-selector="#senha"
+                                   data-error-message="As senhas não coincidem.">
+                            <label for="confirmarSenha"><i class="bi bi-lock-fill me-2"></i>Confirmar Senha</label>
+                            <i class="bi bi-eye-slash password-toggle-icon" id="toggleConfirmarSenha"></i>
+                            <div id="confirmarSenha-error" class="invalid-feedback">As senhas não coincidem.</div>
+                        </div>
+                        <div id="confirmarSenha-help" class="form-text">Repita a senha para confirmação.</div>
+
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg" type="submit" id="btn-registrar">
+                                <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                <span id="btn-text"><i class="bi bi-person-plus me-2"></i>Registrar</span>
+                            </button>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Já tem uma conta? <a href="/admin/login.html">Faça login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-3 bg-dark text-white text-center">
+        <div class="container">
+            <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/forms/validation.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('form-registro');
+        const btnRegistrar = document.getElementById('btn-registrar');
+
+        function setupPasswordToggle(toggleId, fieldId) {
+          const toggle = document.getElementById(toggleId);
+          const field = document.getElementById(fieldId);
+          if (toggle && field) {
+            toggle.addEventListener('click', function () {
+              const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+              field.setAttribute('type', type);
+              this.classList.toggle('bi-eye');
+              this.classList.toggle('bi-eye-slash');
+            });
+          }
+        }
+        setupPasswordToggle('toggleSenha', 'senha');
+        setupPasswordToggle('toggleConfirmarSenha', 'confirmarSenha');
+
+
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const validator = window.FormValidation?.get(form);
+          if (validator && !validator.validate()) {
+            return;
+          }
+
+          const sanitize = window.FormValidation?.sanitizeField;
+
+          const dadosForm = {
+            nome: document.getElementById('nome').value,
+            email: document.getElementById('email').value,
+            cpf: sanitize ? sanitize(document.getElementById('cpf')) : document.getElementById('cpf').value,
+            dataNascimento: sanitize ? sanitize(document.getElementById('dataNascimento')) : document.getElementById('dataNascimento').value,
+            senha: document.getElementById('senha').value,
+            confirmarSenha: document.getElementById('confirmarSenha').value
+          };
+
+          executarAcaoComFeedback(btnRegistrar, async () => {
+            try {
+              const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+              const response = await fetch('/api/registrar', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(dadosForm)
+              });
+
+              if (response.headers.get("content-type")?.includes("application/json")) {
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.erro || 'Ocorreu um erro desconhecido.');
+                }
+                showToast(result.sucesso || 'Usuário registrado com sucesso!', 'success');
+                setTimeout(() => { window.location.href = '/admin/login.html'; }, 2000);
+              } else {
+                const text = await response.text();
+                throw new Error("Resposta inesperada do servidor: " + text);
+              }
+
+            } catch (error) {
+              console.error('Erro na requisição de registro:', error);
+              showToast(error.message, 'danger');
+              throw error;
+            }
+          });
+        });
+      });
+    </script>
+</body>
+</html>

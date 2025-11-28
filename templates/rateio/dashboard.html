@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Lançamento de Rateio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Controle de Rateio">Sistema FIEMG | Controle de Rateio</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar" aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/rateio/dashboard.html"><i data-lucide="coins" class="me-1"></i> Lançamentos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rateio/config.html"><i data-lucide="settings" class="me-1"></i> Configurações</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rateio/instrutores.html"><i data-lucide="id-card" class="me-1"></i> Instrutores</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i data-lucide="user-round" class="me-1"></i>
+                            <span id="userName">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/rateio/perfil.html">
+                                    <i data-lucide="user" class="me-2"></i>Meu Perfil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="realizarLogout()">
+                                    <i data-lucide="log-out" class="me-2"></i>Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12">
+                <div class="page-header">
+                    <h1 class="mb-0">Lançamento de Rateio</h1>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="selectInstrutor" class="form-label">Selecione o Instrutor</label>
+                                <select id="selectInstrutor" class="form-select"></select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="selectAno" class="form-label">Ano</label>
+                                <select id="selectAno" class="form-select"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="grid-anual-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mt-4" style="display: none;">
+                </div>
+
+                <div class="modal fade" id="lancamentoModal" tabindex="-1" aria-labelledby="lancamentoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="lancamentoModalLabel">Lançamentos para Mês / Ano</h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="lancamentosAtuaisContainer"></div>
+                                <hr>
+                                <h3>Adicionar Novo Rateio</h3>
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-6">
+                                        <label for="selectConfigModal" class="form-label">Configuração</label>
+                                        <select id="selectConfigModal" class="form-select"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="inputPercentualModal" class="form-label">Percentual (%)</label>
+                                        <input type="number" id="inputPercentualModal" class="form-control" min="1" max="100">
+                                        <small class="form-text text-muted">Informe a porcentagem deste rateio.</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button id="btnAdicionarRateioModal" class="btn btn-outline-primary w-100">Adicionar rateio</button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <strong>Total Lançado:</strong>
+                                    <strong id="totalPercentualModal">0%</strong>
+                                </div>
+                                <div class="progress mt-1" style="height: 20px;">
+                                    <div id="progressBarModal" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-success" id="btnSalvarModal">
+                                    <i data-lucide="save" class="me-1"></i> Salvar Alterações
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/rateio/lancamentos.js"></script>
+    <script>lucide.createIcons({attrs:{strokeWidth:1.75}})</script>
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+</body>
+</html>

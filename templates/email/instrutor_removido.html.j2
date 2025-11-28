@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <body style="font-family:Arial,Helvetica,sans-serif;">
+    <p>Olá {{ instrutor_nome }},</p>
+    <p>Seu treinamento foi remanejado para outro instrutor.</p>
+    <p>Você não ministrará o treinamento abaixo:</p>
+    <ul>
+      <li><strong>Treinamento:</strong> {{ turma.treinamento.nome }}</li>
+      <li><strong>Matriz do treinamento:</strong> {{ turma.treinamento.codigo }}</li>
+      <li><strong>Data(s):</strong> {{ turma.data_inicio.strftime('%d/%m/%Y') }}{% if turma.data_termino and turma.data_termino != turma.data_inicio %} a {{ turma.data_termino.strftime('%d/%m/%Y') }}{% endif %}</li>
+      <li><strong>Horário:</strong> {{ turma.horario }}</li>
+      <li><strong>Carga horária:</strong> {{ turma.treinamento.carga_horaria }}</li>
+      <li><strong>Instrutor:</strong> {{ instrutor_nome }}</li>
+      <li><strong>Local de Realização:</strong> {{ turma.local }}</li>
+      <li><strong>Teoria Online?</strong> {% if turma.teoria_online %}Sim{% else %}Não{% endif %}</li>
+      {% if turma.treinamento.tem_pratica %}
+      <li><strong>Prática:</strong> {{ turma.local_pratica or turma.local }}</li>
+      {% endif %}
+    </ul>
+    {% include 'email/_signature.html.j2' %}
+  </body>
+</html>

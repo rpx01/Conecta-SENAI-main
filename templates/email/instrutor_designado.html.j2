@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <body style="font-family:Arial,Helvetica,sans-serif;">
+    <p>Olá {{ instrutor_nome }},</p>
+    <p>Você foi designado para ministrar a turma de <strong>{{ treinamento_nome }}</strong>.</p>
+    <ul>
+      <li><strong>Data(s):</strong> {{ data_inicio }}{% if data_fim and data_fim != data_inicio %} a {{ data_fim }}{% endif %}</li>
+      <li><strong>Horário:</strong> {{ horario }}</li>
+      <li><strong>Local:</strong> {{ local_realizacao }}</li>
+    </ul>
+    {% include 'email/_signature.html.j2' %}
+  </body>
+</html>

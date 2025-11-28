@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Conecta SENAI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet"> </head>
+<body>
+    <div class="container-fluid vh-100">
+        <div class="row h-100">
+            <div class="col-md-6 login-branding-col d-none d-md-flex align-items-center justify-content-center">
+                <div class="text-center text-white">
+                    <img src="/img/senai-logo.png" alt="SENAI Logo" style="width: 150px; margin-bottom: 2rem;">
+                    <h2 class="display-4 fw-bold">Conecta SENAI</h2>
+                    <p class="lead">A sua plataforma integrada de gestão e agendamentos.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-center justify-content-center bg-light">
+                <div class="login-form-container">
+                    <div class="text-center mb-5 d-md-none">
+                        <img src="/img/senai-logo.png" alt="SENAI Logo" style="width: 120px;">
+                    </div>
+                    <h1 class="h3 mb-3 fw-normal">Acesse sua conta</h1>
+                    <p class="text-muted mb-4">Bem-vindo de volta! Por favor, insira as suas credenciais.</p>
+
+                    <div id="alert-container"></div>
+
+                    <form id="loginForm" method="POST">
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="seu@email.com" required aria-required="true" aria-describedby="email-help email-error">
+                            <label for="email"><i class="bi bi-envelope me-2"></i>Email</label>
+                            <div id="email-error" class="invalid-feedback">Por favor, informe um email válido.</div>
+                        </div>
+                        <div id="email-help" class="form-text">Digite seu email institucional.</div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="senha" name="senha" placeholder="Senha" required aria-required="true" aria-describedby="senha-help senha-error">
+                            <label for="senha"><i class="bi bi-lock me-2"></i>Senha</label>
+                            <div id="senha-error" class="invalid-feedback">Por favor, informe sua senha.</div>
+                        </div>
+                        <div id="senha-help" class="form-text">Digite sua senha de acesso.</div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <a href="/forgot" class="text-muted small">Esqueceu-se da senha?</a>
+                        </div>
+                        <div class="d-grid">
+                        <button class="btn btn-primary btn-lg" type="submit" id="btnLogin">Entrar</button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Não tem uma conta? <a href="/register">Registre-se</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            let siteKey = '';
+            try {
+                const resp = await fetch('/api/recaptcha/site-key');
+                const data = await resp.json();
+                siteKey = data.site_key || '';
+                if (siteKey) {
+                    const s = document.createElement('script');
+                    s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+                    document.head.appendChild(s);
+                }
+            } catch (e) {
+                console.error('Não foi possível carregar site key:', e);
+            }
+
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                const emailInput = document.getElementById('email');
+                const senhaInput = document.getElementById('senha');
+
+                [emailInput, senhaInput].forEach(input => {
+                    input.addEventListener('input', () => input.classList.remove('is-invalid'));
+                });
+
+                loginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const btn = document.getElementById('btnLogin');
+                    let hasError = false;
+                    [emailInput, senhaInput].forEach(input => {
+                        if (!input.value.trim()) {
+                            input.classList.add('is-invalid');
+                            hasError = true;
+                        }
+                    });
+                    if (hasError) {
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Entrando...';
+
+                    const email = emailInput.value;
+                    const senha = senhaInput.value;
+                    let token = '';
+
+                    if (siteKey && window.grecaptcha) {
+                        try {
+                            token = await new Promise((resolve, reject) => {
+                                grecaptcha.ready(() => {
+                                    grecaptcha.execute(siteKey, { action: 'login' }).then(resolve).catch(reject);
+                                });
+                            });
+                        } catch (err) {
+                            console.error('Não foi possível obter token reCAPTCHA:', err);
+                        }
+                    }
+
+                    try {
+                        await realizarLogin(email, senha, token);
+                    } catch (error) {
+                        showToast(error.message, 'danger');
+                        btn.disabled = false;
+                        btn.innerHTML = 'Entrar';
+                    }
+                });
+            }
+        });
+    </script>
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+    </body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suporte de TI - Registro público de chamado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    {% set fd = form_data or {} %}
+    <nav class="navbar navbar-dark bg-primary shadow-sm">
+        <div class="container d-flex align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/img/senai-logo.png" alt="SENAI" height="32" class="me-2">
+                <span class="fw-semibold">Sistema FIEMG | Suporte de TI</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8 text-center">
+                <p class="text-uppercase text-primary fw-semibold mb-2">Atendimento público</p>
+                <h1 class="display-5 mb-3">Registre seu chamado de suporte</h1>
+                <p class="lead text-muted">Preencha o formulário abaixo com os detalhes do problema. Nossa equipe será notificada automaticamente e você receberá atualizações por e-mail.</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="alert alert-info mb-4" role="status">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2 fs-4"></i>
+                        <div>
+                            <h2 class="h5 mb-1">Como funciona</h2>
+                            <p class="mb-0">Após o envio, você receberá um número de protocolo e todas as atualizações serão encaminhadas para o e-mail informado. Campos marcados com <span class="text-danger">*</span> são obrigatórios.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <form id="formChamadoPublico" novalidate>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="nomeCompleto" class="form-label">Nome completo <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nomeCompleto" name="nome_completo" required placeholder="Seu nome e sobrenome" value="{{ fd.get('nome_completo', '') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="emailContato" class="form-label">E-mail para contato <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="emailContato" name="email" required placeholder="seu@email.com" value="{{ fd.get('email', '') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="areaSelect" class="form-label">Área <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="areaSelect" name="area" required aria-required="true" data-selected="{{ fd.get('area', '') }}">
+                                        <option value="">Selecione...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="tipoEquipamentoSelect" class="form-label">Tipo de equipamento <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="tipoEquipamentoSelect" name="tipo_equipamento_id" required aria-required="true" data-selected="{{ fd.get('tipo_equipamento_id', '') }}">
+                                        <option value="">Selecione...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="patrimonioInput" class="form-label">Patrimônio</label>
+                                    <input type="text" class="form-control" id="patrimonioInput" name="patrimonio" placeholder="Ex.: PAT-1234" value="{{ fd.get('patrimonio', '') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="numeroSerieInput" class="form-label">Número de série</label>
+                                    <input type="text" class="form-control" id="numeroSerieInput" name="numero_serie" placeholder="Ex.: SN123456" value="{{ fd.get('numero_serie', '') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="nivelUrgenciaSelect" class="form-label">Nível de urgência</label>
+                                    <select class="form-select" id="nivelUrgenciaSelect" name="nivel_urgencia">
+                                        <option value="">Selecione...</option>
+                                        <option value="Baixo" {% if fd.get('nivel_urgencia', '') == 'Baixo' %}selected{% endif %}>Baixo</option>
+                                        <option value="Médio" {% if fd.get('nivel_urgencia', '') in ['Médio', 'Medio'] %}selected{% endif %}>Médio</option>
+                                        <option value="Alto" {% if fd.get('nivel_urgencia', '') == 'Alto' %}selected{% endif %}>Alto</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="descricaoProblema" class="form-label">Descrição do problema <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="descricaoProblema" name="descricao_problema" rows="5" required placeholder="Explique o que está acontecendo, quando começou e quais equipamentos foram afetados.">{{ fd.get('descricao_problema', '') }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-danger mt-4 d-none" id="alertErros" role="alert"></div>
+                            <div class="alert alert-success mt-4 d-none" id="alertSucesso" role="status"></div>
+
+                            <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg flex-grow-1" id="btnEnviarChamado">
+                                    <span class="d-inline-flex align-items-center justify-content-center">
+                                        <i class="bi bi-send me-2"></i>
+                                        Enviar chamado
+                                    </span>
+                                </button>
+                                <a href="/" class="btn btn-outline-secondary btn-lg flex-grow-1">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Voltar ao início
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-4 bg-light border-top">
+        <div class="container text-center">
+            <p class="mb-0 small text-muted">Sistema FIEMG | O futuro se faz juntos.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/suporte_ti/abertura_publica.js"></script>
+</body>
+</html>

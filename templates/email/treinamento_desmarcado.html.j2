@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Treinamento Desmarcado</title>
+</head>
+<body>
+    <p>Olá,</p>
+    <p>O treinamento <strong>{{ turma.treinamento.nome }}</strong>, que ocorreria entre as datas <strong>{{ turma.periodo }}</strong>, foi desmarcado.</p>
+    <p>Segue detalhes do treinamento desmarcado:</p>
+    <ul>
+        <li><strong>Treinamento:</strong> {{ turma.treinamento.nome }}</li>
+        <li><strong>Matriz do treinamento:</strong> {{ turma.treinamento.codigo }}</li>
+        <li><strong>Data(s):</strong> {{ turma.periodo }}</li>
+        <li><strong>Horário:</strong> {{ turma.horario }}</li>
+        <li><strong>Carga horária:</strong> {{ turma.treinamento.carga_horaria }} horas</li>
+        <li><strong>Instrutor:</strong> {{ turma.instrutor.nome if turma.instrutor else 'N/A' }}</li>
+        <li><strong>Local de Realização:</strong> {{ turma.local }}</li>
+        <li><strong>Teoria Online?</strong> {{ "Sim" if turma.teoria_online else "Não" }}</li>
+        {% if turma.treinamento.tem_pratica %}
+            <li><strong>Prática:</strong> {{ turma.local_pratica if turma.local_pratica else turma.local }}</li>
+        {% endif %}
+    </ul>
+    {% include 'email/_signature.html.j2' %}
+</body>
+</html>

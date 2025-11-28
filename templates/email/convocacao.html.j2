@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #333;">
+
+<p>Olá {{ nome }},</p>
+
+<p>Você está convocado(a) para o treinamento <strong>{{ nome_do_treinamento }}</strong>.</p>
+<ul>
+    <li><strong>Data(s):</strong> {{ periodo }}</li>
+    <li><strong>Horário:</strong> {{ horario }}</li>
+    <li><strong>Carga horária:</strong> {{ carga_horaria }}</li>
+    <li><strong>Instrutor:</strong> {{ instrutor }}</li>
+    <li><strong>Local de Realização:</strong> {{ local_de_realizacao }}</li>
+</ul>
+
+{% if teoria_online and tem_pratica %}
+    <p><strong>Teoria:</strong> Online na plataforma <a href="https://mg.ead.senai.br/">https://mg.ead.senai.br/</a> (usuário: {{ email_fornecido_na_inscricao }} | senha inicial: 123456).</p>
+    <p><strong>Prática:</strong> Presencial no Local de Realização: {{ local_da_pratica }}</p>
+{% elif not teoria_online and tem_pratica %}
+    <p><strong>Teoria:</strong> Presencial no Local de Realização: {{ local_da_pratica }}</p>
+    <p><strong>Prática:</strong> Presencial no Local de Realização: {{ local_da_pratica }}</p>
+{% elif not teoria_online and not tem_pratica %}
+    <p>Treinamento 100% Presencial no Local de Realização: {{ local_da_pratica }}</p>
+{% elif teoria_online and not tem_pratica %}
+    <p>Treinamento 100% Online na plataforma <a href="https://mg.ead.senai.br/">https://mg.ead.senai.br/</a> (usuário: {{ email_fornecido_na_inscricao }} | senha inicial: 123456).</p>
+{% endif %}
+
+{% include 'email/_signature.html.j2' %}
+
+</body>
+</html>
