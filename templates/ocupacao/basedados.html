@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Dados - Sistema de Controle de Ocupação</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAIEAYAAADIFSHsAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAHdElNRQfpBgoBOhQj05UdAAADXUlEQVRIx92UbUzUdQDHP7/73zXgyjs6uPA8Kg82BgyYFDLNbt1YuWkOcqvZow8V4pouXYLQA3OSTHCGBBtl6RuaY7nVKtwCshU2EQRbK7BJhweUHOw87gTugfv/f72IttYbhRe59Xn/3b6f74uvsFpdrqam4ccBIK2DWyGRSNAe1Y7LfFjblWdZcQg2VjjrHKcheGGmLFoJ39T19nuq4KX3ntyYHYLwZ9FCNRcGbEMlXiukD6c6zQegs7TH5KkG+6b7ku+RMFY08W1wC/gGAlnhT2B3y7PHVo3AYdtHLT0GKGzLed9mg5ncuReijXCuqzc02giKouwXO27Z/l/4A7oF8c23nYkSQwMiRInB6oac6uXLQHVp3fIcBI7MPhx5HlIqLenGHkh6LfF0wna4kj9S7/saPMnX+wIDkOlytFqC8MzVJ5SMPZC119FniQNzeNlQXB8U3MjOSimGla22kyYV8iYziqz1kLIjadSYD9Yf7+1NMIAMy0xZu1jxv0k0LQxA2W1ndAgEiCThEdXQ++LPRde3grt2fHw6G9JrUucSi8HhsP9iPgOaTyuWd4N6VkuTN0GdVN+UzeCd8uXOlsLkO/7yuQdgnWvVyhWfgjESHzQkgLPpodX29XBjbfBgeBBcwwVj91+Eu07pm3XNIDvp4dpSxf+ps0TkZvbJzyGp3DwSPw0Pltl2m0YhWj7/lrofpk74j83lQNgebYhtg5QSi874FTh+tX9grofAczOm6Hpo93b/4K6BkTf+qAiYYPm2JI8xH7xW31NzVdB6vH3voAKqqtZrJyE+M67SUACzVaEP59uBt0Upa5Y+gH7RCQN6dCDShE+8C2fN5yfcW+DS5cGLE3qIbpiv0Log2DZ7JPI6nM+8/N24EwwX9BVKEELd4bZYB3T6e8qvbYXgyzNfRrbDgZKGNd/ng9KiuMXHMF8Tq9X6YfrKzRMRJwxYhgq9jaBoSp2YgtChyCNqKihduoO6XQC8upQhxF8nKOWikwo6BMhLDDIB8ieZIMtBbGCdcAAdtPA0yC+kX+4E+hnCCxwV+3gMyCNDJIP4XXSwC3DJV2gDeZVR/CBcFJAKwi3a2QkyKrOpBfkbY0yDOMwenCDOiKMUA2EixP7LAf4nLHyAP3Cni9wZYp1/AkYRW5V0uSBfAAAAAElFTkSuQmCC">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Controle de Ocupação">Sistema FIEMG | Controle de Ocupação</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ocupacao/dashboard.html">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ocupacao/calendario.html">
+                            <i class="bi bi-calendar3 me-1"></i> Calendário
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active admin-only" href="/ocupacao/basedados.html">
+                            <i class="bi bi-database me-1"></i> Base de Dados
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-only" href="/ocupacao/ocupacoes.html">
+                            <i class="bi bi-list-check me-1"></i> Lista de Ocupações
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-only" href="/ocupacao/agendamento.html">
+                            <i class="bi bi-plus-circle me-1"></i> Nova Ocupação
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span id="nomeUsuarioNav">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/ocupacao/perfil.html"><i class="bi bi-person me-2"></i>Meu Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="realizarLogout()"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12">
+                <div class="page-header">
+                    <h1 class="mb-0">Base de Dados</h1>
+                    <p class="text-muted">Gerencie salas, corpo docente e turmas em um só lugar</p>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs mb-4" id="baseDadosTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="salas-tab" data-bs-toggle="tab" data-bs-target="#salas" type="button" role="tab" aria-controls="salas" aria-selected="true">
+                            <i class="bi bi-door-open me-1"></i> Salas
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="docentes-tab" data-bs-toggle="tab" data-bs-target="#docentes" type="button" role="tab" aria-controls="docentes" aria-selected="false">
+                            <i class="bi bi-person-badge me-1"></i> Corpo Docente
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="turmas-tab" data-bs-toggle="tab" data-bs-target="#turmas" type="button" role="tab" aria-controls="turmas" aria-selected="false">
+                            <i class="bi bi-people-fill me-1"></i> Turmas
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Contents -->
+                <div class="tab-content" id="baseDadosTabContent">
+                    
+                    <!-- ========== SALAS TAB ========== -->
+                    <div class="tab-pane fade show active" id="salas" role="tabpanel" aria-labelledby="salas-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h4 mb-0">Gerenciar Salas</h2>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSala" onclick="novaSala()">
+                                <i class="bi bi-plus-circle me-2"></i>Adicionar sala
+                            </button>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0">
+                                    <i class="bi bi-funnel me-2"></i>Filtros
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="filtroStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="filtroStatus">
+                                            <option value="">Todos</option>
+                                            <option value="ativa">Ativa</option>
+                                            <option value="inativa">Inativa</option>
+                                            <option value="manutencao">Manutenção</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filtroCapacidade" class="form-label">Capacidade Mínima</label>
+                                        <input type="number" class="form-control" id="filtroCapacidade" min="1" placeholder="Ex: 20">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filtroBusca" class="form-label">Buscar</label>
+                                        <input type="text" class="form-control" id="filtroBusca" placeholder="Nome da sala...">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <button type="button" class="btn btn-primary me-2" onclick="aplicarFiltros()">
+                                            <i class="bi bi-search me-1"></i>Filtrar
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="limparFiltros()">
+                                            <i class="bi bi-x-circle me-1"></i>Limpar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0"><i class="bi bi-list me-2"></i>Lista de Salas</h3>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="loadingSalas" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                    <p class="mt-2">Carregando salas...</p>
+                                </div>
+
+                                <div id="listaSalas" class="table-responsive" style="display: none;">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <caption class="visually-hidden">Lista de Salas</caption>
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Nome</th>
+                                                <th scope="col">Recursos Disponíveis</th>
+                                                <th scope="col">Capacidade</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabelaSalas">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== DOCENTES TAB ========== -->
+                    <div class="tab-pane fade" id="docentes" role="tabpanel" aria-labelledby="docentes-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h4 mb-0">Gestão de Corpo Docente</h2>
+                            <button id="btnAdicionarNovo" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Novo Instrutor
+                            </button>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0"><i class="bi bi-funnel me-2"></i>Filtros</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label for="filtroNome" class="form-label">Nome</label>
+                                        <input type="text" class="form-control" id="filtroNome" placeholder="Nome do instrutor">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filtroStatusDocente" class="form-label">Status</label>
+                                        <select id="filtroStatusDocente" class="form-select">
+                                            <option value="">Todos</option>
+                                            <option value="ativo">Ativo</option>
+                                            <option value="inativo">Inativo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5 text-end">
+                                        <button id="btnAplicarFiltros" type="button" class="btn btn-primary me-2">
+                                            <i class="bi bi-search me-1"></i>Filtrar
+                                        </button>
+                                        <button id="btnLimparFiltros" type="button" class="btn btn-outline-secondary">
+                                            <i class="bi bi-x-circle me-1"></i>Limpar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0"><i class="bi bi-list me-2"></i>Lista de Instrutores</h3>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <caption class="visually-hidden">Lista de Instrutores</caption>
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th scope="col">Nome</th>
+                                                <th scope="col">Área de Atuação</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Disponibilidade</th>
+                                                <th scope="col" class="text-end">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabelaCorpoDocente">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========== TURMAS TAB ========== -->
+                    <div class="tab-pane fade" id="turmas" role="tabpanel" aria-labelledby="turmas-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h4 mb-0">Gerenciar Turmas</h2>
+                            <button class="btn btn-primary" onclick="novaTurma()">
+                                <i class="bi bi-plus-circle me-2"></i>Adicionar Turma
+                            </button>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0"><i class="bi bi-funnel me-2"></i>Filtros</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="filtroBuscaTurmas" class="form-label">Buscar</label>
+                                        <input type="text" id="filtroBuscaTurmas" class="form-control" placeholder="Nome da turma...">
+                                    </div>
+                                    <div class="col-md-6 col-lg-8 text-end">
+                                        <button id="btnAplicarFiltrosTurmas" type="button" class="btn btn-primary me-2">
+                                            <i class="bi bi-search me-1"></i>Filtrar
+                                        </button>
+                                        <button id="btnLimparFiltrosTurmas" type="button" class="btn btn-outline-secondary">
+                                            <i class="bi bi-x-circle me-1"></i>Limpar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0"><i class="bi bi-list me-2"></i>Lista de Turmas</h3>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table id="turmasTable" class="table table-striped table-hover mb-0">
+                                        <caption class="visually-hidden">Lista de Turmas</caption>
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Nome</th>
+                                                <th scope="col">Data de Criação</th>
+                                                <th scope="col">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="turmasTableBody">
+                                            <tr>
+                                                <td colspan="4" class="text-center">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Carregando...</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ========== MODAIS SALAS ========== -->
+    <div class="modal fade" id="modalSala" tabindex="-1" aria-labelledby="modalSalaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalSalaLabel">Nova Sala</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formSala">
+                        <input type="hidden" id="salaId">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="salaNome" class="form-label">Nome da Sala *</label>
+                                    <input type="text" class="form-control" id="salaNome" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="salaCapacidade" class="form-label">Capacidade *</label>
+                                    <input type="number" class="form-control" id="salaCapacidade" min="1" required>
+                                    <small class="form-text text-muted">Informe o número máximo de pessoas.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="salaLocalizacao" class="form-label">Localização</label>
+                                    <select class="form-select" id="salaLocalizacao">
+                                        <option value="">Selecione...</option>
+                                        <option value="1º Andar">1º Andar</option>
+                                        <option value="2º Andar">2º Andar</option>
+                                    </select>
+                                    <small class="form-text text-muted">Escolha o andar onde a sala está.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="salaStatus" class="form-label">Status</label>
+                                    <select class="form-select" id="salaStatus">
+                                        <option value="ativa">Ativa</option>
+                                        <option value="inativa">Inativa</option>
+                                        <option value="manutencao">Manutenção</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Recursos Disponíveis</label>
+                            <small class="text-muted d-block">Marque os equipamentos presentes na sala.</small>
+                            <div id="recursosContainer" class="row">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="salaObservacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="salaObservacoes" rows="3" placeholder="Informações adicionais sobre a sala..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formSala" class="btn btn-primary" id="btnSalvarSala">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="btn-text"><i class="bi bi-check-circle me-1"></i><span id="btnSalvarTexto">Salvar</span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalExcluirSala" tabindex="-1" aria-labelledby="modalExcluirSalaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalExcluirSalaLabel">Confirmar Exclusão</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir a sala <strong id="nomeSalaExcluir"></strong>?</p>
+                    <p class="text-muted small">Esta ação não pode ser desfeita. A sala só pode ser excluída se não houver ocupações futuras.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirmarExcluirSala" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAIS INSTRUTORES ========== -->
+    <div class="modal fade" id="modalInstrutor" tabindex="-1" aria-labelledby="modalInstrutorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalInstrutorLabel">Novo Instrutor</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formInstrutor">
+                        <input type="hidden" id="instrutorId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="instrutorNome" class="form-label">Nome *</label>
+                                    <input type="text" class="form-control" id="instrutorNome" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="instrutorEmail" class="form-label">E-mail *</label>
+                                    <input type="email" class="form-control" id="instrutorEmail" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="instrutorArea" class="form-label">Área de Atuação *</label>
+                                    <select class="form-select" id="instrutorArea" required></select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="instrutorStatus" class="form-label">Status</label>
+                                    <select class="form-select" id="instrutorStatus">
+                                        <option value="ativo">Ativo</option>
+                                        <option value="inativo">Inativo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="instrutorObservacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="instrutorObservacoes" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Disponibilidade</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="dispManha" value="manha">
+                                <label class="form-check-label" for="dispManha">M</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="dispTarde" value="tarde">
+                                <label class="form-check-label" for="dispTarde">T</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="dispNoite" value="noite">
+                                <label class="form-check-label" for="dispNoite">N</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formInstrutor" class="btn btn-primary" id="btnSalvarInstrutor">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="btn-text"><i class="bi bi-check-circle me-1"></i>Salvar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalExcluirInstrutor" tabindex="-1" aria-labelledby="modalExcluirInstrutorLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalExcluirInstrutorLabel">Confirmar Exclusão</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir o instrutor <strong id="nomeInstrutorExcluir"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirmarExcluirInstrutor" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAIS TURMAS ========== -->
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" aria-labelledby="confirmacaoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="confirmacaoModalLabel">Confirmar Exclusão</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body" id="confirmacaoModalBody">
+                    <p>Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="turmaModal" tabindex="-1" aria-labelledby="turmaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="turmaModalLabel">Nova Turma</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="turmaForm" class="row g-3">
+                        <input type="hidden" id="turmaId">
+                        <div class="col-12">
+                              <label for="nomeTurma" class="form-label">Nome da Turma</label>
+                              <input type="text" class="form-control" id="nomeTurma" required>
+                              <small class="form-text text-muted">Use um nome fácil de identificar.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="turmaForm" class="btn btn-primary" id="btnSalvarTurma">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                          <span class="btn-text"><i class="bi bi-plus-circle me-2"></i>Salvar turma</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/ocupacao/salas.js"></script>
+    <script src="/js/ocupacao/corpo-docente.js"></script>
+    <script src="/js/ocupacao/turmas.js"></script>
+    <script src="/js/ocupacao/basedados.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isUserAdmin()) {
+                document.body.classList.add('read-only');
+            }
+        });
+    </script>
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Agendamento - Sistema de Agenda de Laboratório</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAIEAYAAADIFSHsAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAHdElNRQfpBgoBOhQj05UdAAADXUlEQVRIx92UbUzUdQDHP7/73zXgyjs6uPA8Kg82BgyYFDLNbt1YuWkOcqvZow8V4pouXYLQA3OSTHCGBBtl6RuaY7nVKtwCshU2EQRbK7BJhweUHOw87gTugfv/f72IttYbhRe59Xn/3b6f74uvsFpdrqam4ccBIK2DWyGRSNAe1Y7LfFjblWdZcQg2VjjrHKcheGGmLFoJ39T19nuq4KX3ntyYHYLwZ9FCNRcGbEMlXiukD6c6zQegs7TH5KkG+6b7ku+RMFY08W1wC/gGAlnhT2B3y7PHVo3AYdtHLT0GKGzLed9mg5ncuReijXCuqzc02giKouwXO27Z/l/4A7oF8c23nYkSQwMiRInB6oac6uXLQHVp3fIcBI7MPhx5HlIqLenGHkh6LfF0wna4kj9S7/saPMnX+wIDkOlytFqC8MzVJ5SMPZC119FniQNzeNlQXB8U3MjOSimGla22kyYV8iYziqz1kLIjadSYD9Yf7+1NMIAMy0xZu1jxv0k0LQxA2W1ndAgEiCThEdXQ++LPRde3grt2fHw6G9JrUucSi8HhsP9iPgOaTyuWd4N6VkuTN0GdVN+UzeCd8uXOlsLkO/7yuQdgnWvVyhWfgjESHzQkgLPpodX29XBjbfBgeBBcwwVj91+Eu07pm3XNIDvp4dpSxf+ps0TkZvbJzyGp3DwSPw0Pltl2m0YhWj7/lrofpk74j83lQNgebYhtg5QSi874FTh+tX9grofAczOm6Hpo93b/4K6BkTf+qAiYYPm2JI8xH7xW31NzVdB6vH3voAKqqtZrJyE+M67SUACzVaEP59uBt0Upa5Y+gH7RCQN6dCDShE+8C2fN5yfcW+DS5cGLE3qIbpiv0Log2DZ7JPI6nM+8/N24EwwX9BVKEELd4bZYB3T6e8qvbYXgyzNfRrbDgZKGNd/ng9KiuMXHMF8Tq9X6YfrKzRMRJwxYhgq9jaBoSp2YgtChyCNqKihduoO6XQC8upQhxF8nKOWikwo6BMhLDDIB8ieZIMtBbGCdcAAdtPA0yC+kX+4E+hnCCxwV+3gMyCNDJIP4XXSwC3DJV2gDeZVR/CBcFJAKwi3a2QkyKrOpBfkbY0yDOMwenCDOiKMUA2EixP7LAf4nLHyAP3Cni9wZYp1/AkYRW5V0uSBfAAAAAElFTkSuQmCC">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Agenda de Laboratórios">Sistema FIEMG | Agenda de Laboratórios</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/laboratorios/calendario.html"><i class="bi bi-calendar3 me-1"></i> Calendário</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/laboratorios/turmas.html"><i class="bi bi-building me-1"></i> Laboratórios e Turmas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/laboratorios/agendamento.html"><i class="bi bi-plus-circle me-1"></i> Novo Agendamento</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/laboratorios/logs.html"><i class="bi bi-journal-text me-1"></i> Logs</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span id="userName">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/laboratorios/perfil.html">
+                                    <i class="bi bi-person me-2"></i> Meu Perfil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" id="btnLogout">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <main class="col-12">
+                <h1 id="pageTitle" class="mb-4">Novo Agendamento</h1>
+                
+                
+                <div class="card">
+                    <div class="card-body">
+                        <form id="agendamentoForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="data" class="form-label">Data</label>
+                                    <input type="date" class="form-control" id="data" name="data" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="laboratorio" class="form-label">Laboratório</label>
+                                    <select class="form-select" id="laboratorio" name="laboratorio" required>
+                                        <option value="">Carregando laboratórios...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="turma" class="form-label">Turma</label>
+                                    <select class="form-select" id="turma" name="turma" required>
+                                        <option value="">Carregando turmas...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="turno" class="form-label">Turno</label>
+                                    <select class="form-select" id="turno" name="turno" required>
+                                        <option value="">Selecione um turno</option>
+                                        <option value="Manhã">Manhã</option>
+                                        <option value="Tarde">Tarde</option>
+                                        <option value="Noite">Noite</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Horários</label>
+                                <div class="row" id="horariosContainer">
+                                </div>
+                                <div class="form-text text-muted" id="horariosInfo">
+                                    Selecione um laboratório, data e turno para ver os horários disponíveis.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 admin-only">
+                                <label for="usuario_id" class="form-label">Responsável</label>
+                                <select class="form-select" id="usuario_id" name="usuario_id">
+                                    <option value="">Carregando usuários...</option>
+                                </select>
+                                <div class="form-text">Deixe em branco para atribuir a você mesmo.</div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="/laboratorios/calendario.html" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Voltar
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="btnSalvar">
+                                    <i class="bi bi-save me-2"></i>Salvar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verifica autenticação
+            verificarAutenticacao();
+            
+            // Variáveis para controle do formulário
+            let modoEdicao = false;
+            let agendamentoId = null;
+            let horariosOcupados = [];
+            let horariosAgendamentoAtual = [];
+            
+            // Horários disponíveis por turno
+            const horariosPorTurno = {
+                'Manhã': [
+                    '08:00 - 08:45',
+                    '08:45 - 09:30',
+                    '09:30 - 10:15',
+                    '10:30 - 11:15',
+                    '11:15 - 12:00'
+                ],
+                'Tarde': [
+                    '13:30 - 14:15',
+                    '14:15 - 15:00',
+                    '15:00 - 15:45',
+                    '16:00 - 16:45',
+                    '16:45 - 17:30'
+                ],
+                'Noite': [
+                    '18:30 - 19:15',
+                    '19:15 - 20:00',
+                    '20:00 - 20:45',
+                    '21:00 - 21:45',
+                    '21:45 - 22:30'
+                ]
+            };
+            
+            // Carrega os laboratórios e turmas
+            carregarLaboratorios();
+            carregarTurmas();
+            
+            // Verifica se é modo de edição (pela URL)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('id')) {
+                agendamentoId = urlParams.get('id');
+                modoEdicao = true;
+                document.getElementById('pageTitle').textContent = 'Editar Agendamento';
+                document.getElementById('btnSalvar').innerHTML = '<i class="bi bi-save me-2"></i>Atualizar';
+                
+                // Carrega os dados do agendamento
+                carregarAgendamento(agendamentoId);
+            }
+            
+            // Se for administrador, carrega a lista de usuários e exibe os links de admin
+            if (isAdmin()) {
+                carregarUsuarios();
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            } else {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            }
+            
+            // Event listeners para campos que afetam os horários disponíveis
+            document.getElementById('data').addEventListener('change', verificarHorariosDisponiveis);
+            document.getElementById('laboratorio').addEventListener('change', verificarHorariosDisponiveis);
+            document.getElementById('turno').addEventListener('change', verificarHorariosDisponiveis);
+            
+            // Event listener para o formulário
+            document.getElementById('agendamentoForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Coleta os dados do formulário
+                const data = document.getElementById('data').value;
+                const labSelect = document.getElementById('laboratorio');
+                const laboratorio = labSelect.options[labSelect.selectedIndex].textContent;
+                const turma = document.getElementById('turma').value;
+                const turno = document.getElementById('turno').value;
+                
+                // Coleta os horários selecionados
+                const horariosSelecionados = [];
+                document.querySelectorAll('input[name="horarios"]:checked').forEach(checkbox => {
+                    horariosSelecionados.push(checkbox.value);
+                });
+                
+                if (horariosSelecionados.length === 0) {
+                    showToast('Selecione pelo menos um horário', 'warning');
+                    return;
+                }
+                
+                // Coleta o usuário responsável (apenas para administradores)
+                let usuario_id = null;
+                if (isAdmin()) {
+                    usuario_id = document.getElementById('usuario_id').value || null;
+                }
+                
+                // Prepara os dados para envio
+                const dadosAgendamento = {
+                    data,
+                    laboratorio,
+                    turma,
+                    turno,
+                    horarios: JSON.stringify(horariosSelecionados)
+                };
+                
+                if (usuario_id) {
+                    dadosAgendamento.usuario_id = usuario_id;
+                }
+                
+                try {
+                    if (modoEdicao) {
+                        // Atualiza o agendamento existente
+                        await chamarAPI(`/agendamentos/${agendamentoId}`, 'PUT', dadosAgendamento);
+                        showToast('Agendamento atualizado com sucesso!', 'success');
+                    } else {
+                        // Cria um novo agendamento
+                        await chamarAPI('/agendamentos', 'POST', dadosAgendamento);
+                        showToast('Agendamento criado com sucesso!', 'success');
+                        
+                        // Limpa o formulário
+                        document.getElementById('agendamentoForm').reset();
+                        document.getElementById('horariosContainer').innerHTML = '';
+                    }
+                    
+                    // Redireciona após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = '/laboratorios/calendario.html';
+                    }, 2000);
+                } catch (error) {
+                    if (error.message.includes('Conflito de horários')) {
+                        showToast('Existe um conflito de horários. Por favor, escolha outro horário ou data.', 'danger');
+                    } else {
+                        showToast(`Não foi possível salvar agendamento: ${error.message}`, 'danger');
+                    }
+                }
+            });
+            
+            // Função para carregar os laboratórios
+            async function carregarLaboratorios() {
+                try {
+                    const laboratorios = await chamarAPI('/laboratorios');
+                    const selectLaboratorio = document.getElementById('laboratorio');
+                    
+                    // Limpa as opções existentes
+                    selectLaboratorio.innerHTML = '';
+                    
+                    // Adiciona a opção padrão
+                    const optionPadrao = document.createElement('option');
+                    optionPadrao.value = '';
+                    optionPadrao.textContent = 'Selecione um laboratório';
+                    selectLaboratorio.appendChild(optionPadrao);
+                    
+                    // Adiciona os laboratórios
+                    if (laboratorios.length === 0) {
+                        const optionVazio = document.createElement('option');
+                        optionVazio.value = '';
+                        optionVazio.textContent = 'Nenhum laboratório cadastrado';
+                        optionVazio.disabled = true;
+                        selectLaboratorio.appendChild(optionVazio);
+                    } else {
+                        laboratorios.forEach(lab => {
+                            const option = document.createElement('option');
+                            option.value = lab.id;
+                            option.textContent = lab.nome;
+                            selectLaboratorio.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Não foi possível carregar laboratórios:', error);
+                    showToast('Não foi possível carregar laboratórios. Por favor, tente novamente.', 'danger');
+                }
+            }
+            
+            // Função para carregar as turmas
+            async function carregarTurmas() {
+                try {
+                    const turmas = await chamarAPI('/turmas');
+                    const selectTurma = document.getElementById('turma');
+                    
+                    // Limpa as opções existentes
+                    selectTurma.innerHTML = '';
+                    
+                    // Adiciona a opção padrão
+                    const optionPadrao = document.createElement('option');
+                    optionPadrao.value = '';
+                    optionPadrao.textContent = 'Selecione uma turma';
+                    selectTurma.appendChild(optionPadrao);
+                    
+                    // Adiciona as turmas
+                    if (turmas.length === 0) {
+                        const optionVazio = document.createElement('option');
+                        optionVazio.value = '';
+                        optionVazio.textContent = 'Nenhuma turma cadastrada';
+                        optionVazio.disabled = true;
+                        selectTurma.appendChild(optionVazio);
+                    } else {
+                        turmas.forEach(turma => {
+                            const option = document.createElement('option');
+                            option.value = turma.nome;
+                            option.textContent = turma.nome;
+                            selectTurma.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Não foi possível carregar turmas:', error);
+                    showToast('Não foi possível carregar turmas. Por favor, tente novamente.', 'danger');
+                }
+            }
+            
+            // Função para verificar horários disponíveis
+            async function verificarHorariosDisponiveis() {
+                const data = document.getElementById('data').value;
+                const labSelect = document.getElementById('laboratorio');
+                const laboratorioId = labSelect.value;
+                const laboratorio = labSelect.options[labSelect.selectedIndex].textContent;
+                const turno = document.getElementById('turno').value;
+                const horariosInfo = document.getElementById('horariosInfo');
+                
+                // Limpa os horários existentes
+                document.getElementById('horariosContainer').innerHTML = '';
+                
+                // Verifica se todos os campos necessários foram preenchidos
+                if (!data || !laboratorioId || !turno) {
+                    horariosInfo.textContent = 'Selecione um laboratório, data e turno para ver os horários disponíveis.';
+                    return;
+                }
+
+                try {
+                    const resultado = await chamarAPI(`/agendamentos/verificar-disponibilidade?data=${data}&laboratorio=${encodeURIComponent(laboratorio)}&turno=${encodeURIComponent(turno)}`);
+
+                    horariosOcupados = Array.isArray(resultado.horarios_reservados) ? resultado.horarios_reservados : [];
+
+                    if (modoEdicao && horariosAgendamentoAtual.length > 0) {
+                        horariosOcupados = horariosOcupados.filter(h => !horariosAgendamentoAtual.includes(h));
+                    }
+                    
+                    // Renderiza os horários disponíveis
+                    renderizarHorarios(turno);
+                    
+                    // Atualiza a mensagem informativa
+                    if (horariosOcupados.length > 0) {
+                        horariosInfo.textContent = 'Os horários já reservados estão desabilitados.';
+                    } else {
+                        horariosInfo.textContent = 'Todos os horários estão disponíveis.';
+                    }
+                } catch (error) {
+                    console.error('Não foi possível verificar disponibilidade:', error);
+                    horariosInfo.textContent = 'Não foi possível verificar disponibilidade. Por favor, tente novamente.';
+                    showToast('Não foi possível verificar disponibilidade de horários.', 'danger');
+                }
+            }
+            
+            // Função para renderizar os horários disponíveis
+            function renderizarHorarios(turno) {
+                const horariosContainer = document.getElementById('horariosContainer');
+                horariosContainer.innerHTML = '';
+                
+                const horarios = horariosPorTurno[turno] || [];
+                
+                horarios.forEach((horario, index) => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4 mb-2';
+                    
+                    const checkboxDiv = document.createElement('div');
+                    checkboxDiv.className = 'form-check';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'form-check-input';
+                    checkbox.id = `horario${index}`;
+                    checkbox.name = 'horarios';
+                    checkbox.value = horario;
+                    
+                    // Verifica se o horário está ocupado
+                    const horarioOcupado = horariosOcupados.includes(horario);
+                    if (horarioOcupado) {
+                        checkbox.disabled = true;
+                        checkboxDiv.classList.add('text-muted');
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.className = 'form-check-label';
+                    label.htmlFor = `horario${index}`;
+                    label.textContent = horario;
+                    
+                    if (horarioOcupado) {
+                        const badgeSpan = document.createElement('span');
+                        badgeSpan.className = 'badge bg-danger ms-2';
+                        badgeSpan.textContent = 'Ocupado';
+                        label.appendChild(badgeSpan);
+                    }
+                    
+                    checkboxDiv.appendChild(checkbox);
+                    checkboxDiv.appendChild(label);
+                    col.appendChild(checkboxDiv);
+                    horariosContainer.appendChild(col);
+                });
+            }
+            
+            // Função para carregar a lista de usuários (apenas para administradores)
+            async function carregarUsuarios() {
+                try {
+                    const usuarios = await chamarAPI('/usuarios');
+                    const selectUsuario = document.getElementById('usuario_id');
+                    
+                    // Limpa as opções existentes
+                    selectUsuario.innerHTML = '';
+                    
+                    // Adiciona a opção padrão
+                    const optionPadrao = document.createElement('option');
+                    optionPadrao.value = '';
+                    optionPadrao.textContent = 'Selecione um usuário (ou deixe em branco para você mesmo)';
+                    selectUsuario.appendChild(optionPadrao);
+                    
+                    // Adiciona os usuários
+                    usuarios.forEach(usuario => {
+                        const option = document.createElement('option');
+                        option.value = usuario.id;
+                        option.textContent = `${usuario.nome} (${usuario.email})`;
+                        selectUsuario.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Não foi possível carregar usuários:', error);
+                }
+            }
+            
+            // Função para carregar os dados de um agendamento existente
+            async function carregarAgendamento(id) {
+                try {
+                    const agendamento = await chamarAPI(`/agendamentos/${id}`);
+                    
+                    // Preenche os campos do formulário
+                    document.getElementById('data').value = agendamento.data.split('T')[0];
+                    
+                    // Aguarda o carregamento dos laboratórios e turmas antes de selecionar
+                    setTimeout(async () => {
+                        const labSelect = document.getElementById('laboratorio');
+                        const optionLab = Array.from(labSelect.options).find(o => o.textContent === agendamento.laboratorio);
+                        if (optionLab) {
+                            labSelect.value = optionLab.value;
+                        }
+                        document.getElementById('turma').value = agendamento.turma;
+                        document.getElementById('turno').value = agendamento.turno;
+
+                        // Guarda horários atuais para que não sejam considerados ocupados
+                        horariosAgendamentoAtual = Array.isArray(agendamento.horarios) ? agendamento.horarios : JSON.parse(agendamento.horarios || '[]');
+
+                        // Verifica horários disponíveis e renderiza os horários do turno
+                        await verificarHorariosDisponiveis();
+
+                        // Marca os horários selecionados
+                        document.querySelectorAll('input[name="horarios"]').forEach(checkbox => {
+                            if (horariosAgendamentoAtual.includes(checkbox.value)) {
+                                checkbox.checked = true;
+                            }
+                        });
+
+                        // Se for administrador, seleciona o usuário responsável
+                        if (isAdmin() && agendamento.usuario_id) {
+                            const selectUsuario = document.getElementById('usuario_id');
+                            if (selectUsuario) {
+                                selectUsuario.value = agendamento.usuario_id;
+                            }
+                        }
+                    }, 500);
+                } catch (error) {
+                    showToast(`Não foi possível carregar agendamento: ${error.message}`, 'danger');
+                }
+            }
+        });
+    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+
+        const labId = params.get('lab_id');
+        const data = params.get('data');
+        const turno = params.get('turno');
+
+        // Função para tentar aplicar os valores dos parâmetros
+        const preencherCampos = () => {
+            if (labId) {
+                const labSelect = document.getElementById('laboratorio');
+                if (labSelect.querySelector(`option[value="${labId}"]`)) {
+                    labSelect.value = labId;
+                }
+            }
+            if (data) {
+                document.getElementById('data').value = data;
+            }
+            if (turno) {
+                const turnoSelect = document.getElementById('turno');
+                turnoSelect.value = turno;
+                // Dispara o evento de 'change' para carregar os horários do turno
+                turnoSelect.dispatchEvent(new Event('change'));
+            }
+        };
+
+        // Espera um pouco para garantir que o select de laboratórios foi carregado
+    setTimeout(preencherCampos, 500);
+});
+</script>
+</body>
+</html>

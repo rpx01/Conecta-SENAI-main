@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <body style="font-family:Arial,Helvetica,sans-serif;">
+    <p>Olá {{ instrutor_nome }}</p>
+    <p>Você foi designado para ministrar um novo treinamento,</p>
+    <p>Segue abaixo detalhes da turma:</p>
+    <ul>
+      <li><strong>Treinamento:</strong> {{ treinamento_nome }}</li>
+      <li><strong>Matriz do treinamento:</strong> {{ treinamento_codigo }}</li>
+      <li><strong>Data(s):</strong> {{ data_inicio }}{% if data_fim and data_fim != data_inicio %} a {{ data_fim }}{% endif %}</li>
+      <li><strong>Horário:</strong> {{ horario }}</li>
+      <li><strong>Carga horária:</strong> {{ carga_horaria }}</li>
+      <li><strong>Instrutor:</strong> {{ instrutor_antigo }}</li>
+      <li><strong>Local de Realização:</strong> {{ local_realizacao }}</li>
+      <li><strong>Teoria Online?:</strong> {{ 'Sim' if teoria_online else 'Não' }}</li>
+      {% if tem_pratica %}
+      <li><strong>Prática:</strong> {{ local_pratica }}</li>
+      {% endif %}
+    </ul>
+    {% include 'email/_signature.html.j2' %}
+  </body>
+</html>
+

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Laboratórios e Turmas - Sistema de Agenda de Laboratório</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAIEAYAAADIFSHsAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAHdElNRQfpBgoBOhQj05UdAAADXUlEQVRIx92UbUzUdQDHP7/73zXgyjs6uPA8Kg82BgyYFDLNbt1YuWkOcqvZow8V4pouXYLQA3OSTHCGBBtl6RuaY7nVKtwCshU2EQRbK7BJhweUHOw87gTugfv/f72IttYbhRe59Xn/3b6f74uvsFpdrqam4ccBIK2DWyGRSNAe1Y7LfFjblWdZcQg2VjjrHKcheGGmLFoJ39T19nuq4KX3ntyYHYLwZ9FCNRcGbEMlXiukD6c6zQegs7TH5KkG+6b7ku+RMFY08W1wC/gGAlnhT2B3y7PHVo3AYdtHLT0GKGzLed9mg5ncuReijXCuqzc02giKouwXO27Z/l/4A7oF8c23nYkSQwMiRInB6oac6uXLQHVp3fIcBI7MPhx5HlIqLenGHkh6LfF0wna4kj9S7/saPMnX+wIDkOlytFqC8MzVJ5SMPZC119FniQNzeNlQXB8U3MjOSimGla22kyYV8iYziqz1kLIjadSYD9Yf7+1NMIAMy0xZu1jxv0k0LQxA2W1ndAgEiCThEdXQ++LPRde3grt2fHw6G9JrUucSi8HhsP9iPgOaTyuWd4N6VkuTN0GdVN+UzeCd8uXOlsLkO/7yuQdgnWvVyhWfgjESHzQkgLPpodX29XBjbfBgeBBcwwVj91+Eu07pm3XNIDvp4dpSxf+ps0TkZvbJzyGp3DwSPw0Pltl2m0YhWj7/lrofpk74j83lQNgebYhtg5QSi874FTh+tX9grofAczOm6Hpo93b/4K6BkTf+qAiYYPm2JI8xH7xW31NzVdB6vH3voAKqqtZrJyE+M67SUACzVaEP59uBt0Upa5Y+gH7RCQN6dCDShE+8C2fN5yfcW+DS5cGLE3qIbpiv0Log2DZ7JPI6nM+8/N24EwwX9BVKEELd4bZYB3T6e8qvbYXgyzNfRrbDgZKGNd/ng9KiuMXHMF8Tq9X6YfrKzRMRJwxYhgq9jaBoSp2YgtChyCNqKihduoO6XQC8upQhxF8nKOWikwo6BMhLDDIB8ieZIMtBbGCdcAAdtPA0yC+kX+4E+hnCCxwV+3gMyCNDJIP4XXSwC3DJV2gDeZVR/CBcFJAKwi3a2QkyKrOpBfkbY0yDOMwenCDOiKMUA2EixP7LAf4nLHyAP3Cni9wZYp1/AkYRW5V0uSBfAAAAAElFTkSuQmCC">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Agenda de Laboratórios">Sistema FIEMG | Agenda de Laboratórios</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/laboratorios/calendario.html"><i class="bi bi-calendar3 me-1"></i> Calendário</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link active" href="/laboratorios/turmas.html"><i class="bi bi-building me-1"></i> Laboratórios e Turmas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/laboratorios/agendamento.html"><i class="bi bi-plus-circle me-1"></i> Novo Agendamento</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/laboratorios/logs.html"><i class="bi bi-journal-text me-1"></i> Logs</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span id="userName">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/laboratorios/perfil.html">
+                                    <i class="bi bi-person me-2"></i> Meu Perfil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" id="btnLogout">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <main class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="mb-0">Gerenciamento de Laboratórios e Turmas</h1>
+                        <button class="btn btn-primary" onclick="novoLaboratorio()">
+                            <i class="bi bi-plus-circle me-2"></i>Novo Laboratório
+                        </button>
+                    </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title mb-0"><i class="bi bi-funnel me-2"></i>Filtros</h2>
+                    </div>
+                    <div class="card-body">
+                    </div>
+                </div>
+
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h2 class="card-title mb-0"><i class="bi bi-list me-2"></i>Lista de Laboratórios</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <caption class="visually-hidden">Lista de Laboratórios</caption>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">Data de Criação</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="laboratoriosTableBody">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Carregando...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="card-title mb-0"><i class="bi bi-list me-2"></i>Lista de Turmas</h2>
+                        <button class="btn btn-primary btn-sm" onclick="novaTurma()"><i class="bi bi-plus-circle me-2"></i>Nova Turma</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <caption class="visually-hidden">Lista de Turmas</caption>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">Data de Criação</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="turmasTableBody">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Carregando...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" aria-labelledby="confirmacaoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="confirmacaoModalLabel">Confirmar Exclusão</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body" id="confirmacaoModalBody">
+                    <p>Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="laboratorioModal" tabindex="-1" aria-labelledby="laboratorioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="laboratorioModalLabel">Novo Laboratório</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="laboratorioForm">
+                        <input type="hidden" id="laboratorioId">
+                        <div class="mb-3">
+                            <label for="nomeLaboratorio" class="form-label">Nome do Laboratório</label>
+                            <input type="text" class="form-control" id="nomeLaboratorio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="classeIconeLaboratorio" class="form-label">Classe do Ícone</label>
+                            <input type="text" class="form-control" id="classeIconeLaboratorio">
+                            <small class="form-text text-muted">
+                                Cole a classe do <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a> aqui.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="laboratorioForm" class="btn btn-primary" id="btnSalvarLaboratorio">
+                        <i class="bi bi-plus-circle me-2"></i>Salvar laboratório
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="turmaModal" tabindex="-1" aria-labelledby="turmaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="turmaModalLabel">Nova Turma</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="turmaForm">
+                        <input type="hidden" id="turmaId">
+                        <div class="mb-3">
+                            <label for="nomeTurma" class="form-label">Nome da Turma</label>
+                            <input type="text" class="form-control" id="nomeTurma" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="turmaForm" class="btn btn-primary" id="btnSalvarTurma">
+                        <i class="bi bi-plus-circle me-2"></i>Salvar turma
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verifica autenticação e permissão de administrador
+            verificarAutenticacao();
+            verificarPermissaoAdmin();
+            
+            // Variáveis para controle dos modais
+            const confirmacaoModal = new bootstrap.Modal(document.getElementById('confirmacaoModal'));
+            const laboratorioModalEl = document.getElementById('laboratorioModal');
+            const turmaModalEl = document.getElementById('turmaModal');
+            const laboratorioModal = new bootstrap.Modal(laboratorioModalEl);
+            const turmaModal = new bootstrap.Modal(turmaModalEl);
+            let itemParaExcluir = { tipo: null, id: null };
+
+            // ADICIONADO: Listeners para limpar os modais quando fechados
+            laboratorioModalEl.addEventListener('hidden.bs.modal', () => {
+                document.getElementById('laboratorioForm').reset();
+                document.getElementById('laboratorioId').value = '';
+                document.getElementById('btnSalvarLaboratorio').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Salvar laboratório';
+            });
+
+            turmaModalEl.addEventListener('hidden.bs.modal', () => {
+                document.getElementById('turmaForm').reset();
+                document.getElementById('turmaId').value = '';
+                document.getElementById('btnSalvarTurma').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Salvar turma';
+            });
+            
+            // Carrega os dados iniciais
+            carregarLaboratorios();
+            carregarTurmas();
+            
+            // Event listeners para os formulários
+            document.getElementById('laboratorioForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                salvarLaboratorio();
+            });
+            
+            document.getElementById('turmaForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                salvarTurma();
+            });
+            
+            // Event listener para o botão de confirmar exclusão
+            document.getElementById('btnConfirmarExclusao').addEventListener('click', function() {
+                if (itemParaExcluir.tipo === 'laboratorio') {
+                    excluirLaboratorio(itemParaExcluir.id);
+                } else if (itemParaExcluir.tipo === 'turma') {
+                    excluirTurma(itemParaExcluir.id);
+                }
+                confirmacaoModal.hide();
+            });
+            
+            // Função para carregar a lista de laboratórios
+            async function carregarLaboratorios() {
+                try {
+                    const laboratorios = await chamarAPI('/laboratorios');
+                    const tableBody = document.getElementById('laboratoriosTableBody');
+                    
+                    if (laboratorios.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum laboratório cadastrado.</td></tr>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    laboratorios.forEach(lab => {
+                        html += `
+                            <tr>
+                                <td>${lab.id}</td>
+                                <td>${lab.nome}</td>
+                                <td>${formatarData(lab.data_criacao)}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editarLaboratorio(${lab.id}, '${lab.nome}', '${lab.classe_icone || ''}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao('laboratorio', ${lab.id}, '${lab.nome}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableBody.innerHTML = html;
+                } catch (error) {
+                    document.getElementById('laboratoriosTableBody').innerHTML = 
+                        '<tr><td colspan="4" class="text-center text-danger">Não foi possível carregar laboratórios.</td></tr>';
+                    console.error('Não foi possível carregar laboratórios:', error);
+                }
+            }
+            
+            // Função para carregar a lista de turmas
+            async function carregarTurmas() {
+                try {
+                    const turmas = await chamarAPI('/turmas');
+                    const tableBody = document.getElementById('turmasTableBody');
+                    
+                    if (turmas.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhuma turma cadastrada.</td></tr>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    turmas.forEach(turma => {
+                        html += `
+                            <tr>
+                                <td>${turma.id}</td>
+                                <td>${turma.nome}</td>
+                                <td>${formatarData(turma.data_criacao)}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editarTurma(${turma.id}, '${turma.nome}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao('turma', ${turma.id}, '${turma.nome}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableBody.innerHTML = html;
+                } catch (error) {
+                    document.getElementById('turmasTableBody').innerHTML = 
+                        '<tr><td colspan="4" class="text-center text-danger">Não foi possível carregar turmas.</td></tr>';
+                    console.error('Não foi possível carregar turmas:', error);
+                }
+            }
+            
+            // Função para salvar um laboratório (criar ou atualizar)
+            async function salvarLaboratorio() {
+                const id = document.getElementById('laboratorioId').value;
+                const nome = document.getElementById('nomeLaboratorio').value;
+                const classeIcone = document.getElementById('classeIconeLaboratorio').value;
+                
+                if (!nome) {
+                    showToast('O nome do laboratório é obrigatório.', 'danger');
+                    return;
+                }
+                
+                try {
+                    if (id) {
+                        // Atualização
+                        await chamarAPI(`/laboratorios/${id}`, 'PUT', { nome, classe_icone: classeIcone });
+                        showToast('Laboratório atualizado com sucesso!', 'success');
+                    } else {
+                        // Criação
+                        await chamarAPI('/laboratorios', 'POST', { nome, classe_icone: classeIcone });
+                        showToast('Laboratório cadastrado com sucesso!', 'success');
+                    }
+                    
+                    // Limpa o formulário e recarrega a lista
+                    document.getElementById('laboratorioForm').reset();
+                    document.getElementById('laboratorioId').value = '';
+                    document.getElementById('btnSalvarLaboratorio').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Salvar laboratório';
+                    laboratorioModal.hide();
+                    carregarLaboratorios();
+                } catch (error) {
+                    showToast(`Não foi possível salvar laboratório: ${error.message}`, 'danger');
+                }
+            }
+            
+            // Função para salvar uma turma (criar ou atualizar)
+            async function salvarTurma() {
+                const id = document.getElementById('turmaId').value;
+                const nome = document.getElementById('nomeTurma').value;
+                
+                if (!nome) {
+                    showToast('O nome da turma é obrigatório.', 'danger');
+                    return;
+                }
+                
+                try {
+                    if (id) {
+                        // Atualização
+                        await chamarAPI(`/turmas/${id}`, 'PUT', { nome });
+                        showToast('Turma atualizada com sucesso!', 'success');
+                    } else {
+                        // Criação
+                        await chamarAPI('/turmas', 'POST', { nome });
+                        showToast('Turma cadastrada com sucesso!', 'success');
+                    }
+                    
+                    // Limpa o formulário e recarrega a lista
+                    document.getElementById('turmaForm').reset();
+                    document.getElementById('turmaId').value = '';
+                    document.getElementById('btnSalvarTurma').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Salvar turma';
+                    turmaModal.hide();
+                    carregarTurmas();
+                } catch (error) {
+                    showToast(`Não foi possível salvar turma: ${error.message}`, 'danger');
+                }
+            }
+            
+            // Função para editar um laboratório
+            window.editarLaboratorio = function(id, nome, classe) {
+                document.getElementById('laboratorioId').value = id;
+                document.getElementById('nomeLaboratorio').value = nome;
+                document.getElementById('classeIconeLaboratorio').value = classe || '';
+                document.getElementById('btnSalvarLaboratorio').innerHTML = '<i class="bi bi-check-circle me-2"></i>Atualizar laboratório';
+                laboratorioModal.show();
+                document.getElementById('nomeLaboratorio').focus();
+            };
+            
+            // Função para editar uma turma
+            window.editarTurma = function(id, nome) {
+                document.getElementById('turmaId').value = id;
+                document.getElementById('nomeTurma').value = nome;
+                document.getElementById('btnSalvarTurma').innerHTML = '<i class="bi bi-check-circle me-2"></i>Atualizar turma';
+                turmaModal.show();
+                document.getElementById('nomeTurma').focus();
+            };
+            
+            // Função para confirmar exclusão
+            window.confirmarExclusao = function(tipo, id, nome) {
+                itemParaExcluir = { tipo, id };
+                
+                const mensagem = tipo === 'laboratorio' 
+                    ? `Tem certeza que deseja excluir o laboratório "${nome}"?`
+                    : `Tem certeza que deseja excluir a turma "${nome}"?`;
+                
+                document.getElementById('confirmacaoModalBody').innerHTML = `
+                    <p>${mensagem}</p>
+                    <p class="text-danger">Esta ação não pode ser desfeita.</p>
+                `;
+                
+                confirmacaoModal.show();
+            };
+            
+            // Função para excluir um laboratório
+            async function excluirLaboratorio(id) {
+                try {
+                    await chamarAPI(`/laboratorios/${id}`, 'DELETE');
+                    showToast('Laboratório excluído com sucesso!', 'success');
+                    carregarLaboratorios();
+                } catch (error) {
+                    showToast(`Não foi possível excluir laboratório: ${error.message}`, 'danger');
+                }
+            }
+            
+            // Função para excluir uma turma
+            async function excluirTurma(id) {
+                try {
+                    await chamarAPI(`/turmas/${id}`, 'DELETE');
+                    showToast('Turma excluída com sucesso!', 'success');
+                    carregarTurmas();
+                } catch (error) {
+                    showToast(`Não foi possível excluir turma: ${error.message}`, 'danger');
+                }
+            }
+
+            window.novoLaboratorio = function() {
+                // A limpeza agora é feita pelo listener 'hidden.bs.modal'
+                laboratorioModal.show();
+            };
+
+            window.novaTurma = function() {
+                // A limpeza agora é feita pelo listener 'hidden.bs.modal'
+                turmaModal.show();
+            };
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isUserAdmin()) {
+                document.body.classList.add('read-only');
+            }
+        });
+    </script>
+</body>
+</html>

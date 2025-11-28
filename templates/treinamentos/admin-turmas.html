@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Turmas de Treinamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Cursos e Treinamentos">Sistema FIEMG | Cursos e Treinamentos</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/treinamentos/index.html"><i class="bi bi-card-list me-1"></i> Cursos Disponíveis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/treinamentos/meus-cursos.html"><i class="bi bi-person-video3 me-1"></i> Meus Cursos</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link active" href="/treinamentos/admin-turmas.html"><i class="bi bi-people-fill me-1"></i> Turmas Futuras</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/treinamentos/admin-historico-turmas.html"><i class="bi bi-play-circle-fill me-1"></i> Turmas em Andamento</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/treinamentos/admin-historico-passado.html"><i class="bi bi-archive-fill me-1"></i> Turmas Encerradas</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/treinamentos/admin-catalogo.html"><i class="bi bi-collection-fill me-1"></i> Catálogo</a>
+                    </li>
+                    <li class="nav-item admin-only">
+                        <a class="nav-link" href="/treinamentos/basedados.html"><i class="bi bi-database me-1"></i> Base de Dados</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span id="userName">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/treinamentos/perfil.html"><i class="bi bi-person me-2"></i>Meu Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <main class="col-12">
+                    <div class="page-header">
+                        <h1 class="mb-0">Gerenciar Turmas Futuras</h1>
+                        <button class="btn btn-primary" onclick="novaTurma()"><i class="bi bi-plus-circle me-2"></i>Nova Turma</button>
+                    </div>
+                
+
+                <div class="card mt-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <caption class="visually-hidden">Lista de Turmas Futuras</caption>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Treinamento</th>
+                                        <th scope="col">Horário</th>
+                                        <th scope="col">Início</th>
+                                        <th scope="col">Término</th>
+                                        <th scope="col">Ações</th><!-- inclui botão "Convocar Todos" -->
+                                    </tr>
+                                </thead>
+                                <tbody id="turmasTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="turmaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Turma</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="turmaForm" onsubmit="event.preventDefault(); salvarTurma();">
+                        <input type="hidden" id="turmaId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Treinamento</label>
+                                <select class="form-select" id="turmaTreinamentoId" required></select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Carga Horária (h)</label>
+                                <input type="text" class="form-control" id="cargaHoraria" readonly>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label d-block">Teoria Online?</label>
+                                <div class="form-check form-switch mt-1">
+                                    <input class="form-check-input" type="checkbox" id="teoriaOnline">
+                                    <label class="form-check-label" for="teoriaOnline">Sim</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Data de Início</label>
+                                <input type="date" class="form-control" id="dataInicio" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Data de Término</label>
+                                <input type="date" class="form-control" id="dataFim" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Local de Realização</label>
+                            <select class="form-select" id="localRealizacao">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Instrutor</label>
+                            <select class="form-select" id="instrutorId">
+                                <option value="">Selecione um instrutor...</option>
+                            </select>
+                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Horário</label>
+                                <select class="form-select" id="horario">
+                                    <option value="">Selecione...</option>
+                                    <option value="07H30 ÀS 16H30">07H30 ÀS 16H30</option>
+                                    <option value="07H30 ÀS 11H30">07H30 ÀS 11H30</option>
+                                    <option value="11H30 ÀS 16H30">11H30 ÀS 16H30</option>
+                                    <option value="13H30 ÀS 16H30">13H30 ÀS 16H30</option>
+                                    <option value="08H00 ÀS 17H00">08H00 ÀS 17H00</option>
+                                    <option value="08H00 ÀS 12H00">08H00 ÀS 12H00</option>
+                                    <option value="12H00 ÀS 17H00">12H00 ÀS 17H00</option>                                
+                                    <option value="09H30 ÀS 18H30">09H30 ÀS 18H30</option>
+                                    <option value="09H30 ÀS 13H30">09H30 ÀS 13H30</option>
+                                    <option value="13H30 ÀS 18H30">13H30 ÀS 18H30</option> 
+                                </select>
+                            </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="turmaForm" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="adminInscricaoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Inscrever Novo Participante</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminInscricaoForm">
+                        <input type="hidden" id="adminTurmaId">
+                        <div class="mb-3">
+                            <label class="form-label" for="adminNome">Nome Completo *</label>
+                            <input type="text" class="form-control" id="adminNome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="adminEmail">Email *</label>
+                            <input type="email" class="form-control" id="adminEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="adminCpf">CPF *</label>
+                            <input type="text" class="form-control" id="adminCpf" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="adminDataNascimento">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="adminDataNascimento">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="adminEmpresa">Empresa</label>
+                            <input type="text" class="form-control" id="adminEmpresa">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnEnviarAdminInscricao">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="btn-text">Inscrever Participante</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/treinamentos/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const usuario = getUsuarioLogado();
+            if (usuario) {
+                document.getElementById('userName').textContent = usuario.nome;
+            }
+        });
+    </script>
+    
+    <div class="modal fade" id="confirmacaoExcluirModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Confirmar Exclusão</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem a certeza de que deseja excluir esta turma? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao">Sim, Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirmacaoConvocarModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Confirmar Convocação</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem a certeza de que deseja convocar por e-mail todos os participantes desta turma?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="btnConfirmarConvocacao">Sim, Convocar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+</body>
+</html>

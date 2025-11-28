@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Ocupação - Sistema de Controle de Ocupação</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="icon"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAIEAYAAADIFSHsAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAHdElNRQfpBgoBOhQj05UdAAADXUlEQVRIx92UbUzUdQDHP7/73zXgyjs6uPA8Kg82BgyYFDLNbt1YuWkOcqvZow8V4pouXYLQA3OSTHCGBBtl6RuaY7nVKtwCshU2EQRbK7BJhweUHOw87gTugfv/f72IttYbhRe59Xn/3b6f74uvsFpdrqam4ccBIK2DWyGRSNAe1Y7LfFjblWdZcQg2VjjrHKcheGGmLFoJ39T19nuq4KX3ntyYHYLwZ9FCNRcGbEMlXiukD6c6zQegs7TH5KkG+6b7ku+RMFY08W1wC/gGAlnhT2B3y7PHVo3AYdtHLT0GKGzLed9mg5ncuReijXCuqzc02giKouwXO27Z/l/4A7oF8c23nYkSQwMiRInB6oac6uXLQHVp3fIcBI7MPhx5HlIqLenGHkh6LfF0wna4kj9S7/saPMnX+wIDkOlytFqC8MzVJ5SMPZC119FniQNzeNlQXB8U3MjOSimGla22kyYV8iYziqz1kLIjadSYD9Yf7+1NMIAMy0xZu1jxv0k0LQxA2W1ndAgEiCThEdXQ++LPRde3grt2fHw6G9JrUucSi8HhsP9iPgOaTyuWd4N6VkuTN0GdVN+UzeCd8uXOlsLkO/7yuQdgnWvVyhWfgjESHzQkgLPpodX29XBjbfBgeBBcwwVj91+Eu07pm3XNIDvp4dpSxf+ps0TkZvbJzyGp3DwSPw0Pltl2m0YhWj7/lrofpk74j83lQNgebYhtg5QSi874FTh+tX9grofAczOm6Hpo93b/4K6BkTf+qAiYYPm2JI8xH7xW31NzVdB6vH3voAKqqtZrJyE+M67SUACzVaEP59uBt0Upa5Y+gH7RCQN6dCDShE+8C2fN5yfcW+DS5cGLE3qIbpiv0Log2DZ7JPI6nM+8/N24EwwX9BVKEELd4bZYB3T6e8qvbYXgyzNfRrbDgZKGNd/ng9KiuMXHMF8Tq9X6YfrKzRMRJwxYhgq9jaBoSp2YgtChyCNqKihduoO6XQC8upQhxF8nKOWikwo6BMhLDDIB8ieZIMtBbGCdcAAdtPA0yC+kX+4E+hnCCxwV+3gMyCNDJIP4XXSwC3DJV2gDeZVR/CBcFJAKwi3a2QkyKrOpBfkbY0yDOMwenCDOiKMUA2EixP7LAf4nLHyAP3Cni9wZYp1/AkYRW5V0uSBfAAAAAElFTkSuQmCC">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Controle de Ocupação">Sistema FIEMG | Controle de Ocupação</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ocupacao/dashboard.html">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ocupacao/calendario.html">
+                            <i class="bi bi-calendar3 me-1"></i> Calendário
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-only" href="/ocupacao/basedados.html">
+                            <i class="bi bi-database me-1"></i> Base de Dados
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-only" href="/ocupacao/ocupacoes.html">
+                            <i class="bi bi-list-check me-1"></i> Lista de Ocupações
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active admin-only" href="/ocupacao/agendamento.html">
+                            <i class="bi bi-plus-circle me-1"></i> Nova Ocupação
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span id="nomeUsuarioNav">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/ocupacao/perfil.html"><i
+                                        class="bi bi-person me-2"></i>Meu Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="realizarLogout()"><i
+                                        class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Nova Ocupação de Sala</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/ocupacao/calendario.html" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Voltar ao Calendário
+                        </a>
+                    </div>
+                </div>
+
+
+                <div class="card">
+                    <div class="card-body">
+                        <form id="formNovaOcupacao">
+                            <div>
+                                <h2 class="mb-4">Dados da Ocupação</h2>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="cursoEvento" class="form-label">Curso/Evento *</label>
+                                            <select class="form-select" id="cursoEvento" required></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="tipoOcupacao" class="form-label">Tipo de Ocupação *</label>
+                                            <select class="form-select" id="tipoOcupacao" required>
+                                                <option value="">Selecione...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="dataInicio" class="form-label">Data de Início *</label>
+                                            <input type="date" class="form-control" id="dataInicio" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="dataFim" class="form-label">Data de Fim *</label>
+                                            <input type="date" class="form-control" id="dataFim" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="turno" class="form-label">Turno *</label>
+                                            <select class="form-select" id="turno" required>
+                                                <option value="">Selecione...</option>
+                                                <option value="Manhã">Manhã</option>
+                                                <option value="Tarde">Tarde</option>
+                                                <option value="Noite">Noite</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="salaOcupacao" class="form-label">Sala *</label>
+                                            <select class="form-select" id="salaOcupacao" required>
+                                                <option value="">Selecione...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="observacoesOcupacao" class="form-label">Observações</label>
+                                    <textarea class="form-control" id="observacoesOcupacao" rows="3"
+                                        placeholder="Informações adicionais sobre a ocupação..."></textarea>
+                                </div>
+
+                                <div id="statusDisponibilidade" class="mb-3"></div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" onclick="salvarOcupacao()">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Salvar Ocupação
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/ocupacao/nova-ocupacao.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Verifica autenticação
+            if (!verificarAutenticacao()) return;
+
+            // Atualiza nome do usuário na navbar
+            const usuario = getUsuarioLogado();
+            document.getElementById('nomeUsuarioNav').textContent = usuario.nome;
+
+            // Carrega dados iniciais
+            await carregarTiposOcupacao();
+            await carregarSalas();
+            await carregarTurmasSelect();
+
+            // Adiciona listeners para validação em tempo real
+            adicionarListenersValidacao();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isUserAdmin()) {
+                document.body.classList.add('read-only');
+            }
+        });
+    </script>
+    <footer class="mt-5 py-3 bg-dark text-white text-center">
+        <div class="container">
+            <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+        </div>
+    </footer>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+</body>
+
+</html>

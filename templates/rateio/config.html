@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Configurações de Rateio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Controle de Rateio">Sistema FIEMG | Controle de Rateio</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rateio/dashboard.html"><i data-lucide="coins" class="me-1"></i> Lançamentos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/rateio/config.html"><i data-lucide="settings" class="me-1"></i> Configurações</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rateio/instrutores.html"><i data-lucide="id-card" class="me-1"></i> Instrutores</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i data-lucide="user-round" class="me-1"></i>
+                            <span id="userName">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/rateio/perfil.html">
+                                    <i data-lucide="user" class="me-2"></i>Meu Perfil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="realizarLogout()">
+                                    <i data-lucide="log-out" class="me-2"></i>Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12">
+                    <div class="page-header">
+                        <h1 class="mb-0">Configurações de Rateio</h1>
+                        <button class="btn btn-primary" onclick="novaConfig()">
+                            <i data-lucide="plus-circle" class="me-2"></i>Nova Configuração
+                        </button>
+                    </div>
+                <div class="card mt-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <caption class="visually-hidden">Configurações de Rateio</caption>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th scope="col">Filial</th>
+                                        <th scope="col">UO</th>
+                                        <th scope="col">CR</th>
+                                        <th scope="col">Classe de Valor</th>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="configsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" aria-labelledby="confirmacaoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="confirmacaoModalLabel">Confirmar Exclusão</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body" id="confirmacaoModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalConfigLabel">Nova Configuração de Rateio</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="configForm">
+                        <div class="mb-3">
+                            <label for="filial" class="form-label">Filial</label>
+                            <input type="text" class="form-control" id="filial" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="uo" class="form-label">Unidade Organizacional (UO)</label>
+                            <input type="text" class="form-control" id="uo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cr" class="form-label">Centro de Resultado (CR)</label>
+                            <input type="text" class="form-control" id="cr" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="classe_valor" class="form-label">Classe de Valor</label>
+                            <input type="text" class="form-control" id="classe_valor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarConfig">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/rateio/config.js"></script>
+    <script>lucide.createIcons({attrs:{strokeWidth:1.75}})</script>
+<footer class="mt-5 py-3 bg-dark text-white text-center">
+    <div class="container">
+        <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Notícias - Sistema FIEMG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/brand.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <link href="/css/noticias.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top" aria-label="Menu administrativo">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/selecao-sistema.html">
+                <img src="/img/senai-logo.png" alt="SENAI" height="28" class="me-2">
+                <span class="navbar-brand-text" title="Gerenciamento de Notícias">Sistema FIEMG | Gerenciamento de Notícias</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas" aria-controls="adminOffcanvas" aria-label="Abrir menu lateral">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/noticias/index.html"><i class="bi bi-newspaper me-1"></i> Portal público</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/noticias/gerenciamento.html"><i class="bi bi-gear-wide-connected me-1"></i> Administração</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-lg-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span id="userName">Usuário</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/admin/perfil.html"><i class="bi bi-person me-2"></i> Meu Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="btnLogout"><i class="bi bi-box-arrow-right me-2"></i> Sair</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="adminOffcanvas" aria-labelledby="adminOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h2 class="offcanvas-title h5" id="adminOffcanvasLabel">Atalhos</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="nav flex-column">
+                <a class="nav-link" href="#newsAdminHeader">Lista de notícias</a>
+                <a class="nav-link" href="#newsAdminFilters">Filtros</a>
+                <a class="nav-link" href="#newsAdminTable">Tabela</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <header class="page-header" id="newsAdminHeader">
+                    <div>
+                        <h1 class="mb-0">Gerenciamento de Notícias</h1>
+                        <p class="text-muted mb-0">Cadastre, edite e publique comunicados institucionais.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary" id="btnExportarNoticias" type="button">
+                            <i class="bi bi-filetype-csv me-1"></i> Exportar CSV
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#noticiaModal" type="button">
+                            <i class="bi bi-plus-lg me-1"></i> Nova notícia
+                        </button>
+                    </div>
+                </header>
+
+                <section class="card mb-4" id="newsAdminFilters" aria-label="Filtros de busca">
+                    <div class="card-header">
+                        <h2 class="card-title mb-0"><i class="bi bi-funnel me-2"></i>Filtros</h2>
+                    </div>
+                    <div class="card-body">
+                        <form class="row g-3 align-items-end" id="newsAdminSearchForm">
+                            <div class="col-md-4">
+                                <label for="newsAdminSearch" class="form-label">Título ou palavra-chave</label>
+                                <input type="search" class="form-control" id="newsAdminSearch" placeholder="Digite um termo de busca">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="newsAdminStatus" class="form-label">Status</label>
+                                <select id="newsAdminStatus" class="form-select">
+                                    <option value="todos">Todos</option>
+                                    <option value="ativos">Apenas publicados</option>
+                                    <option value="inativos">Rascunhos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="newsAdminDestaque" class="form-label">Destaque</label>
+                                <select id="newsAdminDestaque" class="form-select">
+                                    <option value="todos">Todos</option>
+                                    <option value="destaque">Somente destaques</option>
+                                    <option value="comum">Sem destaque</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex gap-2">
+                                <button class="btn btn-primary flex-grow-1" type="submit">
+                                    <i class="bi bi-search me-1"></i> Aplicar
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" id="newsAdminReset">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                    <span class="visually-hidden">Limpar filtros</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="card" id="newsAdminTable" aria-label="Tabela de notícias">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="card-title mb-0"><i class="bi bi-list-check me-2"></i>Resultados</h2>
+                        <span class="badge bg-secondary" id="newsAdminTotal">0 registros</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <caption class="visually-hidden">Tabela com as notícias cadastradas</caption>
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th scope="col">Título</th>
+                                        <th scope="col">Publicação</th>
+                                        <th scope="col">Destaque</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col" class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="newsAdminTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                                            <span class="visually-hidden">Carregando notícias</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav aria-label="Paginação de notícias" class="mt-3">
+                            <ul class="pagination justify-content-center" id="newsAdminPagination"></ul>
+                        </nav>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-5 py-3 bg-dark text-white text-center">
+        <div class="container">
+            <p class="mb-0">Sistema FIEMG | O futuro se faz juntos.</p>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="noticiaModalLabel">Nova notícia</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="noticiaForm" novalidate>
+                        <input type="hidden" id="noticiaId">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="noticiaTitulo" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="noticiaTitulo" name="titulo" required minlength="3" maxlength="200" aria-describedby="feedbackTitulo">
+                                <div class="invalid-feedback" id="feedbackTitulo" role="alert"></div>
+                            </div>
+                            <div class="col-md-4 d-none">
+                                <label for="noticiaDataPublicacao" class="form-label">Data de publicação</label>
+                                <input type="datetime-local" class="form-control" id="noticiaDataPublicacao" name="dataPublicacao" aria-describedby="feedbackDataPublicacao">
+                                <div class="form-text">Se vazio, a data atual será aplicada.</div>
+                                <div class="invalid-feedback" id="feedbackDataPublicacao" role="alert"></div>
+                            </div>
+                            <div class="col-12">
+                                <label for="noticiaResumo" class="form-label">Resumo</label>
+                                <textarea class="form-control" id="noticiaResumo" name="resumo" rows="2" minlength="10" maxlength="400" required aria-describedby="feedbackResumo"></textarea>
+                                <div class="form-text">O resumo é exibido nos cards e pode ter até 400 caracteres.</div>
+                                <div class="invalid-feedback" id="feedbackResumo" role="alert"></div>
+                            </div>
+                            <div class="col-12">
+                                <label for="noticiaConteudo" class="form-label">Conteúdo</label>
+                                <textarea class="form-control" id="noticiaConteudo" name="conteudo" rows="6" required minlength="20" aria-describedby="feedbackConteudo"></textarea>
+                                <div class="invalid-feedback" id="feedbackConteudo" role="alert"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="noticiaAutor" class="form-label">Autor (opcional)</label>
+                                <input type="text" class="form-control" id="noticiaAutor" name="autor" maxlength="120">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="noticiaImagem" class="form-label">Imagem da notícia</label>
+                                <input type="file" class="form-control" id="noticiaImagem" name="imagem" accept="image/*">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="noticiaDestaque" name="destaque">
+                                    <label class="form-check-label" for="noticiaDestaque">Destacar notícia na capa</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="noticiaAtivo" name="ativo" checked>
+                                    <label class="form-check-label" for="noticiaAtivo">Publicar imediatamente</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="noticiaCalendario" name="marcarCalendario" aria-controls="noticiaDataEventoContainer" aria-expanded="false">
+                                    <label class="form-check-label" for="noticiaCalendario">Marcar no calendário?</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-none" id="noticiaDataEventoContainer" aria-hidden="true" hidden>
+                                <label for="noticiaDataEvento" class="form-label">Data do evento</label>
+                                <input type="date" class="form-control" id="noticiaDataEvento" name="dataEvento" aria-describedby="feedbackDataEvento">
+                                <div class="invalid-feedback" id="feedbackDataEvento" role="alert"></div>
+                            </div>
+                            <div class="col-12" id="agendamentoPublicacao" style="display: none;">
+                                <label for="noticiaDataAgendamento" class="form-label">Agendar publicação para</label>
+                                <input type="datetime-local" class="form-control" id="noticiaDataAgendamento" name="dataAgendamento" aria-describedby="feedbackDataAgendamento">
+                                <div class="invalid-feedback" id="feedbackDataAgendamento" role="alert"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarNoticia">Salvar notícia</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmacaoExclusaoModal" tabindex="-1" aria-labelledby="confirmacaoExclusaoTitulo" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="confirmacaoExclusaoTitulo">Excluir notícia</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza de que deseja excluir esta notícia? Esta ação não poderá ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarExclusao">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/noticias/calendario-toggle.js"></script>
+    <script src="/js/noticias/gerenciamento.js"></script>
+</body>
+</html>

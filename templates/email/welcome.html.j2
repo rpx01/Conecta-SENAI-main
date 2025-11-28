@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR">
+  <body style="font-family:Arial,Helvetica,sans-serif;">
+    <h3>Olá, {{ user.name }}! Seja bem-vindo(a) ao Conecta SENAI.</h3>
+    <p>
+        Seu acesso ao nosso portal de <strong>Cursos e Treinamentos</strong> foi criado com sucesso!
+    </p>
+    <p>
+        Através dele, você poderá se inscrever em novos treinamentos, acompanhar o status das suas inscrições e visualizar seu histórico de cursos.
+    </p>
+    <p>
+        Explore agora mesmo as oportunidades disponíveis para impulsionar sua carreira.
+    </p>
+    <p>
+        Qualquer dúvida, estamos à disposição.
+    </p>
+    {% include 'email/_signature.html.j2' %}
+  </body>
+</html>
+
