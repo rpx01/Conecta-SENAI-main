@@ -1,0 +1,14 @@
+{
+  "name": "conecta-senai",
+  "version": "1.0.0",
+  "description": "Agenda de laboratórios e salas do SENAI",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "npm run test:frontend",
+    "test:frontend": "node --test src/static/js/__tests__"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.0"
+  }
+}
