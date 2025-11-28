@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+/* Optional: habilite se houver arquivos de fonte Gibson locais
+@font-face{
+  font-family:"Gibson";
+  src: url("/static/fonts/gibson/Gibson-Regular.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face{
+  font-family:"Gibson";
+  src: url("/static/fonts/gibson/Gibson-Semibold.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+*/
+
+/* Ordem de preferência: Gibson > Exo 2 > Calibri > sistema */
+:root{
+  --font-sans: "Gibson","Exo 2","Calibri",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+
+html,body{ font-family: var(--font-sans); letter-spacing: .01em; }
+h1,h2,h3,h4,h5,h6{ font-family: var(--font-sans); font-weight: 600; }
+.lead,p,li{ line-height: 1.6; }
+
+/* Títulos e subtítulos conforme guia (semibold em títulos, medium em subtítulos) */
+.display-1,.display-2,.display-3,.display-4,h1,h2{ font-weight: 600; }
+h3,h4,h5,h6, .subtitle{ font-weight: 500; }
+
+:root{
+  /* Slightly brighter primary tone to soften large brand surfaces */
+  --brand-primary: #1d4ea8; /* Ajuste suave do azul FIEMG */
+  --brand-info:    #008BD2; /* Medium Blue C */
+
+  /* Secundárias sugeridas (Guia) */
+  --brand-success: #6fb47f; /* 346C */
+  --brand-warning: #f3c258; /* 141C */
+  --brand-danger:  #e06267; /* 7418 */
+  --brand-gray-100:#f8f9fa;
+  --brand-gray-300:#d8d9dd; /* 7541C aprox. */
+  --brand-gray-800:#5b5b5f; /* Cool Gray 11 */
+
+  /* Bootstrap overrides */
+  --bs-primary: var(--brand-primary);
+  --bs-info:    var(--brand-info);
+  --bs-success: var(--brand-success);
+  --bs-warning: var(--brand-warning);
+  --bs-danger:  var(--brand-danger);
+  --bs-secondary: var(--brand-gray-800);
+  --bs-light: var(--brand-gray-100);
+  --bs-dark:  var(--brand-gray-800);
+}
+.btn-primary, .bg-primary{ background-image:none; } /* evitar gradientes indesejados */
+
+.modal-header{ background: var(--brand-primary); color:#fff; }
+.modal-title{ font-weight:600; }
+.btn-primary:disabled, .btn:disabled{ opacity:.65; }
+
+/* Spinner padrão em botões */
+.btn .spinner-border{ width:1rem; height:1rem; border-width:.2rem; margin-left:.5rem; }
+
+.brand-gradient{ background: linear-gradient(135deg, #1d4ea8 0%, #008BD2 100%); }
+.brand-shear{ transform: skewY(-9.19deg); }
+:focus-visible{ outline: 3px solid #f3c258; outline-offset: 2px; } /* amarelo da paleta */
+a:not(.btn){ text-decoration-thickness: .12em; text-underline-offset: .2em; }
+
+/* Lighter outline keeps cards feeling airy against the pale background */
+.card{ border:1px solid rgba(29, 78, 168, 0.08); border-radius: .75rem; }
+.btn{ border-radius:.65rem; }
+.form-control, .form-select{ border-radius:.55rem; }
+.alert{ border:none; }
+.badge{ border-radius:.5rem; }
+
+@media (max-width: 768px){
+  .display-1,.display-2,.display-3,.display-4{ font-size: clamp(2rem, 6vw, 2.75rem); }
+  .btn{ padding: .5rem 1.05rem; font-size: .9rem; }
+  .card{ border-radius: .65rem; }
+}
+
+@media (max-width: 576px){
+  html{ font-size: 13.5px; }
+  .display-1,.display-2,.display-3,.display-4{ font-size: clamp(1.6rem, 6.5vw, 2.2rem); }
+  .lead{ font-size: .9rem; }
+  .card{ border-radius: .55rem; }
+  .btn{ width: 100%; }
+}
