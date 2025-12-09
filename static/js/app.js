@@ -97,7 +97,8 @@ const PAGINAS_PUBLICAS = new Set([
     '/noticias',
     '/noticias/',
     '/noticias/index.html',
-    '/suporte_ti/abertura_publica.html'
+    '/suporte_ti/abertura_publica.html',
+    '/manutencao_unidade/abertura_publica.html'
 ].map(normalizarPathname));
 
 const PREFIXOS_PUBLICOS = ['/noticias/'];
@@ -212,6 +213,8 @@ const MAPA_SLUGS_PARA_URLS = {
     noticias_admin: ['/noticias/gerenciamento.html'],
     suporte_ti: ['/suporte_ti/abertura.html'],
     suporte_ti_admin: ['/suporte_ti/admin_chamados.html'],
+    manutencao_unidade: ['/manutencao_unidade/abertura.html'],
+    manutencao_unidade_admin: ['/manutencao_unidade/admin_chamados.html'],
     rateio: ['/rateio/dashboard.html'],
     usuarios: ['/admin/usuarios.html']
 };
@@ -290,7 +293,8 @@ const MODULOS_PADRAO = normalizarListaModulos([
     '/treinamentos/index.html',
     '/ocupacao/dashboard.html',
     '/noticias/index.html',
-    '/suporte_ti/abertura.html'
+    '/suporte_ti/abertura.html',
+    '/manutencao_unidade/abertura.html'
 ]);
 
 // Mapeia os módulos disponíveis de acordo com o tipo de usuário
@@ -310,7 +314,8 @@ function obterModulosDisponiveis(usuario = {}) {
             '/rateio/dashboard.html',
             '/admin/usuarios.html',
             '/noticias/gerenciamento.html',
-            '/suporte_ti/admin_chamados.html'
+            '/suporte_ti/admin_chamados.html',
+            '/manutencao_unidade/admin_chamados.html'
         ]).forEach((url) => modulos.add(url));
     }
 
