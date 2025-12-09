@@ -29,6 +29,9 @@ from .imagem_noticia import ImagemNoticia  # noqa: E402
 from .suporte_chamado import SuporteChamado  # noqa: E402
 from .suporte_anexo import SuporteAnexo  # noqa: E402
 from .suporte_basedados import SuporteTipoEquipamento, SuporteArea  # noqa: E402
+from .manutencao_chamado import ManutencaoChamado  # noqa: E402
+from .manutencao_anexo import ManutencaoAnexo  # noqa: E402
+from .manutencao_basedados import ManutencaoTipoServico, ManutencaoArea  # noqa: E402
 
 __all__ = [
     "db",
@@ -57,4 +60,8 @@ __all__ = [
     "SuporteAnexo",
     "SuporteTipoEquipamento",
     "SuporteArea",
+    "ManutencaoChamado",
+    "ManutencaoAnexo",
+    "ManutencaoTipoServico",
+    "ManutencaoArea",
 ]

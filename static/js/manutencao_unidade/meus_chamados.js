@@ -29,7 +29,7 @@
 
     async function carregarChamados() {
         try {
-            const chamados = await chamarAPI('/suporte_ti/meus_chamados');
+            const chamados = await chamarAPI('/manutencao_unidade/meus_chamados');
             renderizarChamados(chamados || []);
         } catch (error) {
             console.error(error);
