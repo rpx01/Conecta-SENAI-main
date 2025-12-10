@@ -31,6 +31,12 @@ from conecta_senai.routes.laboratorios import agendamento_bp, laboratorio_bp
 from conecta_senai.routes.noticias import api_noticias_bp
 from conecta_senai.routes.notificacao import notificacao_bp
 from conecta_senai.routes.ocupacao import instrutor_bp, ocupacao_bp, sala_bp
+from conecta_senai.routes.manutencao_unidade import (
+    manutencao_public_bp,
+    manutencao_unidade_admin_bp,
+    manutencao_unidade_paginas_publicas_bp,
+    manutencao_unidade_visitante_bp,
+)
 from conecta_senai.routes.rateio import rateio_bp
 from conecta_senai.routes.suporte_ti import (
     suporte_ti_admin_bp,
@@ -151,6 +157,10 @@ def _configure_flask(app: Flask) -> None:
     app.register_blueprint(instrutor_bp, url_prefix="/api")
     app.register_blueprint(ocupacao_bp, url_prefix="/api")
     app.register_blueprint(rateio_bp, url_prefix="/api")
+    app.register_blueprint(manutencao_unidade_paginas_publicas_bp)
+    app.register_blueprint(manutencao_unidade_visitante_bp)
+    app.register_blueprint(manutencao_public_bp)
+    app.register_blueprint(manutencao_unidade_admin_bp)
     app.register_blueprint(treinamento_bp, url_prefix="/api")
     app.register_blueprint(api_noticias_bp, url_prefix="/api")
     app.register_blueprint(treinamentos_horarios_bp, url_prefix="/api/horarios")

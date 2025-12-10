@@ -30,7 +30,7 @@
 
     async function carregarBasedados() {
         try {
-            dadosBasedados = await chamarAPI('/suporte_ti/basedados_formulario');
+            dadosBasedados = await chamarAPI('/manutencao_unidade/basedados_formulario');
             preencherFiltros(dadosBasedados);
         } catch (error) {
             console.error('Erro ao carregar base de dados:', error);
@@ -108,8 +108,8 @@
     async function carregarIndicadores(queryParams = '') {
         try {
             const url = queryParams
-                ? `/suporte_ti/admin/indicadores?${queryParams}`
-                : '/suporte_ti/admin/indicadores';
+                ? `/manutencao_unidade/admin/indicadores?${queryParams}`
+                : '/manutencao_unidade/admin/indicadores';
             const dados = await chamarAPI(url);
             atualizarCards(dados);
             atualizarNovosCards(dados);

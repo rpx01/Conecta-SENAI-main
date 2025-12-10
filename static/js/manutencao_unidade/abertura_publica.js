@@ -8,7 +8,7 @@
 
     async function carregarBaseDados() {
         try {
-            const resposta = await fetch('/suporte/base-dados', {
+            const resposta = await fetch('/manutencao/base-dados', {
                 credentials: 'same-origin'
             });
             if (!resposta.ok) {
@@ -111,7 +111,7 @@
             if (!formData.get('nivel_urgencia')) {
                 formData.set('nivel_urgencia', 'Médio');
             }
-            const resposta = await fetch('/suporte/abrir-chamado', {
+            const resposta = await fetch('/manutencao/abrir-chamado', {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin'

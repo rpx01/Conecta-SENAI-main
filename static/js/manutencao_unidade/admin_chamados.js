@@ -67,7 +67,7 @@
 
     async function carregarBaseFiltros() {
         try {
-            const dados = await chamarAPI('/suporte_ti/basedados_formulario');
+            const dados = await chamarAPI('/manutencao_unidade/basedados_formulario');
             areasBase = Array.isArray(dados.areas) ? dados.areas : [];
             tiposEquipamentoBase = Array.isArray(dados.tipos_equipamento)
                 ? dados.tipos_equipamento
@@ -147,8 +147,8 @@
             params.set('data_fim', filtroDataFim.value);
         }
         const endpoint = params.toString()
-            ? `/suporte_ti/admin/todos_chamados?${params.toString()}`
-            : '/suporte_ti/admin/todos_chamados?status=Aberto,Em Atendimento';
+            ? `/manutencao_unidade/admin/todos_chamados?${params.toString()}`
+            : '/manutencao_unidade/admin/todos_chamados?status=Aberto,Em Atendimento';
         try {
             const chamados = await chamarAPI(endpoint);
             renderizarChamados(chamados || []);
@@ -344,7 +344,7 @@
     async function atualizarStatusChamado(chamadoId, novoStatus, corpoAdicional = {}) {
         try {
             const resposta = await chamarAPI(
-                `/suporte_ti/admin/chamados/${chamadoId}/status`,
+                `/manutencao_unidade/admin/chamados/${chamadoId}/status`,
                 'PUT',
                 { status: novoStatus, ...corpoAdicional }
             );
@@ -601,7 +601,7 @@
 
         try {
             const resposta = await chamarAPI(
-                `/suporte_ti/admin/chamados/${chamadoEmEdicao.id}`,
+                `/manutencao_unidade/admin/chamados/${chamadoEmEdicao.id}`,
                 'PUT',
                 payload
             );
@@ -631,7 +631,7 @@
             return;
         }
         try {
-            const resposta = await chamarAPI(`/suporte_ti/admin/chamados/${chamado.id}`, 'DELETE');
+            const resposta = await chamarAPI(`/manutencao_unidade/admin/chamados/${chamado.id}`, 'DELETE');
             showToast(resposta?.mensagem || 'Chamado excluído com sucesso!', 'success');
             await buscarChamados();
         } catch (error) {

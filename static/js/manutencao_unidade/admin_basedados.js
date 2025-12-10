@@ -37,7 +37,7 @@
 
     async function carregarAreas() {
         try {
-            const areas = await chamarAPI('/suporte_ti/admin/areas');
+            const areas = await chamarAPI('/manutencao_unidade/admin/areas');
             renderizarTabela(tabelaAreas, areas, 'area');
             atualizarTotal(totalAreas, areas?.length || 0);
         } catch (error) {
@@ -47,7 +47,7 @@
 
     async function carregarTipos() {
         try {
-            const tipos = await chamarAPI('/suporte_ti/admin/tipos_equipamento');
+            const tipos = await chamarAPI('/manutencao_unidade/admin/tipos_equipamento');
             renderizarTabela(tabelaTipos, tipos, 'tipo');
             atualizarTotal(totalTipos, tipos?.length || 0);
         } catch (error) {
@@ -105,7 +105,7 @@
             showToast('Informe um nome antes de adicionar.', 'warning');
             return;
         }
-        const endpoint = tipo === 'area' ? '/suporte_ti/admin/areas' : '/suporte_ti/admin/tipos_equipamento';
+        const endpoint = tipo === 'area' ? '/manutencao_unidade/admin/areas' : '/manutencao_unidade/admin/tipos_equipamento';
         try {
             await chamarAPI(endpoint, 'POST', { nome: valor });
             showToast('Registro criado com sucesso!', 'success');
@@ -134,7 +134,7 @@
             showToast('Informe um nome válido.', 'warning');
             return;
         }
-        const endpoint = tipo === 'area' ? `/suporte_ti/admin/areas/${id}` : `/suporte_ti/admin/tipos_equipamento/${id}`;
+        const endpoint = tipo === 'area' ? `/manutencao_unidade/admin/areas/${id}` : `/manutencao_unidade/admin/tipos_equipamento/${id}`;
         try {
             await chamarAPI(endpoint, 'PUT', { nome });
             showToast('Registro atualizado com sucesso!', 'success');
@@ -151,7 +151,7 @@
         if (!window.confirm('Deseja realmente excluir este registro?')) {
             return;
         }
-        const endpoint = tipo === 'area' ? `/suporte_ti/admin/areas/${id}` : `/suporte_ti/admin/tipos_equipamento/${id}`;
+        const endpoint = tipo === 'area' ? `/manutencao_unidade/admin/areas/${id}` : `/manutencao_unidade/admin/tipos_equipamento/${id}`;
         try {
             await chamarAPI(endpoint, 'DELETE');
             showToast('Registro excluído com sucesso!', 'success');

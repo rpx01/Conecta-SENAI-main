@@ -49,7 +49,7 @@
 
     async function carregarBaseDados() {
         try {
-            const dados = await chamarAPI('/suporte_ti/basedados_formulario');
+            const dados = await chamarAPI('/manutencao_unidade/basedados_formulario');
             areasBase = Array.isArray(dados.areas) ? dados.areas : [];
             tiposEquipamentoBase = Array.isArray(dados.tipos_equipamento)
                 ? dados.tipos_equipamento
@@ -107,7 +107,7 @@
                 console.log('[Históricos] Exibindo todos os registros (sem filtro de data)');
             }
 
-            const endpoint = `/suporte_ti/admin/todos_chamados?${params.toString()}`;
+            const endpoint = `/manutencao_unidade/admin/todos_chamados?${params.toString()}`;
             console.log('[Históricos] Buscando:', endpoint);
             const chamados = await chamarAPI(endpoint);
             renderizarChamados(chamados || []);
@@ -439,7 +439,7 @@
 
         try {
             const resposta = await chamarAPI(
-                `/suporte_ti/admin/chamados/${chamadoEmEdicao.id}`,
+                `/manutencao_unidade/admin/chamados/${chamadoEmEdicao.id}`,
                 'PUT',
                 payload
             );
@@ -469,7 +469,7 @@
             return;
         }
         try {
-            const resposta = await chamarAPI(`/suporte_ti/admin/chamados/${chamado.id}`, 'DELETE');
+            const resposta = await chamarAPI(`/manutencao_unidade/admin/chamados/${chamado.id}`, 'DELETE');
             showToast(resposta?.mensagem || 'Chamado excluído com sucesso!', 'success');
             await carregarHistoricos();
         } catch (error) {
@@ -519,7 +519,7 @@
             console.log('[Históricos] Botão "Exportar Excel" configurado');
             btnExportarExcelHistoricos.addEventListener('click', () => {
                 console.log('[Históricos] Iniciando exportação para Excel');
-                window.location.href = '/api/suporte_ti/admin/chamados/exportar_excel';
+                window.location.href = '/api/manutencao_unidade/admin/chamados/exportar_excel';
             });
         } else {
             console.error('[Históricos] Botão "btnExportarExcelHistoricos" não encontrado no DOM');

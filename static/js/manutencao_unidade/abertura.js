@@ -39,7 +39,7 @@
 
     async function carregarBaseDados() {
         try {
-            const dados = await chamarAPI('/suporte_ti/basedados_formulario');
+            const dados = await chamarAPI('/manutencao_unidade/basedados_formulario');
             preencherSelect(areaSelect, dados.areas || [], 'nome');
             preencherSelect(tipoSelect, dados.tipos_equipamento || []);
         } catch (error) {
@@ -110,7 +110,7 @@
 
         try {
             btnEnviarChamado && btnEnviarChamado.setAttribute('disabled', 'disabled');
-            await chamarAPI('/suporte_ti/novo_chamado', 'POST', formData);
+            await chamarAPI('/manutencao_unidade/novo_chamado', 'POST', formData);
             showToast('Chamado criado com sucesso!', 'success');
             form.reset();
             popularDadosUsuario();
