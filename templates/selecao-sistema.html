@@ -38,7 +38,7 @@
         </div>
     </nav>
 
-    <div class="container py-5">
+    <main class="container py-5 flex-grow-1">
         <div class="row justify-content-center mb-5">
             <div class="col-md-8 text-center">
                 <h1 class="display-4 mb-4">Bem-vindo ao Portal de Sistemas</h1>
@@ -57,7 +57,7 @@
         
         <div class="row justify-content-center">
             <div class="col-md-5 mb-4">
-                <div class="card sistema-card h-100" data-url="/laboratorios/calendario.html">
+                <a href="/laboratorios/calendario.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-calendar-check"></i>
@@ -68,11 +68,11 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-md-5 mb-4">
-                <div class="card sistema-card h-100" data-url="/treinamentos/index.html">
+                <a href="/treinamentos/index.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-easel2"></i>
@@ -83,11 +83,11 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-md-5 mb-4">
-                <div class="card sistema-card h-100" data-url="/noticias/index.html">
+                <a href="/noticias/index.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-newspaper"></i>
@@ -98,11 +98,11 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-md-5 mb-4">
-                <div class="card sistema-card h-100" data-url="/ocupacao/dashboard.html">
+                <a href="/ocupacao/dashboard.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-building"></i>
@@ -113,10 +113,10 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-5 mb-4">
-                <div class="card sistema-card h-100" data-url="/suporte_ti/abertura.html">
+                <a href="/suporte_ti/abertura.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-headset"></i>
@@ -127,10 +127,10 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-5 mb-4">
-                <div class="card sistema-card h-100" data-url="/manutencao_unidade/abertura.html">
+                <a href="/manutencao_unidade/abertura.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-tools"></i>
@@ -141,10 +141,10 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-5 mb-4 admin-only">
-                <div class="card sistema-card h-100" data-url="/rateio/dashboard.html">
+                <a href="/rateio/dashboard.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-coin"></i>
@@ -155,11 +155,11 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-md-5 mb-4 admin-only">
-                <div class="card sistema-card h-100" data-url="/admin/usuarios.html">
+                <a href="/admin/usuarios.html" class="card sistema-card h-100 text-decoration-none text-reset">
                     <div class="card-body text-center p-4 p-lg-5">
                         <div class="sistema-icon">
                             <i class="bi bi-person-gear"></i>
@@ -170,10 +170,10 @@
                             <span class="badge bg-success">Disponível</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
-    </div>
+    </main>
     
 <footer class="mt-5 py-3 bg-dark text-white text-center">
     <div class="container">
@@ -195,7 +195,7 @@
                 document.getElementById('userName').textContent = usuario.nome;
                 const modulosDisponiveis = new Set(obterModulosDisponiveis(usuario));
                 document.querySelectorAll('.sistema-card').forEach(card => {
-                    const urlNormalizada = normalizarUrlModulo(card.getAttribute('data-url'));
+                    const urlNormalizada = normalizarUrlModulo(card.getAttribute('href'));
                     if (!urlNormalizada) {
                         return;
                     }
@@ -226,13 +226,12 @@
 
             document.querySelectorAll('.sistema-card').forEach(card => {
                 card.addEventListener('click', () => {
-                    const url = card.getAttribute('data-url');
+                    const url = card.getAttribute('href');
                     if (rememberCheckbox.checked) {
                         localStorage.setItem('moduloSelecionado', url);
                     } else {
                         localStorage.removeItem('moduloSelecionado');
                     }
-                    window.location.href = url;
                 });
             });
         });

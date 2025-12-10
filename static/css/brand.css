@@ -28,13 +28,13 @@ h3,h4,h5,h6, .subtitle{ font-weight: 500; }
 
 :root{
   /* Slightly brighter primary tone to soften large brand surfaces */
-  --brand-primary: #1d4ea8; /* Ajuste suave do azul FIEMG */
+  --brand-primary: #164194; /* Official FIEMG Blue */
   --brand-info:    #008BD2; /* Medium Blue C */
 
   /* Secundárias sugeridas (Guia) */
   --brand-success: #6fb47f; /* 346C */
   --brand-warning: #f3c258; /* 141C */
-  --brand-danger:  #e06267; /* 7418 */
+  --brand-danger:  #D50032; /* Official FIEMG Red */
   --brand-gray-100:#f8f9fa;
   --brand-gray-300:#d8d9dd; /* 7541C aprox. */
   --brand-gray-800:#5b5b5f; /* Cool Gray 11 */
