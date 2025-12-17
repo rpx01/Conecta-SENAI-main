@@ -1,6 +1,7 @@
 from conecta_senai.models import db
 from conecta_senai.models.user import User
 from conecta_senai.models.refresh_token import RefreshToken
+from conecta_senai.models.agendamento import Notificacao
 
 
 class UserRepository:
@@ -47,6 +48,9 @@ class UserRepository:
         """Remove um usuário e seus registros dependentes."""
 
         if user.id is not None:
+            Notificacao.query.filter_by(usuario_id=user.id).delete(
+                synchronize_session=False
+            )
             RefreshToken.query.filter_by(user_id=user.id).delete(
                 synchronize_session=False
             )

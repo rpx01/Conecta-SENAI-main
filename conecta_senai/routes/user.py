@@ -10,6 +10,8 @@ import jwt
 import uuid
 from conecta_senai.models import db
 from conecta_senai.models.user import User
+from conecta_senai.models.agendamento import Agendamento, Notificacao
+from conecta_senai.models.ocupacao import Ocupacao
 from conecta_senai.repositories.user_repository import UserRepository
 from conecta_senai.models.refresh_token import RefreshToken
 import hashlib
@@ -458,6 +460,39 @@ def remover_usuario(id):
             jsonify({"erro": "Você não tem permissão para remover um administrador"}),
             403,
         )
+
+    # Impede a exclusão de usuários com vínculos obrigatórios, exceto pelo admin raiz
+    if not is_root_solicitante:
+        agendamentos_count = Agendamento.query.filter_by(usuario_id=id).count()
+        ocupacoes_count = Ocupacao.query.filter_by(usuario_id=id).count()
+
+        if agendamentos_count > 0 or ocupacoes_count > 0:
+            return (
+                jsonify(
+                    {
+                        "erro": (
+                            "Não é possível excluir este usuário porque ele possui "
+                            "agendamentos ou ocupações associados. Transfira ou remova "
+                            "esses registros antes de tentar novamente."
+                        )
+                    }
+                ),
+                400,
+            )
+    else:
+        # O admin raiz pode remover usuários mesmo com vínculos; limpar dependências antes
+        agendamento_ids = [
+            row.id
+            for row in Agendamento.query.with_entities(Agendamento.id).filter_by(usuario_id=id)
+        ]
+
+        if agendamento_ids:
+            Notificacao.query.filter(Notificacao.agendamento_id.in_(agendamento_ids)).delete(
+                synchronize_session=False
+            )
+
+        Agendamento.query.filter_by(usuario_id=id).delete(synchronize_session=False)
+        Ocupacao.query.filter_by(usuario_id=id).delete(synchronize_session=False)
 
     try:
         UserRepository.delete(usuario)
