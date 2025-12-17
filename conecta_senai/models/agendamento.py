@@ -99,8 +99,18 @@ class Notificacao(db.Model):
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relacionamentos
-    usuario = db.relationship('User', backref=db.backref('notificacoes', lazy=True))
-    agendamento = db.relationship('Agendamento', backref=db.backref('notificacoes', lazy=True))
+    usuario = db.relationship(
+        'User',
+        backref=db.backref(
+            'notificacoes', cascade="all, delete-orphan", lazy=True
+        ),
+    )
+    agendamento = db.relationship(
+        'Agendamento',
+        backref=db.backref(
+            'notificacoes', cascade="all, delete-orphan", lazy=True
+        ),
+    )
     
     def __init__(self, usuario_id, mensagem, agendamento_id=None):
         """
