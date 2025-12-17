@@ -442,8 +442,8 @@ def remover_usuario(id):
         return jsonify({"erro": "Usuário não encontrado"}), 404
 
     admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
-    solicitante_email = (user.email or "").lower()
-    alvo_email = (usuario.email or "").lower()
+    solicitante_email = (user.email or "").strip().lower()
+    alvo_email = (usuario.email or "").strip().lower()
     is_root_solicitante = bool(admin_email) and solicitante_email == admin_email
     is_root_alvo = bool(admin_email) and alvo_email == admin_email
 
