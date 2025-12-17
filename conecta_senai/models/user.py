@@ -37,12 +37,7 @@ class User(db.Model):
     data_atualizacao = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relacionamento com agendamentos
-    agendamentos = db.relationship(
-        'Agendamento',
-        backref='usuario',
-        lazy=True,
-        cascade="all, delete-orphan",
-    )
+    agendamentos = db.relationship('Agendamento', backref='usuario', lazy=True)
     
     def __init__(self, nome, email, senha, tipo='comum', username=None):
         """
