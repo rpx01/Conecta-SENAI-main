@@ -40,18 +40,30 @@
     function preencherFiltros(dados) {
         // Preencher áreas
         const selectArea = document.getElementById('filtroArea');
-        if (selectArea && dados?.areas) {
+        if (selectArea && Array.isArray(dados?.areas)) {
+            selectArea.innerHTML = '';
+            const optionPadrao = document.createElement('option');
+            optionPadrao.value = '';
+            optionPadrao.textContent = 'Todas';
+            selectArea.appendChild(optionPadrao);
+
             dados.areas.forEach((area) => {
                 const option = document.createElement('option');
-                option.value = area;
-                option.textContent = area;
+                option.value = area?.nome ?? '';
+                option.textContent = area?.nome ?? '';
                 selectArea.appendChild(option);
             });
         }
 
         // Preencher tipos de equipamento
         const selectTipo = document.getElementById('filtroTipo');
-        if (selectTipo && dados?.tipos_equipamento) {
+        if (selectTipo && Array.isArray(dados?.tipos_equipamento)) {
+            selectTipo.innerHTML = '';
+            const optionPadrao = document.createElement('option');
+            optionPadrao.value = '';
+            optionPadrao.textContent = 'Todos';
+            selectTipo.appendChild(optionPadrao);
+
             dados.tipos_equipamento.forEach((tipo) => {
                 const option = document.createElement('option');
                 option.value = tipo.id;
