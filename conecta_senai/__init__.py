@@ -440,6 +440,8 @@ def create_app() -> Flask:
             motivo,
         )
 
+    create_admin(app)
+
     return app
 
 
