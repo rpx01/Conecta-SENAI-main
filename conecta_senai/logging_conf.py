@@ -1,4 +1,3 @@
-"""Configuração de logging estruturado para a aplicação Conecta SENAI."""
 import os
 import logging
 import logging.config
@@ -6,13 +5,13 @@ from flask import g, has_request_context
 
 try:
     from pythonjsonlogger import jsonlogger
-except ImportError:  # pragma: no cover - fallback quando pacote opcional não está instalado
-    jsonlogger = None  # type: ignore[assignment]
+except ImportError:
+    jsonlogger = None
 
 try:
     from opentelemetry import trace
-except ImportError:  # pragma: no cover - módulo opcional
-    trace = None  # type: ignore[assignment]
+except ImportError:
+    trace = None
 
 APP_ENV = os.getenv("APP_ENV", "dev")
 APP_RELEASE = os.getenv("APP_RELEASE", "")
@@ -48,21 +47,25 @@ LOGGING_CONFIG = {
         "context": {"()": ContextFilter},
     },
     "formatters": {
-        "json": ({
-            "()": jsonlogger.JsonFormatter,
-            "fmt": (
-                "%(asctime)s %(levelname)s %(name)s %(message)s "
-                "%(route)s %(method)s %(status)s %(latency_ms)s %(user_id)s "
-                "%(request_id)s %(trace_id)s %(span_id)s"
-            ),
-            "rename_fields": {
-                "asctime": "timestamp",
-                "levelname": "level",
-                "name": "logger",
-            },
-        } if jsonlogger else {
-            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
-        })
+        "json": (
+            {
+                "()": jsonlogger.JsonFormatter,
+                "fmt": (
+                    "%(asctime)s %(levelname)s %(name)s %(message)s "
+                    "%(route)s %(method)s %(status)s %(latency_ms)s %(user_id)s "
+                    "%(request_id)s %(trace_id)s %(span_id)s"
+                ),
+                "rename_fields": {
+                    "asctime": "timestamp",
+                    "levelname": "level",
+                    "name": "logger",
+                },
+            }
+            if jsonlogger
+            else {
+                "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+            }
+        )
     },
     "handlers": {
         "default": {
@@ -95,8 +98,6 @@ LOGGING_CONFIG = {
 
 
 def setup_logging() -> None:
-    """Aplica a configuração de logging, com fallback simples em ambientes locais."""
-
     if not jsonlogger:
         logging.basicConfig(level=LOG_LEVEL)
         return

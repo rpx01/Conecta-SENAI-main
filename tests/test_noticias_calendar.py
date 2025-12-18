@@ -35,13 +35,13 @@ def test_listar_noticias_filtra_calendario_true(client, app):
         )
         destaque_calendario_id = destaque_calendario.id
 
-    resposta = client.get('/api/noticias?marcar_calendario=true&per_page=10')
+    resposta = client.get("/api/noticias?marcar_calendario=true&per_page=10")
     assert resposta.status_code == 200
     dados = resposta.get_json()
-    ids = [item['id'] for item in dados['items']]
+    ids = [item["id"] for item in dados["items"]]
     assert ids == [destaque_calendario_id]
-    assert dados['items'][0]['marcar_calendario'] is True
-    assert dados['items'][0]['data_evento'] is not None
+    assert dados["items"][0]["marcar_calendario"] is True
+    assert dados["items"][0]["data_evento"] is not None
 
 
 def test_listar_noticias_filtra_calendario_false(client, app):
@@ -67,10 +67,10 @@ def test_listar_noticias_filtra_calendario_false(client, app):
         noticia_true_id = noticia_true.id
         noticia_false_id = noticia_false.id
 
-    resposta = client.get('/api/noticias?marcar_calendario=false&per_page=10')
+    resposta = client.get("/api/noticias?marcar_calendario=false&per_page=10")
     assert resposta.status_code == 200
     dados = resposta.get_json()
-    ids = [item['id'] for item in dados['items']]
+    ids = [item["id"] for item in dados["items"]]
     assert noticia_true_id not in ids
     assert noticia_false_id in ids
-    assert all(item['marcar_calendario'] is False for item in dados['items'])
+    assert all(item["marcar_calendario"] is False for item in dados["items"])

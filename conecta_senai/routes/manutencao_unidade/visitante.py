@@ -1,4 +1,3 @@
-"""Rotas públicas para abertura de chamados por visitantes."""
 from __future__ import annotations
 
 from flask import Blueprint, jsonify, render_template, request
@@ -8,7 +7,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from wtforms.validators import ValidationError
 
 from conecta_senai.models import db
-from conecta_senai.models.manutencao_basedados import ManutencaoArea, ManutencaoTipoServico
+from conecta_senai.models.manutencao_basedados import (
+    ManutencaoArea,
+    ManutencaoTipoServico,
+)
 from conecta_senai.models.manutencao_chamado import ManutencaoChamado
 from conecta_senai.routes.manutencao_unidade.utils import ensure_tables_exist
 
@@ -24,9 +26,7 @@ manutencao_unidade_paginas_publicas_bp = Blueprint(
 )
 
 ALLOWED_URGENCIAS = {"Baixo", "Médio", "Medio", "Alto"}
-CHAMADO_EMAIL_MAX_LEN = (
-    ManutencaoChamado.email.property.columns[0].type.length or 120
-)
+CHAMADO_EMAIL_MAX_LEN = ManutencaoChamado.email.property.columns[0].type.length or 120
 CHAMADO_AREA_MAX_LEN = ManutencaoChamado.area.property.columns[0].type.length or 120
 
 
@@ -67,8 +67,6 @@ def _normalizar_urgencia(valor: str | None) -> str:
     "/manutencao_unidade/abertura_publica.html", methods=["GET"], strict_slashes=False
 )
 def pagina_abertura_publica():
-    """Renderiza o formulário público de abertura de chamados com dados padrão."""
-
     form_data = request.args.to_dict(flat=True) if request.args else {}
     return render_template(
         "manutencao_unidade/abertura_publica.html",
@@ -78,8 +76,6 @@ def pagina_abertura_publica():
 
 @manutencao_unidade_visitante_bp.route("/base-dados", methods=["GET"])
 def obter_base_dados_visitante():
-    """Retorna as áreas e tipos de equipamento disponíveis para o formulário público."""
-
     ensure_tables_exist([ManutencaoTipoServico, ManutencaoArea])
 
     tipos = ManutencaoTipoServico.query.order_by(ManutencaoTipoServico.nome.asc()).all()
@@ -87,9 +83,7 @@ def obter_base_dados_visitante():
 
     return jsonify(
         {
-            "tipos_equipamento": [
-                {"id": tipo.id, "nome": tipo.nome} for tipo in tipos
-            ],
+            "tipos_equipamento": [{"id": tipo.id, "nome": tipo.nome} for tipo in tipos],
             "areas": [{"id": area.id, "nome": area.nome} for area in areas],
         }
     )
@@ -97,8 +91,6 @@ def obter_base_dados_visitante():
 
 @manutencao_unidade_visitante_bp.route("/abrir-chamado", methods=["POST"])
 def abrir_chamado_publico():
-    """Cria um novo chamado de suporte enviado por um visitante não autenticado."""
-
     ensure_tables_exist([ManutencaoArea, ManutencaoTipoServico, ManutencaoChamado])
 
     form = request.form
@@ -116,14 +108,14 @@ def abrir_chamado_publico():
     email = _limpar_texto(
         _obter_dado(form, payload, "email", "email_contato"), CHAMADO_EMAIL_MAX_LEN
     )
-    area = _limpar_texto(
-        _obter_dado(form, payload, "area"), CHAMADO_AREA_MAX_LEN
-    )
+    area = _limpar_texto(_obter_dado(form, payload, "area"), CHAMADO_AREA_MAX_LEN)
     tipo_equipamento_id = _obter_dado(
         form, payload, "tipo_equipamento_id", "tipoEquipamentoId"
     )
     patrimonio = _limpar_texto(_obter_dado(form, payload, "patrimonio"), 120)
-    numero_serie = _limpar_texto(_obter_dado(form, payload, "numero_serie", "numeroSerie"), 120)
+    numero_serie = _limpar_texto(
+        _obter_dado(form, payload, "numero_serie", "numeroSerie"), 120
+    )
     descricao = _limpar_texto(
         _obter_dado(
             form,
@@ -162,10 +154,9 @@ def abrir_chamado_publico():
 
     area_registro = None
     if area:
-        area_registro = (
-            ManutencaoArea.query.filter(func.lower(ManutencaoArea.nome) == area.lower())
-            .first()
-        )
+        area_registro = ManutencaoArea.query.filter(
+            func.lower(ManutencaoArea.nome) == area.lower()
+        ).first()
         if not area_registro:
             erros.append("Área selecionada não está cadastrada.")
 
@@ -205,4 +196,7 @@ def abrir_chamado_publico():
         db.session.rollback()
         return jsonify({"erro": "Não foi possível registrar o chamado."}), 500
 
-    return jsonify({"mensagem": "Chamado registrado com sucesso.", "id": chamado.id}), 201
+    return (
+        jsonify({"mensagem": "Chamado registrado com sucesso.", "id": chamado.id}),
+        201,
+    )

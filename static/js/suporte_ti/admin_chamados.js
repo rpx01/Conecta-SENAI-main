@@ -1,5 +1,3 @@
-/* global bootstrap, chamarAPI, verificarAutenticacao, verificarPermissaoAdmin, getUsuarioLogado, formatarData, sanitizeHTML, showToast */
-
 (function () {
     const tabelaChamadosAbertos = document.querySelector('#tabelaChamadosAbertos tbody');
     const tabelaChamadosEmAtendimento = document.querySelector('#tabelaChamadosEmAtendimento tbody');

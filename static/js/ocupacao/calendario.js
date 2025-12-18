@@ -1,6 +1,3 @@
-// Funções para o calendário de ocupações de salas
-
-// Variáveis globais
 let calendar;
 let ocupacoesData = [];
 let salasData = [];
@@ -30,7 +27,7 @@ function setFiltroValue(nome, valor) {
         el.dataset.selectedValue = valorNormalizado;
         el.value = valorNormalizado;
         if (el.value !== valorNormalizado) {
-            // Mantém o valor desejado para aplicar quando as opções forem carregadas
+            
             el.dataset.selectedValue = valorNormalizado;
         }
     });
@@ -66,7 +63,6 @@ function popularSelectComOpcoes(selects, opcoes, opcaoPadrao) {
     });
 }
 
-// Converte o nome do turno em um identificador CSS sem acentos
 function slugifyTurno(turno) {
     return turno
         .toLowerCase()
@@ -74,7 +70,6 @@ function slugifyTurno(turno) {
         .replace(/\p{Diacritic}/gu, '');
 }
 
-// Inicializa o calendário
 function inicializarCalendario() {
     const calendarEl = document.getElementById('calendario');
     
@@ -119,21 +114,18 @@ function inicializarCalendario() {
     
     calendar.render();
     
-    // Esconde loading e mostra calendário
     document.getElementById('loadingCalendario').style.display = 'none';
     document.getElementById('calendario').style.display = 'block';
 }
 
-// Carrega ocupações do servidor
 async function carregarOcupacoes(dataInicio, dataFim) {
     try {
-        // Constrói parâmetros de filtro
+        
         const params = new URLSearchParams({
             data_inicio: dataInicio.split('T')[0],
             data_fim: dataFim.split('T')[0]
         });
         
-        // Aplica filtros ativos
         const salaId = getFiltroValue('Sala');
         const instrutorId = getFiltroValue('Instrutor');
         const turno = getFiltroValue('Turno');
@@ -167,8 +159,6 @@ async function carregarOcupacoes(dataInicio, dataFim) {
     }
 }
 
-// Consulta a API para obter o resumo de ocupações entre duas datas
-// Aplica também os filtros selecionados na interface
 async function carregarResumoPeriodo(dataInicio, dataFim) {
     try {
         const params = new URLSearchParams({
@@ -351,7 +341,6 @@ function mostrarResumoDia(dataStr) {
     modal.show();
 }
 
-// Carrega salas para filtro
 async function carregarSalasParaFiltro() {
     try {
         const response = await fetch(`${API_URL}/salas?status=ativa`, {
@@ -374,7 +363,6 @@ async function carregarSalasParaFiltro() {
     }
 }
 
-// Carrega instrutores para filtro
 async function carregarInstrutoresParaFiltro() {
     try {
         const response = await fetch(`${API_URL}/instrutores?status=ativo`, {
@@ -397,7 +385,6 @@ async function carregarInstrutoresParaFiltro() {
     }
 }
 
-// Carrega tipos de ocupação
 async function carregarTiposOcupacao() {
     try {
         const response = await fetch(`${API_URL}/ocupacoes/tipos`, {
@@ -413,22 +400,17 @@ async function carregarTiposOcupacao() {
     }
 }
 
-// Aplica filtros no calendário
-// Recarrega os eventos e o resumo de ocupações aplicando os filtros ativos
 function aplicarFiltrosCalendario() {
     if (!calendar) return;
 
-    // Atualiza os eventos exibidos
     calendar.refetchEvents();
 
-    // Também atualiza o resumo dos dias para refletir os novos filtros
     carregarResumoPeriodo(
         calendar.view.activeStart.toISOString().split('T')[0],
         calendar.view.activeEnd.toISOString().split('T')[0]
     );
 }
 
-// Configura formulários de filtros (desktop e mobile)
 function configurarFiltros() {
     const form = document.getElementById('filtrosForm');
     const formMobile = document.getElementById('filtrosMobileForm');
@@ -464,7 +446,6 @@ function configurarFiltros() {
     }
 }
 
-// Aplica filtros da URL (quando vem de outras páginas)
 function aplicarFiltrosURL() {
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -490,17 +471,14 @@ function aplicarFiltrosURL() {
         calendar.gotoDate(dataMes);
     }
 
-    // Aplica filtros se houver
     if (salaId || instrutorId || turnoParam) {
         setTimeout(() => aplicarFiltrosCalendario(), 1000);
     }
 }
 
-// Mostra detalhes da ocupação
 function mostrarDetalhesOcupacao(ocupacao) {
     const modal = new bootstrap.Modal(document.getElementById('modalDetalhesOcupacao'));
     
-    // Preenche conteúdo do modal
     const content = document.getElementById('detalhesOcupacaoContent');
     const acoes = document.getElementById('acoesOcupacao');
     
@@ -563,7 +541,6 @@ function mostrarDetalhesOcupacao(ocupacao) {
         ` : ''}
     `;
     
-    // Configura ações baseadas nas permissões
     const usuario = getUsuarioLogado();
     const podeEditar = isAdmin() || ocupacao.usuario_id === usuario.id;
     
@@ -589,13 +566,11 @@ function mostrarDetalhesOcupacao(ocupacao) {
     modal.show();
 }
 
-// Retorna cor do tipo por valor
 function getTipoCorPorValor(valor) {
     const tipo = tiposOcupacao.find(t => t.valor === valor);
     return tipo ? tipo.cor : rootStyle.getPropertyValue('--muted-color').trim();
 }
 
-// Retorna classe do badge de status
 function getStatusBadgeClass(status) {
     const classes = {
         'confirmado': 'bg-success',
@@ -605,7 +580,6 @@ function getStatusBadgeClass(status) {
     return classes[status] || 'bg-secondary';
 }
 
-// Retorna nome do status
 function getStatusNome(status) {
     const nomes = {
         'confirmado': 'Confirmado',
@@ -615,7 +589,6 @@ function getStatusNome(status) {
     return nomes[status] || status;
 }
 
-// Formata data para exibição
 function formatarData(dataStr) {
     const data = new Date(dataStr + 'T00:00:00');
     return data.toLocaleDateString('pt-BR', {
@@ -626,9 +599,8 @@ function formatarData(dataStr) {
     });
 }
 
-// Edita ocupação
 function editarOcupacao(id) {
-    // Fecha modais abertos antes de redirecionar
+    
     const detalhesEl = document.getElementById('modalDetalhesOcupacao');
     const detalhesModal = detalhesEl ? bootstrap.Modal.getInstance(detalhesEl) : null;
     if (detalhesModal) detalhesModal.hide();
@@ -637,11 +609,9 @@ function editarOcupacao(id) {
     const resumoModal = resumoEl ? bootstrap.Modal.getInstance(resumoEl) : null;
     if (resumoModal) resumoModal.hide();
 
-    // Redireciona para edição (implementar página de edição)
     window.location.href = `/ocupacao/agendamento.html?editar=${id}`;
 }
 
-// Exclui ocupação a partir do resumo do dia
 function excluirOcupacaoResumo(id) {
     const evento = calendar.getEventById(id);
     if (!evento) return;
@@ -649,9 +619,8 @@ function excluirOcupacaoResumo(id) {
     excluirOcupacao(id, props.curso_evento, props.grupo_ocupacao_id || '');
 }
 
-// Exclui ocupação
 function excluirOcupacao(id, nome, grupoId) {
-    // Fecha modais que possam estar abertos
+    
     const detalhesEl = document.getElementById('modalDetalhesOcupacao');
     const detalhesModal = detalhesEl ? bootstrap.Modal.getInstance(detalhesEl) : null;
     if (detalhesModal) detalhesModal.hide();
@@ -660,18 +629,15 @@ function excluirOcupacao(id, nome, grupoId) {
     const resumoModal = resumoEl ? bootstrap.Modal.getInstance(resumoEl) : null;
     if (resumoModal) resumoModal.hide();
 
-    // Configura modal de exclusão
     document.getElementById('resumoOcupacaoExcluir').textContent = nome;
     const modalEl = document.getElementById('modalExcluirOcupacao');
     modalEl.setAttribute('data-ocupacao-id', id);
     modalEl.setAttribute('data-grupo-id', grupoId);
     
-    // Mostra modal de confirmação
     const modalExcluir = new bootstrap.Modal(document.getElementById('modalExcluirOcupacao'));
     modalExcluir.show();
 }
 
-// Confirma exclusão da ocupação
 async function confirmarExclusaoOcupacao(modo) {
     try {
         const modalEl = document.getElementById('modalExcluirOcupacao');
@@ -694,11 +660,9 @@ async function confirmarExclusaoOcupacao(modo) {
         if (response.ok) {
             showToast('Ocupação excluída com sucesso!', 'success');
 
-            // Fecha o modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalExcluirOcupacao'));
             modal.hide();
 
-            // Remove evento imediatamente e atualiza dados
             const ev = calendar.getEventById(ocupacaoId);
             if (ev) ev.remove();
             calendar.refetchEvents();
@@ -717,8 +681,6 @@ async function confirmarExclusaoOcupacao(modo) {
         showToast(`Não foi possível excluir a ocupação: ${error.message}`, 'danger');
     }
 }
-
-// Removido: alertas em linha substituídos por toasts globais
 
 function formatarDataCurta(dataStr) {
     const data = new Date(dataStr + 'T00:00:00');

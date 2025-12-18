@@ -1,10 +1,9 @@
 from datetime import datetime
 from conecta_senai.models import db
 
-class LogLancamentoRateio(db.Model):
-    """Histórico das alterações nos lançamentos de rateio dos instrutores."""
 
-    __tablename__ = 'log_lancamentos_rateio_instrutor'
+class LogLancamentoRateio(db.Model):
+    __tablename__ = "log_lancamentos_rateio_instrutor"
 
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)

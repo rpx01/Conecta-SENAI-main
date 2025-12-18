@@ -28,7 +28,11 @@ def test_audit_log_criacao_e_atualizacao(client, login_admin, app):
     assert update_resp.status_code == 200
 
     with app.app_context():
-        creates = AuditLog.query.filter_by(entity="Agendamento", entity_id=ag_id, action="create").all()
-        updates = AuditLog.query.filter_by(entity="Agendamento", entity_id=ag_id, action="update").all()
+        creates = AuditLog.query.filter_by(
+            entity="Agendamento", entity_id=ag_id, action="create"
+        ).all()
+        updates = AuditLog.query.filter_by(
+            entity="Agendamento", entity_id=ag_id, action="update"
+        ).all()
         assert len(creates) == 1
         assert len(updates) == 1

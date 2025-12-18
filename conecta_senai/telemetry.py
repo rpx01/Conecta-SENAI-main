@@ -1,5 +1,3 @@
-"""Integração com OpenTelemetry para instrumentar a aplicação Flask."""
-
 import os
 from flask import Flask
 
@@ -12,18 +10,16 @@ try:
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
-except ImportError:  # pragma: no cover - dependência opcional
-    trace = None  # type: ignore[assignment]
-    OTLPSpanExporter = None  # type: ignore[assignment]
-    FlaskInstrumentor = None  # type: ignore[assignment]
-    Resource = None  # type: ignore[assignment]
-    TracerProvider = None  # type: ignore[assignment]
-    BatchSpanProcessor = None  # type: ignore[assignment]
+except ImportError:
+    trace = None
+    OTLPSpanExporter = None
+    FlaskInstrumentor = None
+    Resource = None
+    TracerProvider = None
+    BatchSpanProcessor = None
 
 
 def instrument(app: Flask) -> None:
-    """Instrumenta o app Flask para exportação de traces."""
-
     if not FlaskInstrumentor or not trace or not TracerProvider or not Resource:
         return
 

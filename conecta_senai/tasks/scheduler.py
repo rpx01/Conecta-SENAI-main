@@ -1,7 +1,3 @@
-"""Agendador de tarefas periódicas da aplicação Conecta SENAI."""
-
-"""Background scheduler setup."""
-
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.base import STATE_RUNNING
@@ -11,7 +7,6 @@ scheduler = BackgroundScheduler()
 
 
 def start_scheduler(app):
-    """Start background scheduler if enabled."""
     intervalo = int(os.getenv("NOTIFICACAO_INTERVALO_MINUTOS", "60"))
 
     def job():
@@ -32,7 +27,9 @@ def start_scheduler(app):
     )
 
     def convocacao_job():
-        from conecta_senai.tasks.jobs.convocacao_automatica import convocacao_automatica_job
+        from conecta_senai.tasks.jobs.convocacao_automatica import (
+            convocacao_automatica_job,
+        )
 
         with app.app_context():
             convocacao_automatica_job()

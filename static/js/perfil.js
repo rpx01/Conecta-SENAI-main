@@ -3,13 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const usuarioLogado = getUsuarioLogado();
     if (!usuarioLogado) return;
 
-    // Atualiza o nome de usuário na navbar
     const userNameElement = document.getElementById('userName');
     if (userNameElement) {
         userNameElement.textContent = usuarioLogado.nome;
     }
     
-
     carregarDadosUsuario();
     
     document.getElementById('perfilForm').addEventListener('submit', salvarDadosPerfil);

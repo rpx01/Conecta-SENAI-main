@@ -1,5 +1,3 @@
-"""Pydantic models for user-related operations."""
-
 from datetime import date
 import re
 from typing import Optional
@@ -10,7 +8,7 @@ from conecta_senai.services.user_service import PASSWORD_REGEX
 
 
 def _is_cpf_valid(cpf: str) -> bool:
-    cpf = ''.join(re.findall(r"\d", str(cpf)))
+    cpf = "".join(re.findall(r"\d", str(cpf)))
     if not cpf or len(cpf) != 11 or cpf == cpf[0] * 11:
         return False
     soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
@@ -62,7 +60,7 @@ class UserUpdateSchema(BaseModel):
     @classmethod
     def validar_cpf(cls, v: str) -> str:
         if v:
-            digits = ''.join(filter(str.isdigit, v))
+            digits = "".join(filter(str.isdigit, v))
             if not _is_cpf_valid(digits):
                 raise ValueError("CPF inválido")
             return digits

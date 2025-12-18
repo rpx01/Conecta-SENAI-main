@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     verificarAutenticacao();
     verificarPermissaoAdmin();
-    carregarHistoricoPassado(); // Nome da função alterado para clareza
+    carregarHistoricoPassado(); 
 });
 
 async function carregarHistoricoPassado() {
     try {
-        // A rota /treinamentos/historico agora retorna apenas turmas passadas
+        
         const turmas = await chamarAPI('/treinamentos/historico');
         const tbody = document.getElementById('turmasTableBody');
         if (!tbody) return;
@@ -19,7 +19,7 @@ async function carregarHistoricoPassado() {
 
         for (const t of turmas) {
             const tr = document.createElement('tr');
-            // Botão de Ações simplificado, apenas para ver inscrições
+            
             const botoesAcoes = `
                 <a class="btn btn-sm btn-outline-info me-1" href="/treinamentos/admin-inscricoes.html?turma=${t.turma_id}" title="Ver Inscrições"><i class="bi bi-people"></i></a>
             `;

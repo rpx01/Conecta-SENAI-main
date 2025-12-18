@@ -1,4 +1,3 @@
-"""Funções utilitárias compartilhadas pela aplicação."""
 from .audit import log_action
 from .error_handler import handle_internal_error
 from .paths import ensure_path_is_safe

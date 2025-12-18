@@ -1,4 +1,3 @@
-"""Rotas administrativas do módulo de suporte de TI."""
 from __future__ import annotations
 
 import csv
@@ -26,20 +25,19 @@ suporte_ti_admin_bp = Blueprint(
 
 CANONICAL_STATUS = {"Aberto", "Em Atendimento", "Finalizado", "Cancelado"}
 
-# Sinônimos aceitos para manter compatibilidade com registros antigos ou requisições
-# que ainda utilizem a nomenclatura anterior dos status.
+
 STATUS_ALIASES = {
     "Em Andamento": "Em Atendimento",
     "Fechado": "Finalizado",
 }
 
-_STATUS_ALIAS_LOOKUP = {alias.lower(): canonical for alias, canonical in STATUS_ALIASES.items()}
+_STATUS_ALIAS_LOOKUP = {
+    alias.lower(): canonical for alias, canonical in STATUS_ALIASES.items()
+}
 _CANONICAL_LOOKUP = {status.lower(): status for status in CANONICAL_STATUS}
 
 
 def _normalizar_status(valor: str | None) -> str | None:
-    """Converte o status informado para sua forma canônica quando aplicável."""
-
     if not valor:
         return valor
     valor_limpo = valor.strip()
@@ -54,8 +52,6 @@ def _normalizar_status(valor: str | None) -> str | None:
 
 
 def _obter_equivalentes_status(statuses: Iterable[str]) -> set[str]:
-    """Gera o conjunto de status equivalentes (canônicos + sinônimos) para consulta."""
-
     equivalentes: set[str] = set()
     for status in statuses:
         if not status:
@@ -111,7 +107,9 @@ def listar_todos_chamados():
 
     status_param = request.args.get("status")
     if status_param:
-        status_lista = [valor.strip() for valor in status_param.split(",") if valor.strip()]
+        status_lista = [
+            valor.strip() for valor in status_param.split(",") if valor.strip()
+        ]
         equivalentes = _obter_equivalentes_status(status_lista)
         if equivalentes:
             consulta = consulta.filter(SuporteChamado.status.in_(equivalentes))
@@ -169,40 +167,35 @@ def listar_todos_chamados():
 @suporte_ti_admin_bp.route("/chamados/exportar_excel", methods=["GET"])
 @admin_required
 def exportar_chamados_excel():
-    """Exporta todos os chamados do sistema em formato XLSX (Excel)."""
-    current_app.logger.info("XLSX EXPORT: Iniciando exportação de chamados em formato XLSX")
+    current_app.logger.info(
+        "XLSX EXPORT: Iniciando exportação de chamados em formato XLSX"
+    )
     ensure_tables_exist([SuporteChamado])
 
     try:
         from openpyxl import Workbook
         from openpyxl.styles import Font, PatternFill, Alignment
+
         current_app.logger.info("XLSX EXPORT: openpyxl importado com sucesso")
     except ImportError:
         current_app.logger.error("XLSX EXPORT: openpyxl não está instalado")
         return jsonify({"erro": "Biblioteca openpyxl não está instalada"}), 500
 
-    # Buscar todos os chamados sem filtro de status
-    chamados = (
-        SuporteChamado.query
-        .order_by(SuporteChamado.created_at.asc())
-        .all()
-    )
+    chamados = SuporteChamado.query.order_by(SuporteChamado.created_at.asc()).all()
 
     def _fmt(dt):
-        """Formatar datetime para string."""
         return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else ""
 
-    # Criar workbook Excel
     wb = Workbook()
     ws = wb.active
     ws.title = "Chamados Suporte TI"
 
-    # Estilo do cabeçalho
     header_font = Font(bold=True, color="FFFFFF")
-    header_fill = PatternFill(start_color="0066CC", end_color="0066CC", fill_type="solid")
+    header_fill = PatternFill(
+        start_color="0066CC", end_color="0066CC", fill_type="solid"
+    )
     header_alignment = Alignment(horizontal="center", vertical="center")
 
-    # Cabeçalhos
     headers = [
         "ID",
         "Nome solicitante",
@@ -218,20 +211,26 @@ def exportar_chamados_excel():
         "Observações",
     ]
 
-    # Escrever cabeçalhos
     for col_num, header in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col_num, value=header)
         cell.font = header_font
         cell.fill = header_fill
         cell.alignment = header_alignment
 
-    # Escrever dados
     for row_num, c in enumerate(chamados, 2):
         ws.cell(row=row_num, column=1, value=c.id)
-        ws.cell(row=row_num, column=2, value=c.nome_solicitante or (c.user.nome if c.user else ""))
+        ws.cell(
+            row=row_num,
+            column=2,
+            value=c.nome_solicitante or (c.user.nome if c.user else ""),
+        )
         ws.cell(row=row_num, column=3, value=c.email)
         ws.cell(row=row_num, column=4, value=c.area or "")
-        ws.cell(row=row_num, column=5, value=c.tipo_equipamento.nome if c.tipo_equipamento else "")
+        ws.cell(
+            row=row_num,
+            column=5,
+            value=c.tipo_equipamento.nome if c.tipo_equipamento else "",
+        )
         ws.cell(row=row_num, column=6, value=c.nivel_urgencia or "")
         ws.cell(row=row_num, column=7, value=c.status or "")
         ws.cell(row=row_num, column=8, value=_fmt(c.created_at))
@@ -240,30 +239,33 @@ def exportar_chamados_excel():
         ws.cell(row=row_num, column=11, value=_fmt(c.updated_at))
         ws.cell(row=row_num, column=12, value=(c.observacoes or ""))
 
-    # Ajustar largura das colunas
     column_widths = [8, 25, 30, 20, 20, 15, 15, 20, 20, 20, 20, 40]
     for col_num, width in enumerate(column_widths, 1):
         ws.column_dimensions[ws.cell(row=1, column=col_num).column_letter].width = width
 
-    # Salvar em memória
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
 
-    # Preparar resposta
-    current_app.logger.info(f"XLSX EXPORT: Arquivo gerado com sucesso. Tamanho: {len(output.getvalue())} bytes")
+    current_app.logger.info(
+        f"XLSX EXPORT: Arquivo gerado com sucesso. Tamanho: {len(output.getvalue())} bytes"
+    )
     resposta = make_response(output.getvalue())
-    resposta.headers["Content-Type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    resposta.headers["Content-Disposition"] = 'attachment; filename="chamados_suporte_ti.xlsx"'
-    current_app.logger.info("XLSX EXPORT: Headers configurados. Retornando arquivo XLSX")
+    resposta.headers["Content-Type"] = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    resposta.headers["Content-Disposition"] = (
+        'attachment; filename="chamados_suporte_ti.xlsx"'
+    )
+    current_app.logger.info(
+        "XLSX EXPORT: Headers configurados. Retornando arquivo XLSX"
+    )
     return resposta
 
 
 @suporte_ti_admin_bp.route("/chamados/<int:chamado_id>/status", methods=["PUT"])
 @admin_required
 def atualizar_status_chamado(chamado_id: int):
-    """Atualiza o status de um chamado existente."""
-
     ensure_tables_exist([SuporteChamado])
 
     dados = request.get_json(silent=True) or {}
@@ -280,19 +282,15 @@ def atualizar_status_chamado(chamado_id: int):
     if not chamado:
         return jsonify({"erro": "Chamado não encontrado."}), 404
 
-    # Salvar status anterior para comparação
     status_anterior = chamado.status
 
-    # Timezone de Brasília (UTC-3)
     tz_brasilia = timezone(timedelta(hours=-3))
     agora = datetime.now(tz_brasilia).replace(tzinfo=None)
 
-    # Lógica de registro de timestamps baseada em transições de status
-    # Normalizar status anterior também para comparação consistente
-    status_anterior_normalizado = _normalizar_status(status_anterior) if status_anterior else None
+    status_anterior_normalizado = (
+        _normalizar_status(status_anterior) if status_anterior else None
+    )
 
-    # Registrar início de atendimento quando transiciona PARA "Em Atendimento"
-    # e ainda não possui esse timestamp
     if status_normalizado == "Em Atendimento" and not chamado.inicio_atendimento_at:
         chamado.inicio_atendimento_at = agora
         current_app.logger.info(
@@ -300,10 +298,8 @@ def atualizar_status_chamado(chamado_id: int):
             f"status {status_anterior_normalizado} → {status_normalizado}"
         )
 
-    # Registrar encerramento quando transiciona PARA "Finalizado" ou "Cancelado"
-    # e ainda não possui esse timestamp
     if status_normalizado in ("Finalizado", "Cancelado") and not chamado.encerrado_at:
-        # Se não tem início de atendimento, registra agora também
+
         if not chamado.inicio_atendimento_at:
             chamado.inicio_atendimento_at = agora
             current_app.logger.info(
@@ -340,7 +336,9 @@ def atualizar_status_chamado(chamado_id: int):
             {
                 "mensagem": "Status atualizado com sucesso.",
                 "status": chamado.status,
-                "updated_at": chamado.updated_at.isoformat() if chamado.updated_at else None,
+                "updated_at": (
+                    chamado.updated_at.isoformat() if chamado.updated_at else None
+                ),
             }
         ),
         200,
@@ -350,8 +348,6 @@ def atualizar_status_chamado(chamado_id: int):
 @suporte_ti_admin_bp.route("/chamados/<int:chamado_id>", methods=["PUT"])
 @admin_required
 def atualizar_chamado(chamado_id: int):
-    """Atualiza os dados principais de um chamado existente."""
-
     if not _eh_admin_raiz():
         return _resposta_nao_autorizado()
 
@@ -440,9 +436,11 @@ def atualizar_chamado(chamado_id: int):
         campos_atualizados = True
 
     if not campos_atualizados:
-        return jsonify({"erro": "Nenhum campo válido para atualização foi informado."}), 400
+        return (
+            jsonify({"erro": "Nenhum campo válido para atualização foi informado."}),
+            400,
+        )
 
-    # Timezone de Brasília (UTC-3)
     tz_brasilia = timezone(timedelta(hours=-3))
     chamado.updated_at = datetime.now(tz_brasilia).replace(tzinfo=None)
 
@@ -466,8 +464,6 @@ def atualizar_chamado(chamado_id: int):
 @suporte_ti_admin_bp.route("/chamados/<int:chamado_id>", methods=["DELETE"])
 @admin_required
 def excluir_chamado(chamado_id: int):
-    """Remove definitivamente um chamado."""
-
     if not _eh_admin_raiz():
         return _resposta_nao_autorizado()
 
@@ -490,13 +486,10 @@ def excluir_chamado(chamado_id: int):
 @suporte_ti_admin_bp.route("/indicadores", methods=["GET"])
 @admin_required
 def obter_indicadores():
-    """Retorna indicadores de suporte com filtros e métricas de tempo."""
     ensure_tables_exist([SuporteChamado])
 
-    # Construir query base
     query = db.session.query(SuporteChamado)
 
-    # Aplicar filtros da query string
     data_inicio_str = request.args.get("data_inicio")
     data_fim_str = request.args.get("data_fim")
     area = request.args.get("area")
@@ -504,30 +497,40 @@ def obter_indicadores():
     nivel_urgencia = request.args.get("nivel_urgencia")
     status = request.args.get("status")
 
-    # Filtro de data início
     if data_inicio_str:
         try:
-            # Timezone de Brasília (UTC-3)
+
             tz_brasilia = timezone(timedelta(hours=-3))
-            data_inicio = datetime.fromisoformat(data_inicio_str).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=tz_brasilia).replace(tzinfo=None)
+            data_inicio = (
+                datetime.fromisoformat(data_inicio_str)
+                .replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=tz_brasilia)
+                .replace(tzinfo=None)
+            )
             query = query.filter(SuporteChamado.created_at >= data_inicio)
         except (ValueError, TypeError):
             pass
 
-    # Filtro de data fim
     if data_fim_str:
         try:
             tz_brasilia = timezone(timedelta(hours=-3))
-            data_fim = datetime.fromisoformat(data_fim_str).replace(hour=23, minute=59, second=59, microsecond=999999, tzinfo=tz_brasilia).replace(tzinfo=None)
+            data_fim = (
+                datetime.fromisoformat(data_fim_str)
+                .replace(
+                    hour=23,
+                    minute=59,
+                    second=59,
+                    microsecond=999999,
+                    tzinfo=tz_brasilia,
+                )
+                .replace(tzinfo=None)
+            )
             query = query.filter(SuporteChamado.created_at <= data_fim)
         except (ValueError, TypeError):
             pass
 
-    # Filtro de área
     if area:
         query = query.filter(SuporteChamado.area == area)
 
-    # Filtro de tipo de equipamento
     if tipo_equipamento_id:
         try:
             tipo_id = int(tipo_equipamento_id)
@@ -535,24 +538,23 @@ def obter_indicadores():
         except (ValueError, TypeError):
             pass
 
-    # Filtro de nível de urgência
     if nivel_urgencia:
         query = query.filter(SuporteChamado.nivel_urgencia == nivel_urgencia)
 
-    # Filtro de status
     if status:
         query = query.filter(SuporteChamado.status == status)
 
-    # Estatísticas básicas (com filtros aplicados)
     total = query.count()
-    
+
     por_status = (
         db.session.query(SuporteChamado.status, func.count(SuporteChamado.id))
-        .filter(SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery()))
+        .filter(
+            SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery())
+        )
         .group_by(SuporteChamado.status)
         .all()
     )
-    
+
     por_tipo = (
         db.session.query(SuporteTipoEquipamento.nome, func.count(SuporteChamado.id))
         .join(
@@ -560,55 +562,61 @@ def obter_indicadores():
             SuporteTipoEquipamento.id == SuporteChamado.tipo_equipamento_id,
             isouter=True,
         )
-        .filter(SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery()))
+        .filter(
+            SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery())
+        )
         .group_by(SuporteTipoEquipamento.nome)
         .all()
     )
-    
+
     por_urgencia = (
         db.session.query(SuporteChamado.nivel_urgencia, func.count(SuporteChamado.id))
-        .filter(SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery()))
+        .filter(
+            SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery())
+        )
         .group_by(SuporteChamado.nivel_urgencia)
         .all()
     )
 
-    # Métricas de tempo - Tempo médio até início de atendimento (em segundos)
     tempo_medio_atendimento = (
         db.session.query(
             func.avg(
-                func.extract('epoch', SuporteChamado.inicio_atendimento_at) - 
-                func.extract('epoch', SuporteChamado.created_at)
+                func.extract("epoch", SuporteChamado.inicio_atendimento_at)
+                - func.extract("epoch", SuporteChamado.created_at)
             )
         )
         .filter(SuporteChamado.inicio_atendimento_at.isnot(None))
-        .filter(SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery()))
+        .filter(
+            SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery())
+        )
         .scalar()
     )
 
-    # Tempo médio até encerramento (em segundos)
     tempo_medio_encerramento = (
         db.session.query(
             func.avg(
-                func.extract('epoch', SuporteChamado.encerrado_at) - 
-                func.extract('epoch', SuporteChamado.created_at)
+                func.extract("epoch", SuporteChamado.encerrado_at)
+                - func.extract("epoch", SuporteChamado.created_at)
             )
         )
         .filter(SuporteChamado.encerrado_at.isnot(None))
-        .filter(SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery()))
+        .filter(
+            SuporteChamado.id.in_(query.with_entities(SuporteChamado.id).subquery())
+        )
         .scalar()
     )
 
-    # Percentual de chamados atendidos em menos de 24 horas
-    total_com_atendimento = (
-        query.filter(SuporteChamado.inicio_atendimento_at.isnot(None)).count()
-    )
-    
+    total_com_atendimento = query.filter(
+        SuporteChamado.inicio_atendimento_at.isnot(None)
+    ).count()
+
     if total_com_atendimento > 0:
         atendidos_em_24h = (
             query.filter(SuporteChamado.inicio_atendimento_at.isnot(None))
             .filter(
-                func.extract('epoch', SuporteChamado.inicio_atendimento_at) - 
-                func.extract('epoch', SuporteChamado.created_at) < 86400
+                func.extract("epoch", SuporteChamado.inicio_atendimento_at)
+                - func.extract("epoch", SuporteChamado.created_at)
+                < 86400
             )
             .count()
         )
@@ -616,40 +624,49 @@ def obter_indicadores():
     else:
         percentual_24h = 0
 
-    # Tempo médio por urgência
     tempo_por_urgencia = []
     for nivel in ["Baixo", "Médio", "Alto"]:
         query_nivel = query.filter(SuporteChamado.nivel_urgencia == nivel)
-        
+
         tempo_atend = (
             db.session.query(
                 func.avg(
-                    func.extract('epoch', SuporteChamado.inicio_atendimento_at) - 
-                    func.extract('epoch', SuporteChamado.created_at)
+                    func.extract("epoch", SuporteChamado.inicio_atendimento_at)
+                    - func.extract("epoch", SuporteChamado.created_at)
                 )
             )
             .filter(SuporteChamado.inicio_atendimento_at.isnot(None))
-            .filter(SuporteChamado.id.in_(query_nivel.with_entities(SuporteChamado.id).subquery()))
+            .filter(
+                SuporteChamado.id.in_(
+                    query_nivel.with_entities(SuporteChamado.id).subquery()
+                )
+            )
             .scalar()
         )
-        
+
         tempo_encer = (
             db.session.query(
                 func.avg(
-                    func.extract('epoch', SuporteChamado.encerrado_at) - 
-                    func.extract('epoch', SuporteChamado.created_at)
+                    func.extract("epoch", SuporteChamado.encerrado_at)
+                    - func.extract("epoch", SuporteChamado.created_at)
                 )
             )
             .filter(SuporteChamado.encerrado_at.isnot(None))
-            .filter(SuporteChamado.id.in_(query_nivel.with_entities(SuporteChamado.id).subquery()))
+            .filter(
+                SuporteChamado.id.in_(
+                    query_nivel.with_entities(SuporteChamado.id).subquery()
+                )
+            )
             .scalar()
         )
-        
-        tempo_por_urgencia.append({
-            "nivel": nivel,
-            "tempo_atendimento": float(tempo_atend) if tempo_atend else 0,
-            "tempo_encerramento": float(tempo_encer) if tempo_encer else 0,
-        })
+
+        tempo_por_urgencia.append(
+            {
+                "nivel": nivel,
+                "tempo_atendimento": float(tempo_atend) if tempo_atend else 0,
+                "tempo_encerramento": float(tempo_encer) if tempo_encer else 0,
+            }
+        )
 
     return jsonify(
         {
@@ -666,8 +683,12 @@ def obter_indicadores():
                 {"nivel": nivel or "Não informado", "quantidade": quantidade}
                 for nivel, quantidade in por_urgencia
             ],
-            "tempo_medio_abertura_para_atendimento_segundos": float(tempo_medio_atendimento) if tempo_medio_atendimento else 0,
-            "tempo_medio_abertura_para_encerramento_segundos": float(tempo_medio_encerramento) if tempo_medio_encerramento else 0,
+            "tempo_medio_abertura_para_atendimento_segundos": (
+                float(tempo_medio_atendimento) if tempo_medio_atendimento else 0
+            ),
+            "tempo_medio_abertura_para_encerramento_segundos": (
+                float(tempo_medio_encerramento) if tempo_medio_encerramento else 0
+            ),
             "percentual_atendidos_em_24h": round(percentual_24h, 2),
             "tempo_medio_por_urgencia": tempo_por_urgencia,
         }
@@ -677,7 +698,9 @@ def obter_indicadores():
 def _criar_registro_basico(model, nome: str):
     if not nome.strip():
         return None, "Nome é obrigatório."
-    existente = model.query.filter(func.lower(model.nome) == nome.strip().lower()).first()
+    existente = model.query.filter(
+        func.lower(model.nome) == nome.strip().lower()
+    ).first()
     if existente:
         return None, "Registro já cadastrado."
     registro = model(nome=nome.strip())
@@ -696,10 +719,9 @@ def _atualizar_registro_basico(model, registro_id: int, nome: str):
         return None, "Registro não encontrado."
     if not nome.strip():
         return None, "Nome é obrigatório."
-    conflito = (
-        model.query.filter(func.lower(model.nome) == nome.strip().lower(), model.id != registro_id)
-        .first()
-    )
+    conflito = model.query.filter(
+        func.lower(model.nome) == nome.strip().lower(), model.id != registro_id
+    ).first()
     if conflito:
         return None, "Registro já cadastrado."
     registro.nome = nome.strip()
@@ -728,7 +750,9 @@ def _excluir_registro_basico(model, registro_id: int):
 @admin_required
 def listar_tipos_equipamento():
     ensure_tables_exist([SuporteTipoEquipamento])
-    tipos = SuporteTipoEquipamento.query.order_by(SuporteTipoEquipamento.nome.asc()).all()
+    tipos = SuporteTipoEquipamento.query.order_by(
+        SuporteTipoEquipamento.nome.asc()
+    ).all()
     return jsonify([{"id": tipo.id, "nome": tipo.nome} for tipo in tipos])
 
 
@@ -750,7 +774,9 @@ def atualizar_tipo_equipamento(registro_id: int):
     ensure_tables_exist([SuporteTipoEquipamento])
     payload = request.get_json(silent=True) or {}
     nome = payload.get("nome", "")
-    registro, erro = _atualizar_registro_basico(SuporteTipoEquipamento, registro_id, nome)
+    registro, erro = _atualizar_registro_basico(
+        SuporteTipoEquipamento, registro_id, nome
+    )
     if erro:
         status = 404 if "não encontrado" in erro.lower() else 400
         if "atualizar" in erro.lower():
@@ -814,6 +840,8 @@ def excluir_area(registro_id: int):
         status = 404 if "não encontrado" in erro.lower() else 500
         return jsonify({"erro": erro}), status
     return jsonify({"mensagem": "Área removida com sucesso."})
+
+
 _URGENCIAS_VALIDAS = {"Baixo", "Médio", "Alto"}
 
 
@@ -828,7 +856,10 @@ def _eh_admin_raiz() -> bool:
 
 
 def _resposta_nao_autorizado():
-    return jsonify({"erro": "Apenas o Administrador raiz pode realizar esta ação."}), 403
+    return (
+        jsonify({"erro": "Apenas o Administrador raiz pode realizar esta ação."}),
+        403,
+    )
 
 
 def _normalizar_urgencia(valor: str | None) -> str | None:
@@ -840,4 +871,3 @@ def _normalizar_urgencia(valor: str | None) -> str | None:
     if valor_limpo.lower() == "medio":
         valor_limpo = "Médio"
     return valor_limpo
-

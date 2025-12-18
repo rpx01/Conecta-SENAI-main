@@ -1,5 +1,3 @@
-"""Jobs relacionados a notícias."""
-
 import logging
 
 from conecta_senai.services.noticia_service import (
@@ -11,8 +9,6 @@ log = logging.getLogger(__name__)
 
 
 def publicar_noticias_agendadas() -> dict[str, int]:
-    """Executa a publicação de notícias agendadas com registro em log."""
-
     resultado = _publicar_noticias_agendadas()
 
     if resultado["total"] == 0:
@@ -34,8 +30,6 @@ def publicar_noticias_agendadas() -> dict[str, int]:
 
 
 def remover_destaques_expirados() -> dict[str, int]:
-    """Remove destaques expirados registrando o total afetado."""
-
     resultado = _remover_destaques_expirados()
 
     ajustados = resultado.get("ajustados", 0)

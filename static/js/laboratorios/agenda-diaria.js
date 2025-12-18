@@ -1,14 +1,12 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
-    // Garante que o usuário está autenticado antes de prosseguir
+    
     if (!verificarAutenticacao()) return;
 
-    // --- VARIÁVEIS DE ESTADO E ELEMENTOS DO DOM ---
     let laboratorios = [];
     let labSelecionadoId = null;
     let dataSelecionada = new Date();
     let miniCalendar;
-    let agendamentoParaExcluirId = null; // Guarda o ID do agendamento a ser excluído
+    let agendamentoParaExcluirId = null; 
 
     const loadingEl = document.getElementById('loading-page');
     const contentEl = document.getElementById('agenda-content');
@@ -25,7 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detalhesModal = new bootstrap.Modal(document.getElementById('detalhesReservaModal'));
     const detalhesContent = document.getElementById('detalhesReservaContent');
 
-    // --- FUNÇÃO DE INICIALIZAÇÃO ---
     const inicializarPagina = async () => {
         contentEl.classList.add('d-none');
         emptyStateEl.classList.add('d-none');
@@ -54,8 +51,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             emptyStateEl.classList.remove('d-none');
         }
     };
-
-    // --- FUNÇÕES DE LÓGICA ---
 
     const carregarLaboratorios = async () => {
         try {
@@ -96,7 +91,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dataFormatada = dataSelecionada.toISOString().split('T')[0];
             const dados = await chamarAPI(`/agendamentos/agenda-diaria?laboratorio_id=${labSelecionadoId}&data=${dataFormatada}`);
             
-            // Verificação para garantir que os dados estão no formato correto
             if (dados && dados.agendamentos_por_turno) {
                 renderizarDetalhesDia(dados.agendamentos_por_turno);
             } else {
@@ -156,8 +150,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-
-        // ** DELEGAÇÃO DE EVENTOS PARA EXCLUSÃO E DETALHES **
         agendaContainer.addEventListener('click', (e) => {
             const btnExcluir = e.target.closest('.btn-excluir');
             if (btnExcluir) {

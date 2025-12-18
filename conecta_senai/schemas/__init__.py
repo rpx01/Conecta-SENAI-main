@@ -7,10 +7,17 @@ from .noticia import NoticiaSchema
 from .noticia_validacao import NoticiaCreateSchema, NoticiaUpdateSchema
 
 __all__ = [
-    'SalaCreateSchema', 'SalaUpdateSchema',
-    'InstrutorCreateSchema', 'InstrutorUpdateSchema',
-    'OcupacaoCreateSchema', 'OcupacaoUpdateSchema',
-    'RateioConfigCreateSchema', 'LancamentoRateioSchema',
-    'UserCreateSchema', 'UserUpdateSchema',
-    'NoticiaSchema', 'NoticiaCreateSchema', 'NoticiaUpdateSchema',
+    "SalaCreateSchema",
+    "SalaUpdateSchema",
+    "InstrutorCreateSchema",
+    "InstrutorUpdateSchema",
+    "OcupacaoCreateSchema",
+    "OcupacaoUpdateSchema",
+    "RateioConfigCreateSchema",
+    "LancamentoRateioSchema",
+    "UserCreateSchema",
+    "UserUpdateSchema",
+    "NoticiaSchema",
+    "NoticiaCreateSchema",
+    "NoticiaUpdateSchema",
 ]

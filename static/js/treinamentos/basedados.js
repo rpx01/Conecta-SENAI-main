@@ -1,5 +1,3 @@
-/* global chamarAPI, showToast, escapeHTML, executarAcaoComFeedback, bootstrap */
-
 let contatosSecretaria = [];
 let locaisRealizacao = [];
 

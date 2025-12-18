@@ -1,23 +1,19 @@
-// CÓDIGO COMPLETO E ADAPTADO PARA O FICHEIRO calendario-labs.js
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Garante que o usuário está autenticado
+    
     if (!verificarAutenticacao()) return;
     
-    // Atualiza o nome do usuário na navbar
     const usuario = getUsuarioLogado();
     if(usuario) {
         const userNameElement = document.getElementById('userName') || document.getElementById('nomeUsuarioNav');
         if(userNameElement) userNameElement.textContent = usuario.nome;
     }
     
-    // Carrega os dados para os filtros e depois inicializa o calendário
     carregarLaboratoriosParaFiltro();
     configurarFiltros();
     inicializarCalendario();
 });
 
-let calendar; // Variável global para o calendário
+let calendar; 
 
 function inicializarCalendario() {
     const calendarEl = document.getElementById('calendario');
@@ -44,13 +40,12 @@ function inicializarCalendario() {
             };
         },
 
-        // Evento que dispara sempre que a visualização do calendário é alterada
         datesSet: function(dateInfo) {
             aplicarFiltrosCalendario();
         },
         
         dateClick: function(info) {
-            // abrir modal de resumo aqui
+            
         }
     });
     
@@ -95,13 +90,11 @@ async function aplicarFiltrosCalendario() {
             data_fim: calendar.view.activeEnd.toISOString().slice(0, 10),
         });
 
-        // Adaptação para os filtros de Agendamento
         const laboratorio = document.getElementById('filtroLaboratorio').value;
         const turno = document.getElementById('filtroTurno').value;
         if (laboratorio) params.append('laboratorio', laboratorio);
         if (turno) params.append('turno', turno);
 
-        // Chamada à API correta
         const data = await chamarAPI(`/agendamentos/resumo-calendario?${params.toString()}`);
         
         if (data && data.resumo) {
@@ -126,7 +119,7 @@ function renderizarPillulas(resumo, totalRecursos) {
             ['Manhã', 'Tarde', 'Noite'].forEach(turno => {
                 const ocupados = diaResumo && diaResumo[turno] ? diaResumo[turno].ocupados : 0;
                 
-                let statusClass = 'turno-livre'; // Padrão é livre
+                let statusClass = 'turno-livre'; 
                 if (ocupados > 0) {
                     statusClass = ocupados >= totalRecursos ? 'turno-cheio' : 'turno-parcial';
                 }

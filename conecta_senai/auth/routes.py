@@ -1,5 +1,3 @@
-"""Rotas públicas de autenticação e sessão da aplicação."""
-
 from flask import (
     Blueprint,
     current_app,
@@ -18,7 +16,6 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.get("/register")
 def register_page():
-    """Renderiza a página de registro e define o cookie CSRF."""
     token = generate_csrf()
     secure_cookie = current_app.config.get("COOKIE_SECURE", False)
     samesite = current_app.config.get("COOKIE_SAMESITE", "Lax")
@@ -29,7 +26,6 @@ def register_page():
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login_page():
-    """Renderiza a página de login e exibe mensagem em caso de falha."""
     token = generate_csrf()
     secure_cookie = current_app.config.get("COOKIE_SECURE", False)
     samesite = current_app.config.get("COOKIE_SAMESITE", "Lax")

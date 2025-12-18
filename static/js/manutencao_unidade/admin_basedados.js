@@ -1,5 +1,3 @@
-/* global bootstrap, chamarAPI, verificarAutenticacao, verificarPermissaoAdmin, getUsuarioLogado, showToast, sanitizeHTML */
-
 (function () {
     const tabelaAreas = document.querySelector('#tabelaAreas tbody');
     const tabelaTipos = document.querySelector('#tabelaTipos tbody');

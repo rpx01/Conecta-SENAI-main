@@ -1,15 +1,9 @@
-"""rename data_termino column to data_fim
-
-Revision ID: 67c822ca4b6e
-Revises: 9f1c4e5a4b6a
-Create Date: 2025-08-22 12:45:00
-"""
 from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-revision: str = '67c822ca4b6e'
-down_revision: Union[str, Sequence[str], None] = '9f1c4e5a4b6a'
+revision: str = "67c822ca4b6e"
+down_revision: Union[str, Sequence[str], None] = "9f1c4e5a4b6a"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

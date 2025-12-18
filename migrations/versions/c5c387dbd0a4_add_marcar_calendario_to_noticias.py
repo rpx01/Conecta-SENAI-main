@@ -1,5 +1,3 @@
-"""add marcar_calendario column to noticias table"""
-
 from typing import Sequence, Union
 
 from alembic import op

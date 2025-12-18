@@ -1,4 +1,3 @@
-"""Rotas públicas (usuários autenticados) do módulo de suporte de TI."""
 from __future__ import annotations
 
 import os
@@ -74,13 +73,14 @@ def criar_chamado():
     )
     patrimonio = form.get("patrimonio") or None
     numero_serie = form.get("numero_serie") or form.get("numeroSerie") or None
-    descricao = (form.get("descricao_problema") or form.get("descricaoProblema") or "").strip()
-    nivel_urgencia = (form.get("nivel_urgencia") or form.get("nivelUrgencia") or "").strip()
+    descricao = (
+        form.get("descricao_problema") or form.get("descricaoProblema") or ""
+    ).strip()
+    nivel_urgencia = (
+        form.get("nivel_urgencia") or form.get("nivelUrgencia") or ""
+    ).strip()
     local_unidade = (
-        form.get("local_unidade")
-        or form.get("local")
-        or form.get("unidade")
-        or ""
+        form.get("local_unidade") or form.get("local") or form.get("unidade") or ""
     ).strip()
 
     erros: list[str] = []
@@ -104,10 +104,9 @@ def criar_chamado():
 
     area_registro = None
     if area:
-        area_registro = (
-            SuporteArea.query.filter(func.lower(SuporteArea.nome) == area.lower())
-            .first()
-        )
+        area_registro = SuporteArea.query.filter(
+            func.lower(SuporteArea.nome) == area.lower()
+        ).first()
         if not area_registro:
             erros.append("Área selecionada não está cadastrada.")
 
@@ -149,7 +148,7 @@ def criar_chamado():
         nome_seguro = secure_filename(arquivo.filename)
         if not nome_seguro:
             continue
-        # Timezone de Brasília (UTC-3)
+
         tz_brasilia = timezone(timedelta(hours=-3))
         timestamp = datetime.now(tz_brasilia).strftime("%Y%m%d%H%M%S%f")
         nome_final = f"{timestamp}_{nome_seguro}"
@@ -157,7 +156,9 @@ def criar_chamado():
         arquivo.save(caminho_completo)
         caminho_relativo = os.path.relpath(caminho_completo, current_app.static_folder)
         arquivos_salvos.append(
-            SuporteAnexo(file_path=os.path.join("/", caminho_relativo).replace("\\", "/"))
+            SuporteAnexo(
+                file_path=os.path.join("/", caminho_relativo).replace("\\", "/")
+            )
         )
 
     if arquivos_salvos:
@@ -199,16 +200,14 @@ def listar_meus_chamados():
 def obter_base_dados_formulario():
     ensure_tables_exist([SuporteTipoEquipamento, SuporteArea])
 
-    tipos = (
-        SuporteTipoEquipamento.query.order_by(SuporteTipoEquipamento.nome.asc()).all()
-    )
+    tipos = SuporteTipoEquipamento.query.order_by(
+        SuporteTipoEquipamento.nome.asc()
+    ).all()
     areas = SuporteArea.query.order_by(SuporteArea.nome.asc()).all()
 
     return jsonify(
         {
-            "tipos_equipamento": [
-                {"id": tipo.id, "nome": tipo.nome} for tipo in tipos
-            ],
+            "tipos_equipamento": [{"id": tipo.id, "nome": tipo.nome} for tipo in tipos],
             "areas": [{"id": area.id, "nome": area.nome} for area in areas],
         }
     )

@@ -1,10 +1,3 @@
-"""Add binary content columns to imagens_noticias.
-
-Revision ID: 8bfad4c51c4a
-Revises: 7b0f5f3f3d9c
-Create Date: 2024-06-09
-"""
-
 from typing import Sequence, Union
 
 from alembic import op

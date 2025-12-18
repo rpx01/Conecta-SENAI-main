@@ -1,4 +1,3 @@
-"""Utilitários compartilhados para as rotas do módulo de suporte de TI."""
 from __future__ import annotations
 
 import logging
@@ -16,15 +15,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 def ensure_tables_exist(models: Iterable[type[db.Model]]) -> None:
-    """Garante que as tabelas (e colunas críticas) existam antes do uso.
-
-    Esta função mantém a compatibilidade com ambientes onde as migrações
-    ainda não foram aplicadas totalmente. Além de criar tabelas ausentes,
-    ela verifica e cria as colunas ``observacoes``, ``local_unidade`` e
-    ``nome_solicitante`` da tabela de chamados e garante que ``user_id`` aceite
-    ``NULL``, reproduzindo o comportamento esperado das migrações oficiais.
-    """
-
     inspector = inspect(db.engine)
     for model in models:
         table_name = model.__tablename__
@@ -37,8 +27,6 @@ def ensure_tables_exist(models: Iterable[type[db.Model]]) -> None:
 
 
 def _ensure_suporte_chamados_columns(inspector):
-    """Garante que colunas críticas existam na tabela de chamados."""
-
     table_name = SuporteChamado.__tablename__
     columns_info = inspector.get_columns(table_name)
     columns = {column["name"] for column in columns_info}
@@ -85,9 +73,7 @@ def _ensure_suporte_chamados_columns(inspector):
     if "encerrado_at" not in columns:
         ddl_statements.append(
             (
-                text(
-                    "ALTER TABLE suporte_chamados ADD COLUMN encerrado_at TIMESTAMP"
-                ),
+                text("ALTER TABLE suporte_chamados ADD COLUMN encerrado_at TIMESTAMP"),
                 "Adicionada coluna encerrado_at em suporte_chamados.",
             )
         )
@@ -110,9 +96,9 @@ def _ensure_suporte_chamados_columns(inspector):
 
 
 def _get_logger():
-    try:  # pragma: no cover - logger cai no app em produção
+    try:
         return current_app.logger
-    except RuntimeError:  # fora do contexto da aplicação (ex.: testes)
+    except RuntimeError:
         return LOGGER
 
 
@@ -121,7 +107,7 @@ def _execute_ddl(ddl, success_message: str) -> None:
         with db.engine.begin() as connection:
             connection.execute(ddl)
             _get_logger().info(success_message)
-    except ProgrammingError as exc:  # pragma: no cover - dependente do banco
+    except ProgrammingError as exc:
         mensagem = str(exc).lower()
         if "duplicate column" not in mensagem and "already exists" not in mensagem:
             raise
@@ -134,9 +120,7 @@ def _make_user_id_nullable():
     if dialect == "sqlite":
         _recreate_table_with_nullable_user()
     else:
-        ddl = text(
-            f"ALTER TABLE {table_name} ALTER COLUMN user_id DROP NOT NULL"
-        )
+        ddl = text(f"ALTER TABLE {table_name} ALTER COLUMN user_id DROP NOT NULL")
         _execute_ddl(
             ddl,
             "Alterada coluna user_id de suporte_chamados para aceitar valores nulos.",
@@ -145,8 +129,6 @@ def _make_user_id_nullable():
 
 
 def _recreate_table_with_nullable_user() -> None:
-    """Recria a tabela garantindo ``user_id`` como nullable no SQLite."""
-
     table_name = SuporteChamado.__tablename__
     old_table = f"{table_name}_old"
     column_names = [column.name for column in SuporteChamado.__table__.columns]

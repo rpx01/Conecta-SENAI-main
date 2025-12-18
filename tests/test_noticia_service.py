@@ -1,5 +1,3 @@
-"""Testes para o módulo de regras de negócio de notícias."""
-
 from __future__ import annotations
 
 import io
@@ -18,8 +16,6 @@ from conecta_senai.services import noticia_service
 
 
 def test_atualizar_noticia_cria_tabela_imagens_quando_ausente(app, tmp_path):
-    """Garante que a tabela de imagens é criada automaticamente e o binário é persistido."""
-
     with app.app_context():
         with db.engine.begin() as conn:
             conn.execute(text("DROP TABLE IF EXISTS imagens_noticias"))
@@ -63,8 +59,6 @@ def test_atualizar_noticia_cria_tabela_imagens_quando_ausente(app, tmp_path):
 
 
 def test_imagem_persistida_fica_disponivel_apos_redeploy(app, tmp_path):
-    """Garante que o binário permanece acessível mesmo após remover o arquivo físico."""
-
     with app.app_context():
         db.create_all()
 
@@ -104,6 +98,7 @@ def test_imagem_persistida_fica_disponivel_apos_redeploy(app, tmp_path):
         assert resposta.data == b"conteudo-imagem"
         assert resposta.mimetype == "image/jpeg"
 
+
 def test_publicar_noticias_agendadas_altera_status_para_ativo(app):
     with app.app_context():
         db.create_all()
@@ -142,7 +137,7 @@ def test_remover_destaques_expirados_considera_dias_uteis(app):
         agora = datetime.now(timezone.utc)
         noticia_expirada = Noticia(
             titulo="Notícia expirada",
-            conteudo="Conteúdo",  # noqa: E501 - texto simplificado
+            conteudo="Conteúdo",
             destaque=True,
             data_publicacao=agora - timedelta(days=10),
         )

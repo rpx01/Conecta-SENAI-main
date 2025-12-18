@@ -1,5 +1,3 @@
-"""create table to armazenar imagens de notícias"""
-
 from typing import Sequence, Union
 
 from alembic import op
@@ -41,7 +39,12 @@ def upgrade() -> None:
         if "caminho_relativo" not in colunas:
             op.add_column(
                 "imagens_noticias",
-                sa.Column("caminho_relativo", sa.String(length=255), nullable=False, server_default=""),
+                sa.Column(
+                    "caminho_relativo",
+                    sa.String(length=255),
+                    nullable=False,
+                    server_default="",
+                ),
             )
             op.execute(
                 sa.text(

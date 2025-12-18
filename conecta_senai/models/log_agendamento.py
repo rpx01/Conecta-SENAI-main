@@ -1,10 +1,9 @@
 from datetime import datetime, date
 from conecta_senai.models import db
 
-class LogAgendamento(db.Model):
-    """Registro de ações realizadas em agendamentos."""
 
-    __tablename__ = 'logs_agendamentos'
+class LogAgendamento(db.Model):
+    __tablename__ = "logs_agendamentos"
 
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(100))
@@ -16,9 +15,16 @@ class LogAgendamento(db.Model):
     dados_depois = db.Column(db.JSON)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, usuario: str, tipo_acao: str, laboratorio: str | None,
-                 turno: str | None, data_agendamento: date | None,
-                 dados_antes: dict | None, dados_depois: dict | None):
+    def __init__(
+        self,
+        usuario: str,
+        tipo_acao: str,
+        laboratorio: str | None,
+        turno: str | None,
+        data_agendamento: date | None,
+        dados_antes: dict | None,
+        dados_depois: dict | None,
+    ):
         self.usuario = usuario
         self.tipo_acao = tipo_acao
         self.laboratorio = laboratorio
@@ -26,4 +32,3 @@ class LogAgendamento(db.Model):
         self.data_agendamento = data_agendamento
         self.dados_antes = dados_antes
         self.dados_depois = dados_depois
-

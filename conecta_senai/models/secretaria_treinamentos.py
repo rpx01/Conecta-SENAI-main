@@ -2,7 +2,6 @@ from conecta_senai.extensions import db
 
 
 class SecretariaTreinamentos(db.Model):
-    """Model for Secretaria de Treinamentos contacts."""
     __tablename__ = "secretaria_treinamentos"
 
     id = db.Column(db.Integer, primary_key=True)

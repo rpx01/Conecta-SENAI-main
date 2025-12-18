@@ -66,11 +66,15 @@ def test_ensure_table_exists_adds_data_evento_column(app):
         _create_legacy_table_without_data_evento(engine)
 
         inspector = inspect(engine)
-        columns = {column["name"] for column in inspector.get_columns(Noticia.__tablename__)}
+        columns = {
+            column["name"] for column in inspector.get_columns(Noticia.__tablename__)
+        }
         assert "data_evento" not in columns
 
         NoticiaRepository.ensure_table_exists(force_refresh=True)
 
         inspector = inspect(engine)
-        columns = {column["name"] for column in inspector.get_columns(Noticia.__tablename__)}
+        columns = {
+            column["name"] for column in inspector.get_columns(Noticia.__tablename__)
+        }
         assert "data_evento" in columns

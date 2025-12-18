@@ -1,13 +1,7 @@
-// Arquivo JavaScript global para o Sistema de Agenda de Laboratório
-// Contém funções de autenticação, manipulação de localStorage e utilitários
-
-// Constantes globais
 const API_URL = '/api';
 
-// Overlay de carregamento reutilizável
 let loadingOverlay;
 
-// Cache para resultado de verificação de autenticação
 let autenticacaoCache = null;
 let verificacaoAutenticacaoPromise = null;
 
@@ -62,12 +56,10 @@ function normalizarPathname(pathname) {
 
     let path = pathname.trim().toLowerCase();
 
-    // Garante que o caminho comece com '/'
     if (path && !path.startsWith('/')) {
         path = `/${path}`;
     }
 
-    // Remove parâmetros de consulta ou hash, caso tenham sido incluídos acidentalmente
     const queryIndex = path.indexOf('?');
     if (queryIndex !== -1) {
         path = path.slice(0, queryIndex);
@@ -77,7 +69,6 @@ function normalizarPathname(pathname) {
         path = path.slice(0, hashIndex);
     }
 
-    // Remove barras extras ao final mantendo a raiz
     if (path.length > 1) {
         path = path.replace(/\/+$/, '');
         if (!path) {
@@ -88,7 +79,6 @@ function normalizarPathname(pathname) {
     return path || '/';
 }
 
-// Páginas públicas acessíveis sem autenticação
 const PAGINAS_PUBLICAS = new Set([
     '/admin/login.html',
     '/register',
@@ -136,15 +126,8 @@ function ehPaginaPublica(pathname) {
     });
 }
 
-// Variável global para armazenar o token CSRF e evitar múltiplas buscas
 let csrfToken = null;
 
-/**
- * Obtém o token CSRF da API. O token é armazenado em memória para
- * reutilização e renovado quando explicitamente solicitado.
- * @param {boolean} force - Quando true, força a renovação do token
- * @returns {Promise<string>} Token CSRF válido
- */
 async function obterCSRFToken(force = false) {
     if (csrfToken && !force) {
         return csrfToken;
@@ -167,11 +150,6 @@ async function obterCSRFToken(force = false) {
     }
 }
 
-/**
- * Escapa caracteres HTML para prevenir ataques XSS.
- * @param {string} str - Texto a escapar
- * @returns {string} - HTML escapado
- */
 function escapeHTML(str) {
     const div = document.createElement('div');
     div.textContent = String(str);
@@ -182,11 +160,6 @@ function sanitizeHTML(html) {
     return window.DOMPurify ? DOMPurify.sanitize(html) : html;
 }
 
-/**
- * Alterna o estado de processamento de um botão, exibindo um spinner.
- * @param {HTMLElement} btn - Botão alvo
- * @param {boolean} busy - Se verdadeiro, ativa o estado de espera
- */
 function setBusy(btn, busy = true) {
     if (!btn) return;
 
@@ -235,7 +208,6 @@ function normalizarUrlModulo(modulo) {
             return null;
         }
 
-        // Remove barra extra ao final, exceto para a raiz
         if (url.pathname !== '/' && url.pathname.endsWith('/')) {
             return url.pathname.slice(0, -1);
         }
@@ -297,7 +269,6 @@ const MODULOS_PADRAO = normalizarListaModulos([
     '/manutencao_unidade/abertura.html'
 ]);
 
-// Mapeia os módulos disponíveis de acordo com o tipo de usuário
 function obterModulosDisponiveis(usuario = {}) {
     const modulos = new Set(MODULOS_PADRAO);
 
@@ -322,7 +293,6 @@ function obterModulosDisponiveis(usuario = {}) {
     return Array.from(modulos);
 }
 
-// Redireciona o usuário após o login com base nos módulos disponíveis
 function redirecionarAposLogin(usuario) {
     const modulos = obterModulosDisponiveis(usuario);
     const moduloSalvo = localStorage.getItem('moduloSelecionado');
@@ -339,13 +309,6 @@ function redirecionarAposLogin(usuario) {
     }
 }
 
-// Funções de autenticação
-/**
- * Realiza o login do usuário
- * @param {string} email - Email do usuário
- * @param {string} senha - Senha do usuário
- * @returns {Promise} - Promise com o resultado do login
- */
 async function realizarLogin(email, senha, recaptchaToken = '') {
     try {
         const data = await chamarAPI('/login', 'POST', {
@@ -374,28 +337,17 @@ async function realizarLogin(email, senha, recaptchaToken = '') {
     }
 }
 
-/**
- * Realiza o logout do usuário
- */
 async function realizarLogout() {
     try {
         await chamarAPI('/logout', 'POST', {});
     } catch (_) {
-        // Ignora erros de logout
+        
     }
     localStorage.removeItem('usuario');
     localStorage.removeItem('isRoot');
     window.location.href = '/admin/login.html';
 }
 
-/**
- * Verifica se o usuário está autenticado
- * @returns {boolean} - True se autenticado, false caso contrário
- */
-/**
- * Obtém os dados do usuário logado
- * @returns {Object|null} - Objeto com os dados do usuário ou null se não estiver autenticado
- */
 function getUsuarioLogado() {
     const usuarioJSON = localStorage.getItem('usuario');
     if (!usuarioJSON) {
@@ -417,13 +369,9 @@ function getUsuarioLogado() {
     }
 }
 
-/**
- * Verifica se o usuário logado é administrador
- * @returns {boolean} - True se for administrador, false caso contrário
- */
 function isAdmin() {
     const usuario = getUsuarioLogado();
-    // Acesso total para admin, acesso a treinamentos para secretaria
+    
     if (!usuario) return false;
     if (usuario.tipo === 'admin') return true;
     if (usuario.tipo === 'secretaria' && window.location.pathname.includes('/treinamentos/')) {
@@ -436,16 +384,15 @@ function isUserAdmin() {
     return localStorage.getItem('isAdmin') === 'true';
 }
 
-// Função para ajustar a visibilidade dos elementos com base no papel do usuário
 function ajustarVisibilidadePorPapel() {
     const usuario = getUsuarioLogado();
     if (!usuario) return;
 
     if (usuario.tipo !== 'admin') {
         document.querySelectorAll('.admin-only').forEach(el => {
-            // Se for secretaria e estiver na área de treinamentos, mostra o elemento
+            
             if (usuario.tipo === 'secretaria' && window.location.pathname.includes('/treinamentos/')) {
-                // Deixamos o elemento visível para a secretaria
+                
             } else {
                 el.style.display = 'none';
             }
@@ -453,13 +400,6 @@ function ajustarVisibilidadePorPapel() {
     }
 }
 
-/**
- * Redireciona para a página de login se o usuário não estiver autenticado
- */
-/**
- * Verifica se o usuário está autenticado, validando o token com o servidor.
- * @returns {Promise<boolean>} - True se autenticado, false caso contrário
- */
 async function verificarAutenticacao() {
     if (autenticacaoCache !== null) {
         return autenticacaoCache;
@@ -476,7 +416,7 @@ async function verificarAutenticacao() {
         }
 
         try {
-            // Valida o token acessando os dados do próprio usuário
+            
             await chamarAPI(`/usuarios/${usuario.id}`);
             autenticacaoCache = true;
             return true;
@@ -493,60 +433,40 @@ async function verificarAutenticacao() {
     return verificacaoAutenticacaoPromise;
 }
 
-/**
- * Verifica se o usuário tem permissão de administrador
- * Redireciona para o dashboard se não tiver
- */
 async function verificarPermissaoAdmin() {
-    // Passo 1: Verifica se o usuário está autenticado. Se não, a função já redireciona.
+    
     if (!(await verificarAutenticacao())) return false;
 
-    // Passo 2: Verifica se a página atual é a de seleção de sistema.
     const paginaAtual = window.location.pathname;
     if (paginaAtual === '/selecao-sistema.html') {
-        // Se for a página de seleção, NÃO FAÇA NADA. Permita o acesso.
+        
         return true;
     }
 
-    // Passo 3: Se NÃO for a página de seleção, continue com a verificação de admin.
     if (!isAdmin()) {
         showToast('Desculpe, você não tem permissão para acessar esta página. Vamos redirecioná-lo(a).', 'warning');
-        window.location.href = '/selecao-sistema.html'; // Redireciona para um local seguro
+        window.location.href = '/selecao-sistema.html'; 
         return false;
     }
 
     return true;
 }
 
-// ---------- Proteção de Rotas Global ----------
-// Esta IIFE garante que o redirecionamento ocorra apenas quando necessário,
-// evitando loops na página de login ou registro.
 (async function() {
     const currentPage = normalizarPathname(window.location.pathname);
 
-    // Se a página não for pública, valida a sessão no servidor
     if (!ehPaginaPublica(currentPage)) {
         await verificarAutenticacao();
     }
 
-    // Usuário logado tentando acessar página pública que deve redirecionar
     const usuario = getUsuarioLogado();
     if (usuario && PAGINAS_REDIRECIONAMENTO.has(currentPage)) {
         window.location.href = '/selecao-sistema.html';
     }
 
-    // Ajusta interface conforme o papel do usuário
     ajustarVisibilidadePorPapel();
 })();
 
-// Funções para chamadas à API
-/**
- * Realiza uma chamada à API com autenticação
- * @param {string} endpoint - Endpoint da API
- * @param {string} method - Método HTTP (GET, POST, PUT, DELETE)
- * @param {Object} body - Corpo da requisição (opcional)
- * @returns {Promise} - Promise com o resultado da chamada
- */
 async function chamarAPI(endpoint, method = 'GET', body = null) {
     const endpointFormatado = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     const url = `${API_URL}${endpointFormatado}`;
@@ -610,12 +530,6 @@ async function chamarAPI(endpoint, method = 'GET', body = null) {
     });
 }
 
-// Funções de formatação e utilidades
-/**
- * Formata uma data no padrão brasileiro
- * @param {string} dataISO - Data em formato ISO
- * @returns {string} - Data formatada (DD/MM/YYYY)
- */
 function formatarData(dataISO) {
     if (!dataISO) return '';
     const [parteData] = dataISO.split('T');
@@ -623,15 +537,9 @@ function formatarData(dataISO) {
     return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 }
 
-/**
- * Formata um horário no padrão 24h
- * @param {string} horario - Horário em formato HH:MM
- * @returns {string} - Horário formatado
- */
 function formatarHorario(horario) {
     if (!horario) return '';
 
-    // Se já estiver no formato correto HH:MM, apenas normaliza zeros à esquerda
     const partes = horario.split(':');
     if (partes.length === 2) {
         const horas = parseInt(partes[0], 10);
@@ -644,14 +552,9 @@ function formatarHorario(horario) {
         }
     }
 
-    // Caso não seja possível formatar, retorna original
     return horario;
 }
 
-/**
- * Garante a existência de um container global para toasts
- * @returns {HTMLElement} - Elemento container
- */
 function criarToastContainer() {
     let container = document.querySelector('.toast-container');
     if (!container) {
@@ -663,11 +566,6 @@ function criarToastContainer() {
     return container;
 }
 
-/**
- * Exibe uma mensagem usando toasts do Bootstrap
- * @param {string} mensagem - Mensagem a ser exibida
- * @param {string} tipo - Tipo do toast (success, danger, warning, info)
- */
 function showToast(mensagem, tipo = 'info') {
     const toastContainer = criarToastContainer();
 
@@ -701,11 +599,6 @@ function showToast(mensagem, tipo = 'info') {
     toast.show();
 }
 
-/**
- * Exibe notificação rápida via Toast do Bootstrap.
- * @param {string} tipo - success|warning|danger|info
- * @param {string} mensagem - Mensagem a ser exibida
- */
 function notify(tipo, mensagem) {
     showToast(mensagem, tipo);
 }
@@ -716,11 +609,6 @@ window.setBusy = setBusy;
 window.normalizarUrlModulo = normalizarUrlModulo;
 document.addEventListener('DOMContentLoaded', criarToastContainer);
 
-/**
- * Retorna a classe CSS correspondente ao turno
- * @param {string} turno - Nome do turno (Manhã, Tarde, Noite)
- * @returns {string} - Nome da classe CSS
- */
 function getClasseTurno(turno) {
     switch (turno) {
         case 'Manhã':
@@ -734,17 +622,6 @@ function getClasseTurno(turno) {
     }
 }
 
-/**
- * Executa uma ação assíncrona desabilitando o botão durante a operação para
- * evitar cliques duplicados. Caso o botão contenha um elemento com a classe
- * `.spinner-border`, ele será exibido enquanto a Promise estiver pendente. Se
- * houver um span com classe `.btn-text`, o texto é temporariamente alterado
- * para "Processando...".
- *
- * @param {HTMLButtonElement|HTMLInputElement} btn - Botão que dispara a ação
- * @param {() => Promise<any>} acao - Função assíncrona a ser executada
- * @returns {Promise<any>} - Resultado da Promise da ação
- */
 async function executarAcaoComFeedback(btn, acao) {
     if (!btn || typeof acao !== 'function') {
         throw new Error('Parâmetros inválidos em executarAcaoComFeedback');
@@ -767,22 +644,15 @@ async function executarAcaoComFeedback(btn, acao) {
     }
 }
 
-/**
- * Adiciona o link para a página de Laboratórios e Turmas no menu
- * @param {string} containerSelector - Seletor CSS do container do menu
- * @param {boolean} isNavbar - Indica se é o menu da navbar ou sidebar
- */
 function adicionarLinkLabTurmas(containerSelector, isNavbar = false) {
     const container = document.querySelector(containerSelector);
     if (!container) return;
     
-    // Verifica se o link já existe para evitar duplicação
     const linkExistente = container.querySelector('a[href="/laboratorios/turmas.html"]');
     if (linkExistente) return;
     
-    // Cria o elemento do link baseado no tipo de menu
     if (isNavbar) {
-        // Para navbar (menu superior)
+        
         const navItem = document.createElement('li');
         navItem.className = 'nav-item admin-only';
         
@@ -793,7 +663,6 @@ function adicionarLinkLabTurmas(containerSelector, isNavbar = false) {
         
         navItem.appendChild(link);
 
-        // Insere antes do último item (dropdown do usuário)
         const lastItem = container.querySelector('.dropdown');
         if (lastItem) {
             container.insertBefore(navItem, lastItem);
@@ -802,13 +671,12 @@ function adicionarLinkLabTurmas(containerSelector, isNavbar = false) {
         }
         refreshIcons();
     } else {
-        // Para sidebar (menu lateral)
+        
         const link = document.createElement('a');
         link.className = 'nav-link admin-only';
         link.href = '/laboratorios/turmas.html';
         link.innerHTML = '<i data-lucide="building-2"></i> Laboratórios e Turmas';
         
-        // Insere antes do último item (Meu Perfil)
         const lastItem = container.querySelector('a[href="/laboratorios/perfil.html"], a[href="/ocupacao/perfil.html"], a[href="/admin/perfil.html"]');
         if (lastItem) {
             container.insertBefore(link, lastItem);
@@ -819,7 +687,6 @@ function adicionarLinkLabTurmas(containerSelector, isNavbar = false) {
     }
 }
 
-// Adiciona o link para a página de Logs
 function adicionarLinkLogs(containerSelector, isNavbar = false) {
     const container = document.querySelector(containerSelector);
     if (!container) return;
@@ -861,9 +728,6 @@ function adicionarLinkLogs(containerSelector, isNavbar = false) {
     }
 }
 
-/**
- * Adiciona ao menu do usuário um botão para retornar à tela de seleção de sistema
- */
 function adicionarBotaoSelecaoSistema() {
     const usuario = getUsuarioLogado();
     if (!usuario) return;
@@ -871,7 +735,7 @@ function adicionarBotaoSelecaoSistema() {
     if (modulos.length <= 1) return;
 
     document.querySelectorAll('.dropdown-menu').forEach(menu => {
-        // Evita duplicação do botão
+        
         if (menu.querySelector('a[href="/selecao-sistema.html"]')) return;
 
         const li = document.createElement('li');
@@ -894,9 +758,6 @@ function adicionarBotaoSelecaoSistema() {
     });
 }
 
-/**
- * Converte a navbar colapsável em offcanvas para telas pequenas.
- */
 function configurarNavbarOffcanvas() {
     const navbar = document.querySelector('.navbar');
     const toggler = document.querySelector('.navbar-toggler');
@@ -904,17 +765,14 @@ function configurarNavbarOffcanvas() {
 
     if (!navbar || !toggler || !collapse) return;
 
-    // Ajusta breakpoint de expansão
     navbar.classList.remove('navbar-expand-lg');
     navbar.classList.add('navbar-expand-md');
 
-    // Configura o botão para abrir o offcanvas
     toggler.setAttribute('data-bs-toggle', 'offcanvas');
     toggler.setAttribute('data-bs-target', '#navOffcanvas');
     toggler.setAttribute('aria-controls', 'navOffcanvas');
     toggler.setAttribute('aria-label', 'Abrir menu');
 
-    // Cria estrutura do offcanvas
     const offcanvas = document.createElement('div');
     offcanvas.id = 'navOffcanvas';
     offcanvas.className = 'offcanvas offcanvas-start offcanvas-md';
@@ -936,18 +794,14 @@ function configurarNavbarOffcanvas() {
     collapse.parentNode.replaceChild(offcanvas, collapse);
 }
 
-// Inicialização da página
 document.addEventListener('DOMContentLoaded', async function() {
 
-    // Verifica autenticação em todas as páginas exceto as públicas
     const paginaAtual = window.location.pathname.toLowerCase();
 
-    // Limpa escolha salva ao retornar para a seleção de sistema
     document.querySelectorAll('a[href="/selecao-sistema.html"]').forEach(link => {
         link.addEventListener('click', () => localStorage.removeItem('moduloSelecionado'));
     });
 
-    // Configura o botão de logout em todas as páginas
     const btnLogout = document.getElementById('btnLogout');
     if (btnLogout) {
         btnLogout.addEventListener('click', function(e) {
@@ -960,14 +814,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
 
-    // Verifica se o usuário está autenticado
     if (!(await verificarAutenticacao())) {
         return;
     }
 
-
-    
-    // Verifica se é a página de seleção de sistema
     if (paginaAtual === '/selecao-sistema.html') {
         if (!(await verificarPermissaoAdmin())) {
             return;
@@ -975,27 +825,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
     
-    // Páginas que requerem permissão de administrador
     if (paginaAtual === '/admin/usuarios.html' || paginaAtual === '/laboratorios/turmas.html') {
         if (!(await verificarPermissaoAdmin())) {
             return;
         }
     }
     
-    // Adiciona o botão de retorno para admins
     adicionarBotaoSelecaoSistema();
 
-    // Atualiza a interface com os dados do usuário
     atualizarInterfaceUsuario();
 
-    // CHAMA A NOVA FUNÇÃO PARA AJUSTAR A INTERFACE
     ajustarVisibilidadePorPapel();
     
-    // Adiciona os links de navegação para administradores apenas nos módulos permitidos
     if (isAdmin()) {
         const modulosDeInclusao = [
             '/laboratorios/'
-            // Se outras áreas precisarem destes links, adicione aqui
+            
         ];
 
         const deveExibirLinks = modulosDeInclusao.some(modulo => paginaAtual.startsWith(modulo));
@@ -1014,12 +859,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     configurarNavbarOffcanvas();
 });
 
-/**
- * Configura observadores de mutação para garantir que os links admin sejam adicionados
- * mesmo quando o DOM é modificado dinamicamente
- */
 function configurarObservadoresMenu() {
-    // Configura o observador para a navbar
+    
     const navbarObserver = new MutationObserver(function(mutations) {
         adicionarLinkLabTurmas('.navbar-nav.ms-auto', true);
         adicionarLinkLogs('.navbar-nav.ms-auto', true);
@@ -1030,7 +871,6 @@ function configurarObservadoresMenu() {
         navbarObserver.observe(navbar, { childList: true, subtree: true });
     }
 
-    // Configura o observador para a sidebar
     const sidebarObserver = new MutationObserver(function(mutations) {
         adicionarLinkLabTurmas('#sidebarDrawer nav ul', false);
         adicionarLinkLogs('#sidebarDrawer nav ul', false);
@@ -1042,34 +882,25 @@ function configurarObservadoresMenu() {
     }
 }
 
-/**
- * Atualiza elementos da interface com os dados do usuário logado
- */
 function atualizarInterfaceUsuario() {
     const usuario = getUsuarioLogado();
     if (!usuario) return;
     
-    // Atualiza o nome do usuário na navbar
     const userNameElement = document.getElementById('userName');
     if (userNameElement) {
         userNameElement.textContent = usuario.nome;
     }
     
-    // Exibe ou oculta elementos baseado no tipo de usuário
     const adminElements = document.querySelectorAll('.admin-only');
     adminElements.forEach(element => {
         element.style.display = isAdmin() ? '' : 'none';
     });
     
-    // Carrega notificações no dashboard
     if (window.location.pathname === '/laboratorios/calendario.html') {
         carregarNotificacoes();
     }
 }
 
-/**
- * Carrega notificações do usuário para exibição no dashboard
- */
 async function carregarNotificacoes() {
     const notificacoesContainer = document.getElementById('notificacoesContainer');
     if (!notificacoesContainer) return;
@@ -1106,13 +937,12 @@ async function carregarNotificacoes() {
 
         notificacoesContainer.innerHTML = sanitizeHTML(html);
         
-        // Adiciona event listeners para os botões de marcar como lida
         document.querySelectorAll('.marcar-lida').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.getAttribute('data-id');
                 try {
                     await chamarAPI(`/notificacoes/${id}/marcar-lida`, 'PUT');
-                    // Recarrega as notificações
+                    
                     carregarNotificacoes();
                 } catch (error) {
                     showToast('Não conseguimos marcar a notificação como lida.', 'danger');
@@ -1124,10 +954,6 @@ async function carregarNotificacoes() {
     }
 }
 
-/**
- * Carrega laboratórios do sistema para uso em filtros e formulários
- * @returns {Promise<Array>} - Promise com a lista de laboratórios
- */
 async function carregarLaboratoriosParaFiltro(seletorElemento) {
     const selectElement = document.querySelector(seletorElemento);
     if (!selectElement) return [];
@@ -1135,10 +961,8 @@ async function carregarLaboratoriosParaFiltro(seletorElemento) {
     try {
         const laboratorios = await chamarAPI('/laboratorios');
         
-        // Mantém a opção "Todos"
         let html = '<option value="">Todos</option>';
         
-        // Adiciona as opções de laboratórios
         laboratorios.forEach(lab => {
             html += `<option value="${lab.nome}">${lab.nome}</option>`;
         });
@@ -1151,7 +975,6 @@ async function carregarLaboratoriosParaFiltro(seletorElemento) {
     }
 }
 
-// Exporta dados genéricos (CSV, PDF ou XLSX)
 async function exportarDados(endpoint, formato, nomeArquivo) {
     try {
         const response = await fetch(`${API_URL}${endpoint}?formato=${formato}`, {
@@ -1174,7 +997,6 @@ async function exportarDados(endpoint, formato, nomeArquivo) {
     }
 }
 
-// Preenche de forma genérica uma tabela a partir de um endpoint
 async function preencherTabela(idTabela, endpoint, funcaoRenderizarLinha) {
     const tabela = document.getElementById(idTabela);
     if (!tabela) {
@@ -1185,7 +1007,6 @@ async function preencherTabela(idTabela, endpoint, funcaoRenderizarLinha) {
     const tbody = tabela.querySelector('tbody');
     const numColunas = thead ? thead.querySelector('tr').childElementCount : 1;
 
-    // Exibe um texto enquanto os dados são carregados
     tbody.innerHTML = `<tr><td colspan="${numColunas}" class="text-center py-4">Carregando...</td></tr>`;
 
     try {
@@ -1209,7 +1030,6 @@ async function preencherTabela(idTabela, endpoint, funcaoRenderizarLinha) {
     }
 }
 
-// Inicializa um menu lateral oculto baseado nos links da navbar
 (() => {
     if (document.getElementById('sidebarDrawer')) {
         return;

@@ -8,20 +8,20 @@ from conecta_senai.models.user import User
 def test_user_deletion_cascades_to_agendamentos_and_notificacoes(app):
     with app.app_context():
         usuario = User(
-            nome='Cascade User',
-            email='cascade@example.com',
-            senha='Senha@123',
-            tipo='comum',
+            nome="Cascade User",
+            email="cascade@example.com",
+            senha="Senha@123",
+            tipo="comum",
         )
         db.session.add(usuario)
         db.session.commit()
 
         agendamento = Agendamento(
             data=date.today(),
-            laboratorio='Laboratório 1',
-            turma='Turma A',
-            turno='manha',
-            horarios=['08:00'],
+            laboratorio="Laboratório 1",
+            turma="Turma A",
+            turno="manha",
+            horarios=["08:00"],
             usuario_id=usuario.id,
         )
         usuario.agendamentos.append(agendamento)
@@ -29,11 +29,11 @@ def test_user_deletion_cascades_to_agendamentos_and_notificacoes(app):
         db.session.commit()
 
         notificacao_usuario = Notificacao(
-            usuario_id=usuario.id, mensagem='Aviso direto ao usuário'
+            usuario_id=usuario.id, mensagem="Aviso direto ao usuário"
         )
         notificacao_agendamento = Notificacao(
             usuario_id=usuario.id,
-            mensagem='Aviso vinculado ao agendamento',
+            mensagem="Aviso vinculado ao agendamento",
             agendamento_id=agendamento.id,
         )
         agendamento.notificacoes.append(notificacao_agendamento)

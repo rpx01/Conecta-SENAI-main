@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: "Gibson";
   src: url("data:font/woff2;base64,") format("woff2");
@@ -20,7 +19,7 @@ html {
 }
 
 :root {
-  /* Softer primary blue to reduce visual weight on large areas */
+  
   --header-color: #1d4ea8;
   --primary-color: #1d4ea8;
   --accent-color: #008BD2;
@@ -31,13 +30,12 @@ html {
   --info-color: #00539F;
   --light-color: #f8f9fa;
   --dark-color: #212529;
-  /* Softer body text for comfortable reading */
+  
   --text-color: #3a3a3a;
   --muted-color: #888888;
-  /* Lightened background for subtle section contrast */
+  
   --background-color: #f5f7fb;
 
-  /* Unified spacing scale for consistent rhythm */
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.5rem;
@@ -51,9 +49,9 @@ html {
 
 body {
   font-family: "Gibson", "Exo 2", sans-serif;
-  /* Restored base font size for better typographic hierarchy */
+  
   font-size: 1rem;
-  /* Slightly taller lines improve readability across paragraphs */
+  
   line-height: 1.65;
   color: var(--text-color);
   background-color: var(--background-color);
@@ -82,7 +80,6 @@ table {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Normalize Bootstrap icon appearance */
 .bi,
 i.bi {
   font-style: normal;
@@ -108,7 +105,7 @@ svg.icon,
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  /* Expanded breathing room to align with softer layout */
+  
   margin-bottom: var(--space-3);
   padding-top: var(--space-2);
   padding-bottom: var(--space-2);
@@ -116,37 +113,35 @@ svg.icon,
 }
 
 .card, .btn, .badge, .form-control, .form-select, .modal-content, .input-group-text {
-  /* Slightly larger radii reinforce the friendly look and feel */
+  
   border-radius: 0.65rem;
 }
 
-/* Softened elevation for a modern, less harsh appearance */
 .card {
   box-shadow: 0 12px 35px rgba(13, 36, 76, 0.08);
   border: 1px solid rgba(13, 36, 76, 0.06);
 }
 
 .btn {
-  /* Subtle lift helps primary actions stand out without feeling heavy */
+  
   box-shadow: 0 8px 20px rgba(13, 36, 76, 0.08);
 }
 
-
 h1, .h1, h2, .h2 {
-  /* Reserve heavy weights for key headings only */
+  
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.5px;
 }
 
 h1, .h1 {
-  /* Balanced scale for strong page titles without overpowering layouts */
+  
   font-size: clamp(2rem, 1.7rem + 1.5vw, 2.5rem);
   line-height: 1.2;
 }
 
 h2, .h2 {
-  /* Adjusted clamp for balanced hierarchy on wide screens */
+  
   font-size: clamp(1.7rem, 1.45rem + 0.7vw, 2rem);
   line-height: 1.25;
 }
@@ -168,7 +163,7 @@ h4, .h4 {
 p,
 .card-text,
 .lead {
-  /* Slightly larger paragraph text improves legibility at the new base size */
+  
   font-size: 1rem;
   color: inherit;
   line-height: 1.7;
@@ -338,9 +333,9 @@ small, .small {
 }
 
 .table-container table th {
-  background-color: #004383 !important; /* Cor de fundo azul da barra superior */
-  color: #ffffff !important;             /* Cor do texto branca para melhor contraste */
-  border-color: #003366 !important;     /* Um tom de azul mais escuro para as bordas */
+  background-color: #004383 !important; 
+  color: #ffffff !important;             
+  border-color: #003366 !important;     
 }
 
 .btn-group .btn {
@@ -445,20 +440,17 @@ small, .small {
   cursor: pointer;
 }
 
-
 .agendamento-manha {
   background-color: var(--turno-manha-color);
   border-left: 3px solid var(--turno-manha-color);
   color: #000;
 }
 
-
 .agendamento-tarde {
   background-color: var(--turno-tarde-color);
   border-left: 3px solid var(--turno-tarde-color);
   color: #fff;
 }
-
 
 .agendamento-noite {
   background-color: var(--turno-noite-color);
@@ -502,11 +494,6 @@ small, .small {
   border-left: 3px solid var(--turno-noite-color);
 }
 
-/* ======================================================= */
-/* == ESTILOS DEFINITIVOS E CORRIGIDOS PARA OS CALENDÁRIOS == */
-/* ======================================================= */
-
-/* Estilo base para as pílulas */
 .pill-turno {
     padding: 0.25rem 0.5rem;
     margin: 0.2rem auto;
@@ -520,14 +507,12 @@ small, .small {
     line-height: 1.4;
 }
 
-/* ESTILO LIVRE (0% Ocupado) */
 .turno-livre {
     background-color: #f8f9fa;
     color: var(--muted-color);
     border-color: #dee2e6;
 }
 
-/* ESTILO PARCIAL (1-99% Ocupado) - CORREÇÃO */
 .turno-parcial {
   background-color: var(--warning-color) !important;
   color: #000;
@@ -535,7 +520,6 @@ small, .small {
   font-weight: 600;
 }
 
-/* ESTILO CHEIO (100% Ocupado) - CORREÇÃO */
 .turno-cheio {
   background-color: var(--primary-color) !important;
   color: #FFFFFF;
@@ -947,7 +931,6 @@ textarea {
   box-sizing: border-box;
 }
 
-
 .card {
   border: none;
   border-radius: 0;
@@ -1016,12 +999,6 @@ textarea {
     padding-top: 4px;
 }
 
-
-/* ======================================================= */
-/* == ESTILOS DEFINITIVOS E CORRIGIDOS PARA OS CALENDÁRIOS == */
-/* ======================================================= */
-
-/* Estilo base para as pílulas */
 .pill-turno {
     padding: 0.25rem 0.5rem;
     margin: 0.2rem auto;
@@ -1035,14 +1012,12 @@ textarea {
     line-height: 1.4;
 }
 
-/* ESTILO LIVRE (0% Ocupado) */
 .turno-livre {
     background-color: #f8f9fa;
     color: var(--muted-color);
     border-color: #dee2e6;
 }
 
-/* ESTILO PARCIAL (1-99% Ocupado) - CORREÇÃO */
 .turno-parcial {
     background-color: var(--warning-color) !important;
     color: #000;
@@ -1050,7 +1025,6 @@ textarea {
     font-weight: 600;
 }
 
-/* ESTILO CHEIO (100% Ocupado) - CORREÇÃO */
 .turno-cheio {
     background-color: var(--primary-color) !important;
     color: #FFFFFF;
@@ -1073,7 +1047,6 @@ textarea {
     font-size: 0.75rem;
     margin-bottom: 2px;
 }
-
 
 @media (max-width: 991.98px) {
   body {
@@ -1263,7 +1236,6 @@ textarea {
   }
 }
 
-
 #seletor-laboratorios .lab-icon {
     display: flex;
     flex-direction: column;
@@ -1321,7 +1293,6 @@ textarea {
 .agendamento-info span { font-size: 0.9em; color: var(--muted-color); }
 .btn-novo-agendamento-turno { font-weight: 500; }
 
-
 #mini-calendario .fc-daygrid-day-number {
     text-decoration: none !important;
     padding: 4px;
@@ -1353,7 +1324,6 @@ textarea {
     border-radius: 50%;
 }
 
-/* Estilos para o modo "Apenas Visualização" */
 .read-only .btn-primary,
 .read-only .btn-danger,
 .read-only .btn-editar,
@@ -1362,7 +1332,6 @@ textarea {
     display: none !important;
 }
 
-/* Estilos para a nova página "Meus Cursos" */
 .curso-card {
     border-left-width: 5px;
     border-left-style: solid;
@@ -1486,7 +1455,6 @@ textarea {
     color: var(--danger-color);
 }
 
-/* Overlay de carregamento acessível */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -1513,7 +1481,6 @@ textarea {
   font-weight: 600;
 }
 
-/* Toggle SGE */
 .sge-switch {
   position: relative;
   display: inline-block;

@@ -1,5 +1,3 @@
-// Gerenciamento de salas utilizando classe
-
 class GerenciadorSalas {
     constructor() {
         this.salasData = [];
@@ -29,8 +27,6 @@ class GerenciadorSalas {
         }
     }
 
-
-    // Carrega recursos disponíveis para salas
     async carregarRecursosSala() {
         try {
             const response = await fetch(`${API_URL}/salas/recursos`, {
@@ -41,7 +37,6 @@ class GerenciadorSalas {
         if (response.ok) {
             this.recursosSala = await response.json();
             
-            // Preenche o container de recursos
             const container = document.getElementById('recursosContainer');
             container.innerHTML = '';
             
@@ -64,13 +59,11 @@ class GerenciadorSalas {
     }
     }
 
-    // Carrega lista de salas
     async carregarSalas() {
         try {
             document.getElementById('loadingSalas').style.display = 'block';
             document.getElementById('listaSalas').style.display = 'none';
         
-        // Constrói parâmetros de filtro
         const params = new URLSearchParams();
         
         const status = document.getElementById('filtroStatus').value;
@@ -87,7 +80,6 @@ class GerenciadorSalas {
         if (response.ok) {
             this.salasData = await response.json();
             
-            // Aplica filtro de busca local se necessário
             const busca = document.getElementById('filtroBusca').value.toLowerCase();
             let salasFiltradas = this.salasData;
             
@@ -117,7 +109,6 @@ class GerenciadorSalas {
     }
 }
 
-// Renderiza a tabela de salas
     renderizarTabelaSalas(salas) {
     const tbody = document.getElementById('tabelaSalas');
     
@@ -162,7 +153,6 @@ class GerenciadorSalas {
     });
 }
 
-// Retorna badge de status
     getStatusBadge(status) {
     const badges = {
         'ativa': '<span class="badge bg-success">Ativa</span>',
@@ -172,12 +162,10 @@ class GerenciadorSalas {
     return badges[status] || '<span class="badge bg-secondary">-</span>';
     }
 
-// Aplica filtros
     aplicarFiltros() {
     this.carregarSalas();
     }
 
-// Limpa filtros
     limparFiltros() {
         document.getElementById('filtroStatus').value = '';
         document.getElementById('filtroCapacidade').value = '';
@@ -185,7 +173,6 @@ class GerenciadorSalas {
     this.carregarSalas();
     }
 
-// Abre modal para nova sala
     novaSala() {
     this.salaEditando = null;
     document.getElementById('modalSalaLabel').textContent = 'Nova Sala';
@@ -193,21 +180,18 @@ class GerenciadorSalas {
     document.getElementById('formSala').reset();
     document.getElementById('salaId').value = '';
     
-    // Desmarca todos os recursos
     this.recursosSala.forEach(recurso => {
         const checkbox = document.getElementById(`recurso_${recurso.valor}`);
         if (checkbox) checkbox.checked = false;
     });
     }
 
-    // Retorna lista de recursos marcados no formulario da sala
     coletarRecursosSelecionados() {
         return Array.from(
             document.querySelectorAll('#formSala input[name="recursos"]:checked')
         ).map(cb => cb.value);
     }
 
-// Edita uma sala existente
     async editarSala(id) {
     try {
         const response = await fetch(`${API_URL}/salas/${id}`, {
@@ -219,7 +203,6 @@ class GerenciadorSalas {
             const sala = await response.json();
             this.salaEditando = sala;
             
-            // Preenche o formulário
             document.getElementById('modalSalaLabel').textContent = 'Editar Sala';
             document.getElementById('btnSalvarTexto').textContent = 'Atualizar';
             document.getElementById('salaId').value = sala.id;
@@ -229,7 +212,6 @@ class GerenciadorSalas {
             document.getElementById('salaStatus').value = sala.status;
             document.getElementById('salaObservacoes').value = sala.observacoes || '';
             
-            // Marca os recursos selecionados
             this.recursosSala.forEach(recurso => {
                 const checkbox = document.getElementById(`recurso_${recurso.valor}`);
                 if (checkbox) {
@@ -238,7 +220,6 @@ class GerenciadorSalas {
                 }
             });
             
-            // Abre o modal
             const modal = new bootstrap.Modal(document.getElementById('modalSala'));
             modal.show();
         } else {
@@ -250,7 +231,6 @@ class GerenciadorSalas {
     }
 }
 
-// Salva sala (criar ou atualizar)
     async salvarSala() {
     const btn = document.getElementById('btnSalvarSala');
     const spinner = btn ? btn.querySelector('.spinner-border') : null;
@@ -259,7 +239,7 @@ class GerenciadorSalas {
         spinner.classList.remove('d-none');
     }
     try {
-        // Coleta os recursos marcados no formulário
+        
         const recursos = this.coletarRecursosSelecionados();
 
         const formData = {
@@ -271,7 +251,6 @@ class GerenciadorSalas {
             recursos: recursos
         };
         
-        // Validações
         if (!formData.nome) {
             showToast('Informe o nome da sala para continuar.', 'warning');
             return;
@@ -281,8 +260,6 @@ class GerenciadorSalas {
             showToast('A capacidade precisa ser um número maior que zero.', 'warning');
             return;
         }
-        
-
         
         const salaId = document.getElementById('salaId').value;
         const isEdicao = salaId !== '';
@@ -300,15 +277,11 @@ class GerenciadorSalas {
         if (response.ok) {
             showToast(`Sala ${isEdicao ? 'atualizada' : 'criada'} com sucesso!`, 'success');
 
-            // Fecha o modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalSala'));
             modal.hide();
 
-            // Reseta o formulário e o estado de edição para evitar
-            // que uma nova criação seja tratada como atualização
             this.novaSala();
 
-            // Recarrega a lista
             this.carregarSalas();
         } else {
             let mensagemErro = 'Ocorreu um erro desconhecido.';
@@ -341,7 +314,6 @@ class GerenciadorSalas {
     }
 }
 
-// Exclui uma sala
     excluirSala(id, nome) {
     document.getElementById('nomeSalaExcluir').textContent = nome;
     document.getElementById('modalExcluirSala').setAttribute('data-sala-id', id);
@@ -350,7 +322,6 @@ class GerenciadorSalas {
     modal.show();
 }
 
-// Confirma exclusão da sala
     async confirmarExclusaoSala() {
     try {
         const salaId = document.getElementById('modalExcluirSala').getAttribute('data-sala-id');
@@ -366,11 +337,9 @@ class GerenciadorSalas {
         if (response.ok) {
             showToast('Sala excluída com sucesso!', 'success');
             
-            // Fecha o modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalExcluirSala'));
             modal.hide();
             
-            // Recarrega a lista
             this.carregarSalas();
         } else {
             throw new Error(result.erro || 'Erro ao excluir sala');
@@ -381,16 +350,12 @@ class GerenciadorSalas {
     }
 }
 
-// Ver ocupações de uma sala
     verOcupacoesSala(id) {
-        // Redireciona para o calendário com filtro da sala
+        
         window.location.href = `/ocupacao/calendario.html?sala_id=${id}`;
     }
 
 }
 
-// Removido: alertas em linha substituídos por toasts globais
-
-// Instancia o gerenciador de salas e o torna global para acesso inline
 window.gerenciadorSalas = new GerenciadorSalas();
 

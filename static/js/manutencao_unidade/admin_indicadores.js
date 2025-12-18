@@ -1,5 +1,3 @@
-/* global Chart, chamarAPI, verificarAutenticacao, verificarPermissaoAdmin, getUsuarioLogado */
-
 (function () {
     let graficoStatus;
     let graficoTipos;
@@ -38,7 +36,7 @@
     }
 
     function preencherFiltros(dados) {
-        // Preencher áreas
+        
         const selectArea = document.getElementById('filtroArea');
         if (selectArea && dados?.areas) {
             dados.areas.forEach((area) => {
@@ -49,7 +47,6 @@
             });
         }
 
-        // Preencher tipos de equipamento
         const selectTipo = document.getElementById('filtroTipo');
         if (selectTipo && dados?.tipos_equipamento) {
             dados.tipos_equipamento.forEach((tipo) => {
@@ -138,7 +135,6 @@
     function atualizarNovosCards(dados) {
         console.log('Dados recebidos para novos cards:', dados);
 
-        // Tempo médio até atendimento
         const tempoAtendimento = dados?.tempo_medio_abertura_para_atendimento_segundos || 0;
         console.log('Tempo atendimento (segundos):', tempoAtendimento);
 
@@ -148,7 +144,6 @@
         if (indicadorTempoAtendimento) indicadorTempoAtendimento.textContent = valorAtend;
         if (unidadeTempoAtendimento) unidadeTempoAtendimento.textContent = unidadeAtend;
 
-        // Tempo médio até encerramento
         const tempoEncerramento = dados?.tempo_medio_abertura_para_encerramento_segundos || 0;
         console.log('Tempo encerramento (segundos):', tempoEncerramento);
 
@@ -158,7 +153,6 @@
         if (indicadorTempoEncerramento) indicadorTempoEncerramento.textContent = valorEncer;
         if (unidadeTempoEncerramento) unidadeTempoEncerramento.textContent = unidadeEncer;
 
-        // Percentual atendidos em 24h
         const percentual24h = dados?.percentual_atendidos_em_24h || 0;
         console.log('Percentual 24h:', percentual24h);
 
@@ -293,7 +287,6 @@
 
         const dadosTempos = dados?.tempo_medio_por_urgencia || [];
 
-        // Converter segundos para horas
         const labelsNiveis = dadosTempos.map((item) => item.nivel);
         const temposAtendimento = dadosTempos.map((item) => (item.tempo_atendimento / 3600).toFixed(2));
         const temposEncerramento = dadosTempos.map((item) => (item.tempo_encerramento / 3600).toFixed(2));

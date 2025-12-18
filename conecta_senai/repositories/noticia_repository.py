@@ -1,5 +1,3 @@
-"""Repositório com operações de banco para notícias."""
-
 from __future__ import annotations
 
 import logging
@@ -16,20 +14,10 @@ log = logging.getLogger(__name__)
 
 
 class NoticiaRepository:
-    """Encapsula o acesso ao banco para o modelo :class:`Noticia`."""
-
     _table_checked: bool = False
 
     @classmethod
     def ensure_table_exists(cls, force_refresh: bool = False) -> bool:
-        """Garante que a tabela de notícias esteja disponível.
-
-        Em ambientes recém configurados as migrações podem não ter sido
-        executadas, o que provocaria erros de ``ProgrammingError`` em todas as
-        requisições. Para manter a API funcional garantimos que a tabela seja
-        criada dinamicamente caso ainda não exista.
-        """
-
         if cls._table_checked and not force_refresh:
             return True
 
@@ -54,14 +42,6 @@ class NoticiaRepository:
 
     @classmethod
     def _ensure_marcar_calendario_column(cls, engine, inspector) -> None:
-        """Garante a existência da coluna ``marcar_calendario``.
-
-        Ambientes que ainda não executaram a migração correspondente lançam
-        erros de ``UndefinedColumn`` ao consultar o modelo ``Noticia``. Para
-        garantir retrocompatibilidade, criamos a coluna dinamicamente quando
-        ela ainda não está presente na tabela.
-        """
-
         table_name = Noticia.__tablename__
         columns = {column["name"] for column in inspector.get_columns(table_name)}
         if "marcar_calendario" in columns:
@@ -69,7 +49,7 @@ class NoticiaRepository:
 
         default_literal = "false"
         if engine.dialect.name == "sqlite":
-            # SQLite não reconhece ``false`` como literal booleano.
+
             default_literal = "0"
 
         try:
@@ -93,8 +73,6 @@ class NoticiaRepository:
 
     @classmethod
     def _ensure_data_evento_column(cls, engine, inspector) -> None:
-        """Garante a existência da coluna ``data_evento``."""
-
         table_name = Noticia.__tablename__
         columns = {column["name"] for column in inspector.get_columns(table_name)}
         if "data_evento" in columns:
@@ -112,7 +90,9 @@ class NoticiaRepository:
                         f"ADD COLUMN data_evento {column_type}"
                     )
                 )
-            log.info("Coluna 'data_evento' criada automaticamente na tabela 'noticias'.")
+            log.info(
+                "Coluna 'data_evento' criada automaticamente na tabela 'noticias'."
+            )
         except SQLAlchemyError:
             cls._table_checked = False
             log.exception(
@@ -148,7 +128,7 @@ class NoticiaRepository:
         db.session.commit()
 
     @staticmethod
-    def rollback():  # pragma: no cover - utilitário para fluxos de erro
+    def rollback():
         db.session.rollback()
 
     @staticmethod

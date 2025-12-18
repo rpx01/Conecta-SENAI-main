@@ -9,24 +9,24 @@ from conecta_senai.utils.error_handler import handle_internal_error
 
 
 def listar_notificacoes(user):
-    """Retorna notificações ordenadas por data de criação."""
     if verificar_admin(user):
         notificacoes = Notificacao.query.order_by(Notificacao.data_criacao.desc()).all()
     else:
-        notificacoes = Notificacao.query.filter_by(usuario_id=user.id).order_by(
-            Notificacao.data_criacao.desc()
-        ).all()
+        notificacoes = (
+            Notificacao.query.filter_by(usuario_id=user.id)
+            .order_by(Notificacao.data_criacao.desc())
+            .all()
+        )
     return jsonify([n.to_dict() for n in notificacoes])
 
 
 def marcar_notificacao_lida(id, user):
-    """Marca uma notificação como lida se o usuário tiver permissão."""
     notificacao = db.session.get(Notificacao, id)
     if not notificacao:
-        return jsonify({'erro': 'Notificação não encontrada'}), 404
+        return jsonify({"erro": "Notificação não encontrada"}), 404
 
     if not verificar_admin(user) and notificacao.usuario_id != user.id:
-        return jsonify({'erro': 'Permissão negada'}), 403
+        return jsonify({"erro": "Permissão negada"}), 403
 
     try:
         notificacao.marcar_como_lida()
@@ -38,7 +38,6 @@ def marcar_notificacao_lida(id, user):
 
 
 def criar_notificacoes_agendamentos_proximos():
-    """Gera lembretes para agendamentos que ocorrerão nas próximas 24 horas."""
     agora = datetime.utcnow()
     limite = agora + timedelta(hours=24)
 

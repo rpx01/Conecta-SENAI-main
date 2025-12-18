@@ -1,10 +1,7 @@
-"""Modelo de anexos do módulo de suporte de TI."""
 from conecta_senai.models import db
 
 
 class SuporteAnexo(db.Model):
-    """Armazena metadados de arquivos anexados aos chamados de suporte."""
-
     __tablename__ = "suporte_anexos"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -17,5 +14,5 @@ class SuporteAnexo(db.Model):
 
     chamado = db.relationship("SuporteChamado", back_populates="anexos")
 
-    def __repr__(self) -> str:  # pragma: no cover - representação simples
+    def __repr__(self) -> str:
         return f"<SuporteAnexo id={self.id} chamado_id={self.chamado_id}>"

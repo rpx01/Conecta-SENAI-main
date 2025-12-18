@@ -3,17 +3,15 @@
   --senai-laranja: #F3B54E;
 }
 
-/* Zona de hover na borda esquerda (quase invisível) */
 #hoverEdge{
   position: fixed;
   left: 0;
   top: 0;
-  width: 12px;          /* zona segura para o mouse encostar */
+  width: 12px;          
   height: 100vh;
-  z-index: 1030;        /* acima do conteúdo */
+  z-index: 1030;        
 }
 
-/* Drawer */
 #sidebarDrawer.drawer{
   position: fixed;
   top: 0;
@@ -52,10 +50,8 @@
   border-left-color: var(--senai-laranja);
 }
 
-/* Acessibilidade: foco visível */
 #sidebarDrawer .drawer-nav a:focus{ box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
 
-/* Responsivo: em telas muito estreitas o drawer ocupa toda a largura */
 @media (max-width: 480px){
   #sidebarDrawer.drawer{ width: 88vw; }
 }

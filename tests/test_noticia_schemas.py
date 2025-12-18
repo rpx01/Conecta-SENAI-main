@@ -1,5 +1,3 @@
-"""Testes para os esquemas de validação de notícias."""
-
 from datetime import datetime, timezone
 
 import pytest
@@ -8,8 +6,6 @@ from conecta_senai.schemas.noticia_validacao import NoticiaCreateSchema
 
 
 def test_noticia_create_schema_accepts_isoformat_with_z_suffix():
-    """Garante que datas com sufixo ``Z`` sejam aceitas e convertidas para UTC."""
-
     payload = {
         "titulo": "Notícia com data em UTC",
         "resumo": "Um resumo válido com tamanho suficiente.",
@@ -19,7 +15,9 @@ def test_noticia_create_schema_accepts_isoformat_with_z_suffix():
 
     schema = NoticiaCreateSchema.model_validate(payload)
 
-    assert schema.data_publicacao == datetime(2025, 10, 9, 13, 30, 14, tzinfo=timezone.utc)
+    assert schema.data_publicacao == datetime(
+        2025, 10, 9, 13, 30, 14, tzinfo=timezone.utc
+    )
 
 
 @pytest.mark.parametrize(
@@ -27,8 +25,6 @@ def test_noticia_create_schema_accepts_isoformat_with_z_suffix():
     ["2025-10-09 13:30:14", "2025-10-09T13:30:14", "2025-10-09T13:30:14+00:00"],
 )
 def test_noticia_create_schema_normalizes_naive_datetimes(valor):
-    """Datas válidas são normalizadas para UTC quando não há informação de timezone."""
-
     payload = {
         "titulo": "Notícia com data normalizada",
         "resumo": "Resumo suficiente para passar na validação.",
@@ -39,4 +35,3 @@ def test_noticia_create_schema_normalizes_naive_datetimes(valor):
     schema = NoticiaCreateSchema.model_validate(payload)
 
     assert schema.data_publicacao.tzinfo == timezone.utc
-

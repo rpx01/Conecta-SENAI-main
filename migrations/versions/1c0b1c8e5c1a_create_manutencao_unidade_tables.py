@@ -1,16 +1,9 @@
-"""create manutencao unidade tables
-
-Revision ID: 1c0b1c8e5c1a
-Revises: aecabea0aca8
-Create Date: 2025-01-01 00:00:00.000000
-"""
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
 
 
-# revision identifiers, used by Alembic.
 revision: str = "1c0b1c8e5c1a"
 down_revision: Union[str, None] = "aecabea0aca8"
 branch_labels: Union[str, Sequence[str], None] = None
@@ -44,8 +37,15 @@ def upgrade() -> None:
         sa.Column("patrimonio", sa.String(length=120), nullable=True),
         sa.Column("numero_serie", sa.String(length=120), nullable=True),
         sa.Column("descricao_problema", sa.Text(), nullable=False),
-        sa.Column("nivel_urgencia", sa.String(length=20), nullable=False, server_default="Baixo"),
-        sa.Column("status", sa.String(length=20), nullable=False, server_default="Aberto"),
+        sa.Column(
+            "nivel_urgencia",
+            sa.String(length=20),
+            nullable=False,
+            server_default="Baixo",
+        ),
+        sa.Column(
+            "status", sa.String(length=20), nullable=False, server_default="Aberto"
+        ),
         sa.Column("observacoes", sa.Text(), nullable=True),
         sa.Column("local_unidade", sa.String(length=150), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
@@ -78,7 +78,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_index("ix_manutencao_chamados_status", table_name="manutencao_chamados")
-    op.drop_index("ix_manutencao_chamados_tipo_servico", table_name="manutencao_chamados")
+    op.drop_index(
+        "ix_manutencao_chamados_tipo_servico", table_name="manutencao_chamados"
+    )
     op.drop_table("manutencao_anexos")
     op.drop_table("manutencao_chamados")
     op.drop_table("manutencao_tipos_servico")

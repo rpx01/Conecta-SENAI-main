@@ -1,5 +1,3 @@
-/* global bootstrap, chamarAPI, showToast, verificarPermissaoAdmin, sanitizeHTML, getUsuarioLogado, verificarAutenticacao */
-
 document.addEventListener('DOMContentLoaded', async () => {
     const usuario = typeof getUsuarioLogado === 'function' ? getUsuarioLogado() : null;
 

@@ -1,5 +1,3 @@
-"""Atualiza estrutura da tabela de notícias"""
-
 from typing import Sequence, Union
 
 from alembic import op
@@ -34,8 +32,15 @@ def upgrade() -> None:
             sa.Column("conteudo", sa.Text(), nullable=False),
             sa.Column("autor", sa.String(length=120), nullable=True),
             sa.Column("imagem_url", sa.String(length=500), nullable=True),
-            sa.Column("destaque", sa.Boolean(), nullable=False, server_default=sa.text("false")),
-            sa.Column("ativo", sa.Boolean(), nullable=False, server_default=sa.text("true")),
+            sa.Column(
+                "destaque",
+                sa.Boolean(),
+                nullable=False,
+                server_default=sa.text("false"),
+            ),
+            sa.Column(
+                "ativo", sa.Boolean(), nullable=False, server_default=sa.text("true")
+            ),
             sa.Column("data_publicacao", sa.DateTime(timezone=True), nullable=True),
             sa.Column(
                 "criado_em",
@@ -68,7 +73,9 @@ def upgrade() -> None:
             existing_nullable=resumo_info.get("nullable", True),
         )
     else:
-        op.add_column("noticias", sa.Column("resumo", sa.String(length=500), nullable=True))
+        op.add_column(
+            "noticias", sa.Column("resumo", sa.String(length=500), nullable=True)
+        )
 
     data_publicacao_info = columns.get("data_publicacao")
     if data_publicacao_info:

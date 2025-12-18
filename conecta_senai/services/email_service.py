@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
-# Permite definir o remetente tanto via MAIL_FROM quanto RESEND_FROM
+
 DEFAULT_FROM = os.getenv("MAIL_FROM") or os.getenv(
     "RESEND_FROM", "no-reply@example.com"
 )
@@ -40,15 +40,12 @@ DEFAULT_REPLY_TO = os.getenv("RESEND_REPLY_TO")
 
 Address = Union[str, Iterable[str]]
 
-# Intervalo mínimo entre notificações para respeitar o limite de 2 requisições
-# por segundo imposto pelo provedor externo.
+
 RATE_LIMIT_DELAY = 0.5
 MAX_EMAIL_RETRIES = 2
 
 
 class RateLimiter:
-    """Decorator que limita a taxa de execução de uma função."""
-
     def __init__(self, max_calls: int, period: int = 1) -> None:
         self.calls: deque[float] = deque()
         self.period = period
@@ -67,9 +64,7 @@ class RateLimiter:
                     if sleep_for > 0:
                         time_module.sleep(sleep_for)
                         now = time_module.monotonic()
-                        while (
-                            self.calls and now - self.calls[0] >= self.period
-                        ):
+                        while self.calls and now - self.calls[0] >= self.period:
                             self.calls.popleft()
 
                 self.calls.append(time_module.monotonic())
@@ -80,8 +75,6 @@ class RateLimiter:
 
 
 def _normalize(addr: Address | None) -> Optional[List[str]]:
-    """Converte o destinatário em lista de strings."""
-
     if addr is None:
         return None
     if isinstance(addr, str):
@@ -90,8 +83,6 @@ def _normalize(addr: Address | None) -> Optional[List[str]]:
 
 
 def _parse_time(value: Any) -> time | None:
-    """Tenta extrair uma instância de ``time`` a partir de diferentes formatos."""
-
     if isinstance(value, time):
         return value
     if isinstance(value, str):
@@ -107,8 +98,6 @@ def _parse_time(value: Any) -> time | None:
 
 
 def build_turma_context(turma: Any) -> SimpleNamespace:
-    """Monta o contexto mínimo usado nos templates de e-mail de turmas."""
-
     treino = getattr(turma, "treinamento", None)
     return SimpleNamespace(
         treinamento=SimpleNamespace(nome=getattr(treino, "nome", "")),
@@ -130,8 +119,6 @@ def build_turma_context(turma: Any) -> SimpleNamespace:
 
 
 def build_user_context(nome: str) -> SimpleNamespace:
-    """Cria um namespace simples apenas com o nome do usuário."""
-
     return SimpleNamespace(name=nome)
 
 
@@ -149,7 +136,7 @@ def send_email(
     attachments: Optional[List[Dict[str, Any]]] = None,
     from_: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Envia e-mail via Resend."""
+
     params = {
         "from": from_ or DEFAULT_FROM,
         "to": _normalize(to),
@@ -198,9 +185,7 @@ def send_email(
     if attachments:
         params["attachments"] = attachments
 
-    log.debug(
-        "EMAIL_SEND_START", extra={"to": params["to"], "subject": subject}
-    )
+    log.debug("EMAIL_SEND_START", extra={"to": params["to"], "subject": subject})
     for attempt in range(1, MAX_EMAIL_RETRIES + 1):
         try:
             result = resend.Emails.send(params)
@@ -209,11 +194,8 @@ def send_email(
                 extra={"email_id": result.get("id"), "subject": subject},
             )
             return result
-        except ResendError as exc:  # pragma: no cover - network failure
-            if (
-                getattr(exc, "code", None) == 429
-                and attempt < MAX_EMAIL_RETRIES
-            ):
+        except ResendError as exc:
+            if getattr(exc, "code", None) == 429 and attempt < MAX_EMAIL_RETRIES:
                 log.warning(
                     "EMAIL_RATE_LIMIT_HIT",
                     extra={"subject": subject, "attempt": attempt},
@@ -233,8 +215,6 @@ def render_email_template(name: str, **ctx: Any) -> str:
 
 
 def _resolve_participante_nome(inscricao: Any) -> str:
-    """Retorna o nome do participante priorizando o registro da inscrição."""
-
     if getattr(inscricao, "nome", None):
         return inscricao.nome
 
@@ -242,16 +222,10 @@ def _resolve_participante_nome(inscricao: Any) -> str:
     if usuario is None:
         return ""
 
-    return (
-        getattr(usuario, "nome", None)
-        or getattr(usuario, "name", None)
-        or ""
-    )
+    return getattr(usuario, "nome", None) or getattr(usuario, "name", None) or ""
 
 
 def _resolve_participante_email(inscricao: Any) -> str:
-    """Obtém o e-mail do participante a partir da inscrição ou do usuário."""
-
     email = getattr(inscricao, "email", "") or ""
     if email:
         return email
@@ -263,11 +237,7 @@ def _resolve_participante_email(inscricao: Any) -> str:
     return ""
 
 
-def _formatar_periodo(
-    data_inicio: date | None, data_fim: date | None
-) -> str:
-    """Gera o texto do período apresentado no e-mail de convocação."""
-
+def _formatar_periodo(data_inicio: date | None, data_fim: date | None) -> str:
     if data_inicio and data_fim:
         return (
             f"De {data_inicio.strftime('%d/%m/%Y')} "
@@ -283,11 +253,7 @@ def _formatar_periodo(
     return ""
 
 
-def _formatar_periodo_texto(
-    data_inicio: str | None, data_fim: str | None
-) -> str:
-    """Formata período já convertido em texto para exibição em e-mails."""
-
+def _formatar_periodo_texto(data_inicio: str | None, data_fim: str | None) -> str:
     if data_inicio and data_fim:
         return f"De {data_inicio} a {data_fim}"
 
@@ -301,8 +267,6 @@ def _formatar_periodo_texto(
 
 
 def _montar_dados_turma_email(turma: Any) -> Dict[str, Any]:
-    """Monta o dicionário padrão com informações da turma para e-mails."""
-
     treinamento = getattr(turma, "treinamento", None)
     periodo = _formatar_periodo(
         getattr(turma, "data_inicio", None),
@@ -334,7 +298,6 @@ def _montar_dados_turma_email(turma: Any) -> Dict[str, Any]:
 def _aplicar_diff_em_dados_antigos(
     dados_base: Dict[str, Any], diff: Dict[str, Any]
 ) -> Dict[str, Any]:
-    """Retorna cópia dos dados aplicando valores antigos presentes no diff."""
 
     dados_antigos = dict(dados_base)
 
@@ -350,14 +313,10 @@ def _aplicar_diff_em_dados_antigos(
         dados_antigos["horario"] = diff["horario"][0] or ""
 
     if "local_realizacao" in diff:
-        dados_antigos["local_realizacao"] = (
-            diff["local_realizacao"][0] or ""
-        )
+        dados_antigos["local_realizacao"] = diff["local_realizacao"][0] or ""
 
     if "instrutor" in diff:
-        dados_antigos["instrutor_nome"] = (
-            diff["instrutor"][0] or "Não definido"
-        )
+        dados_antigos["instrutor_nome"] = diff["instrutor"][0] or "Não definido"
 
     if "teoria_online" in diff:
         dados_antigos["teoria_online"] = bool(diff["teoria_online"][0])
@@ -378,7 +337,7 @@ def _aplicar_diff_em_dados_antigos(
 def enviar_convocacao(
     inscricao: Any, turma: Any, send_email_fn: Callable[..., Any] = send_email
 ) -> None:
-    """Envia e-mail de convocação para um inscrito."""
+
     treinamento = getattr(turma, "treinamento", None)
     if treinamento is None:
         raise ValueError("Turma sem treinamento associado")
@@ -431,9 +390,7 @@ def enviar_convocacao(
             current_app.logger.error("Arquivo de tutorial não encontrado.")
 
     data_inicio_str = data_inicio.strftime("%d/%m/%Y") if data_inicio else ""
-    subject = (
-        f"Convocação: {getattr(treinamento, 'nome', '')} — {data_inicio_str}"
-    )
+    subject = f"Convocação: {getattr(treinamento, 'nome', '')} — {data_inicio_str}"
     if send_email_fn is send_email:
         send_email_fn(
             to=destinatario,
@@ -447,10 +404,9 @@ def enviar_convocacao(
 
 
 def listar_emails_secretaria() -> List[str]:
-    """Retorna e-mails da secretaria de treinamentos."""
     from conecta_senai.models.secretaria_treinamentos import (
         SecretariaTreinamentos,
-    )  # lazy import
+    )
 
     registros = SecretariaTreinamentos.query.all()
     return [r.email for r in registros if getattr(r, "email", None)]
@@ -459,7 +415,7 @@ def listar_emails_secretaria() -> List[str]:
 def send_turma_alterada_secretaria(
     emails: Iterable[str], dados_antigos: Dict[str, Any], turma: Any
 ) -> None:
-    """Envia e-mail comparando dados antigos e novos de uma turma."""
+
     turma_ctx = build_turma_context(turma)
     dados_novos = _montar_dados_turma_email(turma)
     subject = (
@@ -479,7 +435,6 @@ def send_turma_alterada_secretaria(
 
 
 def send_turma_alterada_email(dados_antigos: dict, dados_novos: dict):
-    """Envia e-mail à secretaria informando alteração de uma turma."""
     try:
         recipients = listar_emails_secretaria()
         if not recipients:
@@ -510,7 +465,7 @@ def send_turma_alterada_email(dados_antigos: dict, dados_novos: dict):
                 "enviado para a secretaria."
             )
         )
-    except Exception as e:  # pragma: no cover - log de erro
+    except Exception as e:
         current_app.logger.error(
             f"Falha ao enviar e-mail de turma alterada: {e}", exc_info=True
         )
@@ -519,16 +474,14 @@ def send_turma_alterada_email(dados_antigos: dict, dados_novos: dict):
 def send_treinamento_desmarcado_email(
     recipients: Iterable[str], turma: "TurmaTreinamento"
 ) -> None:
-    """Envia e-mail informando sobre o cancelamento de um treinamento."""
+
     recipients_list = list(recipients)
     if not recipients_list:
         return
 
     treinamento = getattr(turma, "treinamento", None)
     periodo = ""
-    if getattr(turma, "data_inicio", None) and getattr(
-        turma, "data_fim", None
-    ):
+    if getattr(turma, "data_inicio", None) and getattr(turma, "data_fim", None):
         periodo = (
             f"{turma.data_inicio.strftime('%d/%m/%Y')} a "
             f"{turma.data_fim.strftime('%d/%m/%Y')}"
@@ -552,9 +505,7 @@ def send_treinamento_desmarcado_email(
     )
 
     subject = f"Treinamento desmarcado - {turma_ctx.treinamento.nome}"
-    html = render_email_template(
-        "treinamento_desmarcado.html.j2", turma=turma_ctx
-    )
+    html = render_email_template("treinamento_desmarcado.html.j2", turma=turma_ctx)
     send_email(recipients_list, subject, html)
 
 
@@ -562,7 +513,7 @@ def send_nova_turma_instrutor_email(
     turma: "TurmaTreinamento",
     instrutor: "Instrutor",
 ) -> None:
-    """Envia um e-mail para o instrutor informando sobre a nova turma."""
+
     if not instrutor or not getattr(instrutor, "email", None):
         return
 
@@ -612,21 +563,16 @@ def send_nova_turma_instrutor_email(
 
 
 def notificar_nova_turma(turma: "TurmaTreinamento") -> None:
-    """Notifica instrutor e secretaria sobre criação de nova turma."""
     treinamento = getattr(turma, "treinamento", None)
     if not treinamento:
         return
 
     fmt = "%d/%m/%Y"
     data_inicio = (
-        turma.data_inicio.strftime(fmt)
-        if getattr(turma, "data_inicio", None)
-        else ""
+        turma.data_inicio.strftime(fmt) if getattr(turma, "data_inicio", None) else ""
     )
     data_fim = (
-        turma.data_fim.strftime(fmt)
-        if getattr(turma, "data_fim", None)
-        else None
+        turma.data_fim.strftime(fmt) if getattr(turma, "data_fim", None) else None
     )
     ctx = {
         "treinamento_nome": getattr(treinamento, "nome", ""),
@@ -658,7 +604,7 @@ def notificar_atualizacao_turma(
     *,
     notificar_secretaria: bool = True,
 ) -> None:
-    """Notifica secretaria e instrutores sobre alterações em uma turma."""
+
     if not diff:
         return
 
@@ -677,19 +623,14 @@ def notificar_atualizacao_turma(
 
     instrutor_atual = getattr(turma, "instrutor", None)
 
-    # ``instrutor_antigo`` pode ser uma instância ou apenas o ID.
     instrutor_antigo_obj = instrutor_antigo
-    if instrutor_antigo_obj and not getattr(
-        instrutor_antigo_obj, "email", None
-    ):
-        try:  # tenta carregar o instrutor a partir do ID
-            from conecta_senai.models.instrutor import Instrutor  # lazy import
+    if instrutor_antigo_obj and not getattr(instrutor_antigo_obj, "email", None):
+        try:
+            from conecta_senai.models.instrutor import Instrutor
             from conecta_senai.models import db
 
-            instrutor_antigo_obj = db.session.get(
-                Instrutor, instrutor_antigo_obj
-            )
-        except Exception:  # pragma: no cover - fallback silencioso
+            instrutor_antigo_obj = db.session.get(Instrutor, instrutor_antigo_obj)
+        except Exception:
             instrutor_antigo_obj = None
 
     antigo_id = getattr(instrutor_antigo_obj, "id", None)
@@ -721,18 +662,10 @@ def notificar_atualizacao_turma(
             send_email(instrutor_antigo_obj.email, subject_rem, html_rem)
             time_module.sleep(RATE_LIMIT_DELAY)
 
-    if (
-        atual_id
-        and antigo_id != atual_id
-        and getattr(instrutor_atual, "email", None)
-    ):
+    if atual_id and antigo_id != atual_id and getattr(instrutor_atual, "email", None):
         send_nova_turma_instrutor_email(turma, instrutor_atual)
         time_module.sleep(RATE_LIMIT_DELAY)
-    elif (
-        atual_id
-        and antigo_id == atual_id
-        and getattr(instrutor_atual, "email", None)
-    ):
+    elif atual_id and antigo_id == atual_id and getattr(instrutor_atual, "email", None):
         subject = (
             "Alteração de Agendamento de Turma: "
             f"{dados_novos.get('treinamento_nome')}"
@@ -747,8 +680,6 @@ def notificar_atualizacao_turma(
 
 
 class EmailService:
-    """Serviço de envio de e-mails com suporte a anexos."""
-
     def _send_mail(
         self,
         subject: str,
@@ -757,11 +688,6 @@ class EmailService:
         context: Dict[str, Any],
         attachment_path: str | None = None,
     ) -> None:
-        """Renderiza o template e envia o e-mail.
-
-        Se ``attachment_path`` for fornecido e existir, o arquivo será anexado
-        ao e-mail.
-        """
 
         template_obj = current_app.jinja_env.get_or_select_template(template)
         html = template_obj.render(**context)
@@ -788,7 +714,7 @@ class EmailService:
         template: str,
         **context: Any,
     ) -> None:
-        """Interface simples para envio de e-mails usando templates."""
+
         recipients = [to] if isinstance(to, str) else list(to)
         self._send_mail(
             subject=subject,
@@ -798,8 +724,6 @@ class EmailService:
         )
 
     def send_convocacao_email(self, user: Any, turma: Any) -> None:
-        """Envia e-mail de convocação com anexo quando necessário."""
-
         subject = (
             f"Convocação: {turma.treinamento.nome} — "
             f"{turma.data_inicio.strftime('%d/%m/%Y')}"

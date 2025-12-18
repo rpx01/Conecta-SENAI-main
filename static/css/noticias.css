@@ -1,9 +1,9 @@
 .news-hero {
   position: relative;
-  /* Softer gradient tones to keep the hero approachable */
+  
   background: linear-gradient(135deg, rgba(29, 78, 168, 0.9), rgba(0, 139, 210, 0.85));
   color: #fff;
-  /* Reduced top/bottom extremes to prevent oversized hero blocks */
+  
   padding: clamp(2.5rem, 4.5vw, 4rem) 0;
   overflow: hidden;
 }
@@ -29,14 +29,14 @@
 }
 
 .news-hero__title {
-  /* Lower maximum size keeps titles elegant on wide screens */
+  
   font-size: clamp(1.9rem, 3.5vw, 2.6rem);
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
 .news-hero__summary {
-  /* Balanced summary sizing for smoother reading rhythm */
+  
   font-size: clamp(0.95rem, 1.8vw, 1.15rem);
   max-width: 48ch;
   color: rgba(255, 255, 255, 0.9);
@@ -65,7 +65,7 @@
 .news-highlight {
   background: #fff;
   border-radius: 0.85rem;
-  /* Airier shadow and spacing embrace the softer visual tone */
+  
   box-shadow: 0 12px 32px rgba(12, 32, 67, 0.08);
   padding: 1.75rem;
   scroll-snap-align: start;
@@ -80,7 +80,7 @@
 }
 
 .news-highlight__title {
-  /* Slightly lighter weight aligns with the global typography refresh */
+  
   font-size: 1.1rem;
   font-weight: 500;
 }
@@ -115,7 +115,7 @@
   flex-direction: column;
   background: #fff;
   border-radius: 0.85rem;
-  /* Softer elevation keeps cards feeling lightweight */
+  
   box-shadow: 0 16px 38px rgba(12, 32, 67, 0.08);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -136,7 +136,7 @@
 
 .news-card__body {
   flex: 1;
-  /* Increased interior spacing gives the content room to breathe */
+  
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
@@ -152,7 +152,7 @@
 }
 
 .news-card__title {
-  /* Lowered weight to prevent titles from dominating the card */
+  
   font-size: 1.2rem;
   font-weight: 600;
 }
@@ -208,7 +208,7 @@
 }
 
 .news-modal__title {
-  /* Modal titles mirror on-page hierarchy for continuity */
+  
   font-size: 1.65rem;
   font-weight: 600;
 }
@@ -235,7 +235,7 @@
   }
 
   .news-card__body {
-    /* Maintain generous spacing on tablets without overwhelming the layout */
+    
     padding: 1.5rem;
   }
 }
@@ -281,7 +281,7 @@
   }
 
   .news-highlight {
-    /* Preserve tactile spacing within horizontal scroll on smaller screens */
+    
     padding: 1.4rem;
   }
 

@@ -1,4 +1,3 @@
-"""Módulo de configuração centralizado da aplicação Conecta SENAI."""
 from .base import BaseConfig, env_bool, strtobool
 from .dev import DevConfig
 from .prod import ProdConfig
