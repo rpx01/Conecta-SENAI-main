@@ -1,5 +1,3 @@
-"""Schemas Marshmallow para serialização de notícias."""
-
 from __future__ import annotations
 
 import logging
@@ -13,8 +11,6 @@ log = logging.getLogger(__name__)
 
 
 class ImagemNoticiaSchema(Schema):
-    """Serializa instâncias do modelo :class:`ImagemNoticia`."""
-
     id = fields.Int()
     nome_arquivo = fields.Str()
     caminho_relativo = fields.Str()
@@ -25,8 +21,6 @@ _imagem_schema = ImagemNoticiaSchema()
 
 
 class NoticiaSchema(Schema):
-    """Serializa instâncias do modelo :class:`Noticia`."""
-
     id = fields.Int()
     titulo = fields.Str(required=True)
     resumo = fields.Str(allow_none=True)
@@ -44,18 +38,9 @@ class NoticiaSchema(Schema):
 
     @staticmethod
     def _get_relacionamento_imagem(obj: Any):
-        """Obtém a relação de imagem de forma resiliente.
-
-        Em ambientes onde as migrações de banco ainda não foram executadas,
-        acessar ``obj.imagem`` dispara um ``ProgrammingError`` informando que a
-        tabela ``imagens_noticias`` está ausente. Em vez de propagar o erro e
-        interromper a serialização, retornamos ``None`` e registramos o
-        ocorrido em nível ``debug`` para facilitar a investigação.
-        """
-
         try:
             return getattr(obj, "imagem", None)
-        except (ProgrammingError, SQLAlchemyError) as exc:  # pragma: no cover - proteção extra
+        except (ProgrammingError, SQLAlchemyError) as exc:
             log.debug("Falha ao carregar relacionamento imagem: %s", exc)
             return None
 

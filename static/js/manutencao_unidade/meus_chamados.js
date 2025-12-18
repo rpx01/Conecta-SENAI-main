@@ -1,5 +1,3 @@
-/* global bootstrap, chamarAPI, verificarAutenticacao, getUsuarioLogado, formatarData, sanitizeHTML */
-
 (function () {
     const tabela = document.querySelector('#tabelaChamados tbody');
     const alertaSemChamados = document.getElementById('alertSemChamados');

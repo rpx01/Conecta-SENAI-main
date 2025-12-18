@@ -16,7 +16,7 @@ class InscricaoTreinamentoCreate(BaseModel):
     cpf: CpfStr
     empresa: constr(strip_whitespace=True, min_length=1)
 
-    @field_validator('cpf')
+    @field_validator("cpf")
     @classmethod
     def valida_cpf(cls, v):
         return v

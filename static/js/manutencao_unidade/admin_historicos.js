@@ -1,5 +1,3 @@
-/* global bootstrap, chamarAPI, verificarAutenticacao, verificarPermissaoAdmin, getUsuarioLogado, formatarData, sanitizeHTML, showToast */
-
 (function () {
     const tabela = document.querySelector('#tabelaHistoricos tbody');
     const totalHistoricosEl = document.getElementById('totalHistoricos');
@@ -91,7 +89,7 @@
                 const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
                 const fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0);
 
-                const dataInicio = inicioMes.toISOString().slice(0, 10); // yyyy-mm-dd
+                const dataInicio = inicioMes.toISOString().slice(0, 10); 
                 const dataFim = fimMes.toISOString().slice(0, 10);
 
                 console.log('[Históricos] Filtro de mês ativo:', {
@@ -497,7 +495,7 @@
     }
 
     function configurarBotoesHistoricos() {
-        // Botão para exibir todos os históricos ou apenas mês atual
+        
         const btnExibirTodosHistoricos = document.getElementById('btnExibirTodosHistoricos');
         if (btnExibirTodosHistoricos) {
             console.log('[Históricos] Botão "Exibir todos" configurado');
@@ -513,7 +511,6 @@
             console.error('[Históricos] Botão "btnExibirTodosHistoricos" não encontrado no DOM');
         }
 
-        // Botão para exportar todos os chamados para Excel/CSV
         const btnExportarExcelHistoricos = document.getElementById('btnExportarExcelHistoricos');
         if (btnExportarExcelHistoricos) {
             console.log('[Históricos] Botão "Exportar Excel" configurado');

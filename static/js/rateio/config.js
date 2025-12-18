@@ -1,31 +1,29 @@
-// Função para limpar e abrir o modal para uma nova configuração
 let configEmEdicaoId = null;
-// Função para limpar e abrir o modal para uma nova configuração
+
 function novaConfig() {
     document.getElementById('configForm').reset();
-    configEmEdicaoId = null; // Garante que é modo de criação
+    configEmEdicaoId = null; 
     document.getElementById('modalConfigLabel').textContent = 'Nova Configuração';
-    // Acessa o modal pela variável global definida no escopo do DOMContentLoaded
+    
     if (window.configModal) {
         window.configModal.show();
     }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Validação de autenticação e permissões
+    
     if (!verificarAutenticacao() || !isAdmin()) {
         window.location.href = '/selecao-sistema.html';
         return;
     }
 
     const configModalEl = document.getElementById('configModal');
-    window.configModal = new bootstrap.Modal(configModalEl); // Torna o modal acessível globalmente
+    window.configModal = new bootstrap.Modal(configModalEl); 
     const confirmacaoModal = new bootstrap.Modal(document.getElementById('confirmacaoModal'));
     const form = document.getElementById('configForm');
     const tableBody = document.getElementById('configsTableBody');
     let configParaExcluirId = null;
 
-    // Listener para limpar o form sempre que o modal for fechado
     if (configModalEl) {
         configModalEl.addEventListener('hidden.bs.modal', () => {
             form.reset();
@@ -33,11 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Função para carregar e renderizar as configurações
     async function carregarConfiguracoes() {
         try {
             const configs = await chamarAPI('/rateio-configs');
-            tableBody.innerHTML = ''; // Limpa a tabela
+            tableBody.innerHTML = ''; 
             if (configs.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhuma configuração encontrada.</td></tr>`;
                 return;
@@ -68,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Função para abrir o modal em modo de edição ou criação
     function abrirModal(config = null) {
         form.reset();
         if (config) {
@@ -86,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.configModal.show();
     }
 
-    // Salvar (Criar ou Editar)
     document.getElementById('btnSalvarConfig').addEventListener('click', async () => {
         const dados = {
             filial: document.getElementById('filial').value,
@@ -111,14 +106,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Lidar com cliques na tabela (delegação de eventos)
     tableBody.addEventListener('click', async (e) => {
         const btnEditar = e.target.closest('.btn-editar');
         const btnExcluir = e.target.closest('.btn-excluir');
 
         if (btnEditar) {
             const id = btnEditar.closest('tr').dataset.id;
-            const config = await chamarAPI(`/rateio-configs/${id}`); // Busca os dados mais recentes
+            const config = await chamarAPI(`/rateio-configs/${id}`); 
             abrirModal(config);
         }
 
@@ -129,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Confirmação de exclusão
     document.getElementById('btnConfirmarExclusao').addEventListener('click', async () => {
         if (!configParaExcluirId) return;
         try {
@@ -144,6 +137,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Carregamento inicial
     carregarConfiguracoes();
 });

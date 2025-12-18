@@ -1,7 +1,6 @@
-// Lógica para calendário híbrido (visão mensal e semanal)
 let activeView = 'mensal';
 let currentDate = new Date();
-let calendar; // FullCalendar instance
+let calendar; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const viewMensalRadio = document.getElementById('view-mensal');

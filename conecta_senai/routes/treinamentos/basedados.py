@@ -1,5 +1,3 @@
-"""Rotas auxiliares relacionadas à secretaria de treinamentos."""
-
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from sqlalchemy import inspect
@@ -45,7 +43,6 @@ def _validar_local_payload(data: dict):
 
 
 def ensure_table_exists(model) -> None:
-    """Cria a tabela do modelo caso não exista."""
     inspector = inspect(db.engine)
     if not inspector.has_table(model.__tablename__):
         model.__table__.create(db.engine)
@@ -55,9 +52,7 @@ def ensure_table_exists(model) -> None:
 @admin_required
 def listar_contatos():
     ensure_table_exists(SecretariaTreinamentos)
-    contatos = (
-        SecretariaTreinamentos.query.order_by(SecretariaTreinamentos.id).all()
-    )
+    contatos = SecretariaTreinamentos.query.order_by(SecretariaTreinamentos.id).all()
     return jsonify(schemas.dump(contatos))
 
 
@@ -92,12 +87,10 @@ def atualizar_contato(contato_id):
     erros = schema.validate(data)
     if erros:
         return jsonify({"erro": erros}), 400
-    if (
-        SecretariaTreinamentos.query.filter(
-            SecretariaTreinamentos.email == data.get("email"),
-            SecretariaTreinamentos.id != contato_id,
-        ).first()
-    ):
+    if SecretariaTreinamentos.query.filter(
+        SecretariaTreinamentos.email == data.get("email"),
+        SecretariaTreinamentos.id != contato_id,
+    ).first():
         return jsonify({"erro": "E-mail já cadastrado"}), 409
     contato.nome = data["nome"]
     contato.email = data["email"]
@@ -164,12 +157,10 @@ def atualizar_local_realizacao(local_id):
     nome, erros = _validar_local_payload(data)
     if erros:
         return jsonify({"erro": erros}), 400
-    if (
-        LocalRealizacao.query.filter(
-            LocalRealizacao.nome == nome,
-            LocalRealizacao.id != local_id,
-        ).first()
-    ):
+    if LocalRealizacao.query.filter(
+        LocalRealizacao.nome == nome,
+        LocalRealizacao.id != local_id,
+    ).first():
         return jsonify({"erro": "Local já cadastrado"}), 409
     local.nome = nome
     try:
@@ -196,21 +187,17 @@ def excluir_local_realizacao(local_id):
         return jsonify({"erro": "Erro ao excluir local"}), 500
 
 
-@horarios_bp.route('', methods=['GET'])
+@horarios_bp.route("", methods=["GET"])
 @admin_required
 def listar_horarios():
-    """Lista todos os horários cadastrados ordenados por nome."""
-
     ensure_table_exists(Horario)
     horarios = Horario.query.order_by(Horario.nome).all()
     return jsonify([HorarioOut.model_validate(h).model_dump() for h in horarios])
 
 
-@horarios_bp.route('', methods=['POST'])
+@horarios_bp.route("", methods=["POST"])
 @admin_required
 def criar_horario():
-    """Cria um novo horário disponível para treinamentos."""
-
     ensure_table_exists(Horario)
     payload = request.get_json() or {}
     try:
@@ -226,11 +213,9 @@ def criar_horario():
     return HorarioOut.model_validate(horario).model_dump(), 201
 
 
-@horarios_bp.route('/<int:horario_id>', methods=['PUT'])
+@horarios_bp.route("/<int:horario_id>", methods=["PUT"])
 @admin_required
 def atualizar_horario(horario_id: int):
-    """Atualiza os dados de um horário existente."""
-
     ensure_table_exists(Horario)
     horario = db.session.get(Horario, horario_id)
     if not horario:

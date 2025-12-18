@@ -1,5 +1,3 @@
-// Gerenciamento de turmas utilizando função genérica de tabela
-
 document.addEventListener('DOMContentLoaded', () => {
     verificarAutenticacao();
     verificarPermissaoAdmin();

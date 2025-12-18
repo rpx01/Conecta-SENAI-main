@@ -1,18 +1,14 @@
-"""Modelos de chamados do módulo de suporte de TI."""
 from datetime import datetime, timezone, timedelta
 
 from conecta_senai.models import db
 
 
 def _get_brasilia_time():
-    """Retorna o horário atual de Brasília (UTC-3)."""
     tz_brasilia = timezone(timedelta(hours=-3))
     return datetime.now(tz_brasilia).replace(tzinfo=None)
 
 
 class SuporteChamado(db.Model):
-    """Representa um chamado aberto pelos usuários para suporte de TI."""
-
     __tablename__ = "suporte_chamados"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -39,7 +35,7 @@ class SuporteChamado(db.Model):
         onupdate=_get_brasilia_time,
         nullable=False,
     )
-    # novos campos para registrar transições de status
+
     inicio_atendimento_at = db.Column(db.DateTime, nullable=True)
     encerrado_at = db.Column(db.DateTime, nullable=True)
 
@@ -51,5 +47,5 @@ class SuporteChamado(db.Model):
         cascade="all, delete-orphan",
     )
 
-    def __repr__(self) -> str:  # pragma: no cover - representação simples
+    def __repr__(self) -> str:
         return f"<SuporteChamado id={self.id} status={self.status!r}>"

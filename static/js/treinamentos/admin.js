@@ -1,6 +1,3 @@
-// Funções para administração de treinamentos e turmas
-
-// Armazena a lista de treinamentos e instrutores para não ter que recarregar
 let catalogoDeTreinamentos = [];
 let listaDeInstrutores = [];
 let listaDeLocaisRealizacao = [];
@@ -8,7 +5,6 @@ let turmaParaExcluirId = null;
 let turmaParaConvocarId = null;
 let confirmacaoModal;
 
-// Função para limpar e abrir o modal de Treinamento (Catálogo)
 function novoTreinamento() {
     document.getElementById('treinamentoForm').reset();
     document.getElementById('treinamentoId').value = '';
@@ -16,11 +12,10 @@ function novoTreinamento() {
     new bootstrap.Modal(document.getElementById('treinamentoModal')).show();
 }
 
-// Carrega o catálogo de treinamentos na tabela
 async function carregarCatalogo() {
     try {
         const lista = await chamarAPI('/treinamentos/catalogo');
-        catalogoDeTreinamentos = lista; // Armazena para uso no modal de turmas
+        catalogoDeTreinamentos = lista; 
         const tbody = document.getElementById('catalogoTableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
@@ -48,8 +43,6 @@ async function carregarCatalogo() {
     }
 }
 
-
-// Salva um treinamento (novo ou existente)
 async function salvarTreinamento() {
     const id = document.getElementById('treinamentoId').value;
     const body = {
@@ -73,7 +66,6 @@ async function salvarTreinamento() {
     }
 }
 
-// Preenche o modal de treinamento para edição
 async function editarTreinamento(id) {
     try {
         const t = await chamarAPI(`/treinamentos/catalogo/${id}`);
@@ -92,7 +84,6 @@ async function editarTreinamento(id) {
     }
 }
 
-// Exclui um treinamento do catálogo
 async function excluirTreinamento(id) {
     if (!confirm('Excluir treinamento?')) return;
     try {
@@ -103,10 +94,6 @@ async function excluirTreinamento(id) {
     }
 }
 
-/**
- * Abre o modal de inscrição para administradores.
- * @param {number} turmaId - O ID da turma onde o participante será inscrito.
- */
 function abrirModalInscricaoAdmin(turmaId) {
     const modalEl = document.getElementById('adminInscricaoModal');
     if (!modalEl) {
@@ -119,9 +106,6 @@ function abrirModalInscricaoAdmin(turmaId) {
     modal.show();
 }
 
-/**
- * Envia os dados do formulário de inscrição do administrador para o servidor.
- */
 async function enviarInscricaoAdmin() {
     const btn = document.getElementById('btnEnviarAdminInscricao');
 
@@ -150,7 +134,6 @@ async function enviarInscricaoAdmin() {
     });
 }
 
-// Carrega a lista de turmas na tabela, agora com lógica para desativar botões.
 async function carregarTurmas() {
     try {
         const turmas = await chamarAPI('/treinamentos/agendadas');
@@ -189,7 +172,6 @@ async function carregarTurmas() {
     }
 }
 
-// Convoca todos os participantes de uma turma
 function convocarTodosDaTurma(turmaId) {
     turmaParaConvocarId = turmaId;
     const modalEl = document.getElementById('confirmacaoConvocarModal');
@@ -245,10 +227,8 @@ async function executarExclusao() {
     }
 }
 
-
-// Carrega instrutores para o select
 async function carregarInstrutores() {
-    if (listaDeInstrutores.length > 0) return; // Evita recarregar
+    if (listaDeInstrutores.length > 0) return; 
     try {
         listaDeInstrutores = await chamarAPI('/instrutores');
     } catch(e) {
@@ -256,9 +236,8 @@ async function carregarInstrutores() {
     }
 }
 
-// Carrega locais de realização para o select
 async function carregarLocaisRealizacao() {
-    if (listaDeLocaisRealizacao.length > 0) return; // Evita recarregar
+    if (listaDeLocaisRealizacao.length > 0) return; 
     try {
         listaDeLocaisRealizacao = await chamarAPI('/treinamentos/locais-realizacao');
     } catch(e) {
@@ -267,17 +246,12 @@ async function carregarLocaisRealizacao() {
     }
 }
 
-/**
- * Função centralizada para abrir o modal de turma, seja para criar ou editar.
- * @param {number|null} id - O ID da turma para editar, ou null para criar uma nova.
- */
 async function abrirModalTurma(id = null) {
     const form = document.getElementById('turmaForm');
     form.reset();
     document.getElementById('turmaId').value = id || '';
     document.getElementById('teoriaOnline').checked = false;
 
-    // Popula o select de treinamentos
     const selectTrein = document.getElementById('turmaTreinamentoId');
     selectTrein.innerHTML = '<option value="">Selecione um treinamento...</option>';
     if (catalogoDeTreinamentos.length === 0) {
@@ -287,7 +261,6 @@ async function abrirModalTurma(id = null) {
         selectTrein.innerHTML += `<option value="${t.id}">${escapeHTML(t.nome)}</option>`;
     });
 
-    // Popula o select de instrutores
     const selectInstrutor = document.getElementById('instrutorId');
     selectInstrutor.innerHTML = '<option value="">Selecione um instrutor...</option>';
     if (listaDeInstrutores.length === 0) {
@@ -297,7 +270,6 @@ async function abrirModalTurma(id = null) {
         selectInstrutor.innerHTML += `<option value="${i.id}">${escapeHTML(i.nome)}</option>`;
     });
 
-    // Popula o select de locais de realização
     const selectLocal = document.getElementById('localRealizacao');
     selectLocal.innerHTML = '<option value="">Selecione...</option>';
     if (listaDeLocaisRealizacao.length === 0) {
@@ -307,14 +279,12 @@ async function abrirModalTurma(id = null) {
         selectLocal.innerHTML += `<option value="${escapeHTML(local.nome)}">${escapeHTML(local.nome)}</option>`;
     });
 
-    // Se for edição, busca os dados da turma
     if (id) {
         try {
             const t = await chamarAPI(`/treinamentos/turmas/${id}`);
             selectTrein.value = t.treinamento_id;
             document.getElementById('dataInicio').value = t.data_inicio ? t.data_inicio.split('T')[0] : '';
 
-            // Dispara o evento de change para atualizar a carga horária e data mínima
             selectTrein.dispatchEvent(new Event('change'));
 
             document.getElementById('dataFim').value = t.data_fim ? t.data_fim.split('T')[0] : '';
@@ -325,29 +295,26 @@ async function abrirModalTurma(id = null) {
 
         } catch(e) {
             showToast(`Não foi possível carregar dados da turma: ${e.message}`, 'danger');
-            return; // Não abre o modal se houver erro
+            return; 
         }
     } else {
-        // Se for novo
+        
         document.getElementById('cargaHoraria').value = '';
-        document.getElementById('dataFim').min = ''; // Limpa a restrição
+        document.getElementById('dataFim').min = ''; 
         document.getElementById('teoriaOnline').checked = false;
     }
 
     new bootstrap.Modal(document.getElementById('turmaModal')).show();
 }
 
-// (NOVA FUNÇÃO) - Chamada pelo botão "NOVA TURMA"
 function novaTurma() {
     abrirModalTurma(null);
 }
 
-// (FUNÇÃO CORRIGIDA) - Chamada pelo botão de editar
 function editarTurma(id) {
     abrirModalTurma(id);
 }
 
-// Salva a turma (nova ou existente)
 async function salvarTurma() {
     const id = document.getElementById('turmaId').value;
     const body = {
@@ -377,7 +344,6 @@ async function salvarTurma() {
     }
 }
 
-// NOVA FUNÇÃO: Atualiza a data de término mínima
 function atualizarDataMinimaTermino() {
     const selectTreinamento = document.getElementById('turmaTreinamentoId');
     const dataInicioInput = document.getElementById('dataInicio');
@@ -411,10 +377,6 @@ function atualizarDataMinimaTermino() {
     }
 }
 
-/**
- * Carrega os dados da turma selecionada e preenche o cabeçalho da página.
- * Retorna true se o treinamento possuir parte prática.
- */
 async function carregarDetalhesDaTurma(turmaId) {
     try {
         const dados = await chamarAPI(`/treinamentos/turmas/${turmaId}`);
@@ -441,7 +403,6 @@ async function carregarDetalhesDaTurma(turmaId) {
     }
 }
 
-// Carrega as inscrições de uma turma específica
 async function carregarInscricoes(turmaId) {
     const temPratica = await carregarDetalhesDaTurma(turmaId);
     try {
@@ -510,14 +471,12 @@ async function carregarInscricoes(turmaId) {
     }
 }
 
-// Função para confirmar e executar a exclusão do participante
 function confirmarExclusaoParticipante(inscricaoId, nome) {
     if (confirm(`Tem a certeza de que deseja remover o participante "${nome}" da turma?`)) {
         executarExclusaoParticipante(inscricaoId);
     }
 }
 
-// Função que chama a API para excluir
 async function executarExclusaoParticipante(inscricaoId) {
     try {
         await chamarAPI(`/treinamentos/inscricoes/${inscricaoId}`, 'DELETE');
@@ -532,7 +491,6 @@ async function executarExclusaoParticipante(inscricaoId) {
     }
 }
 
-// Salva notas, status e presença de todas as inscrições
 async function salvarAlteracoesInscricoes() {
     const btn = document.getElementById('btnSalvarAlteracoes');
     if (!btn) return;
@@ -569,8 +527,6 @@ async function salvarAlteracoesInscricoes() {
     });
 }
 
-
-// Envia convocação por e-mail ao clicar no botão correspondente
 document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.btn-convocar');
     if (!btn) return;
@@ -621,7 +577,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSalvar.addEventListener('click', salvarAlteracoesInscricoes);
     }
 
-    // Lógica para o novo modal de exportação
     const exportarModalEl = document.getElementById('exportarModal');
     if (exportarModalEl) {
         const exportarModal = new bootstrap.Modal(exportarModalEl);
@@ -665,7 +620,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnConfirmarConvocacao.addEventListener('click', executarConvocacao);
     }
 
-    // Listener para o select de treinamento no modal de turma
     const selectTreinamento = document.getElementById('turmaTreinamentoId');
     const dataInicioInput = document.getElementById('dataInicio');
 

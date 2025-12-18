@@ -1,5 +1,9 @@
-"""Pacote com a lógica de autenticação e autorização."""
-from .decorators import admin_required, login_required, verificar_admin, verificar_autenticacao
+from .decorators import (
+    admin_required,
+    login_required,
+    verificar_admin,
+    verificar_autenticacao,
+)
 from .routes import auth_bp
 from .reset_routes import auth_reset_bp
 

@@ -1,15 +1,8 @@
-// src/static/js/treinamentos.js
-
-// Armazena os dados do usuário logado e suas inscrições
 let dadosUsuarioLogado = null;
 let minhasInscricoesIds = new Set();
 let contadoresIntervals = [];
-let cacheMeusCursos = []; // Cache para os dados dos cursos do usuário
+let cacheMeusCursos = []; 
 
-/**
- * Aplica a máscara de CPF (nnn.nnn.nnn-nn) a um campo de input.
- * @param {HTMLInputElement} input - O elemento do campo de CPF.
- */
 function mascaraCpf(input) {
     let value = input.value.replace(/\D/g, '');
     value = value.replace(/(\d{3})(\d)/, '$1.$2');
@@ -18,10 +11,6 @@ function mascaraCpf(input) {
     input.value = value;
 }
 
-/**
- * Valida um CPF e atualiza a classe do input para feedback visual.
- * @param {HTMLInputElement} input - O elemento do campo de CPF.
- */
 function validarCPF(input) {
     let cpf = input.value.replace(/\D/g, '');
     if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
@@ -51,9 +40,6 @@ function validarCPF(input) {
     input.classList.add('is-valid');
 }
 
-/**
- * Listener que é executado quando o conteúdo da página termina de carregar.
- */
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('cursos-disponiveis-cards-container')) {
         carregarTreinamentos();
@@ -62,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarMeusCursos();
     }
 
-    // Listener para o botão de submissão do formulário de inscrição
     const btnEnviar = document.getElementById('btnEnviarInscricao');
     if (btnEnviar) {
         btnEnviar.addEventListener('click', () => {
@@ -75,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Listener para o checkbox de "inscrever outro"
     const checkInscreverOutro = document.getElementById('inscreverOutroCheck');
     if (checkInscreverOutro) {
         checkInscreverOutro.addEventListener('change', (e) => {
@@ -83,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Listener para o botão de inscrição própria no modal de seleção
     const btnParaMim = document.getElementById('btnInscreverParaMim');
     if (btnParaMim) {
         btnParaMim.addEventListener('click', async () => {
@@ -100,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Listener para o botão de inscrição de terceiros no modal de seleção
     const btnParaOutro = document.getElementById('btnInscreverParaOutro');
     if (btnParaOutro) {
         btnParaOutro.addEventListener('click', async () => {
@@ -117,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Listener para campo de CPF
     const cpfInput = document.getElementById('cpf');
     if (cpfInput) {
         cpfInput.addEventListener('input', () => {
@@ -131,12 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/**
- * Calcula a data limite para inscrições, considerando um dia útil
- * anterior à data de início do treinamento.
- * @param {string} dataInicioStr - Data de início em formato ISO (YYYY-MM-DD).
- * @returns {string} Data de encerramento das inscrições em formato ISO.
- */
 function calcularDataLimiteInscricao(dataInicioStr) {
     const data = new Date(dataInicioStr);
     if (isNaN(data)) return dataInicioStr;
@@ -168,9 +143,6 @@ function buildBadges(turma) {
     return teoriaBadge + praticaBadge;
 }
 
-/**
- * Carrega a lista de turmas disponíveis, verificando se o usuário já está inscrito.
- */
 async function carregarTreinamentos() {
     const container = document.getElementById('cursos-disponiveis-cards-container');
     if (!container) return;
@@ -292,9 +264,6 @@ function iniciarContadores() {
     });
 }
 
-/**
- * Carrega e distribui os cursos do usuário por status.
- */
 async function carregarMeusCursos() {
     const containers = {
         andamento: document.getElementById('cursos-em-andamento'),
@@ -345,9 +314,6 @@ async function carregarMeusCursos() {
     }
 }
 
-/**
- * Renderiza um grupo de cursos em seu respectivo container.
- */
 function renderizarGrupoCursos(cursos, container, statusClass, statusText) {
     if (cursos.length === 0) {
         container.innerHTML = `<div class="col-12"><p class="text-center text-muted">Nenhum curso nesta categoria.</p></div>`;
@@ -387,9 +353,6 @@ function renderizarGrupoCursos(cursos, container, statusClass, statusText) {
     });
 }
 
-/**
- * Abre o modal com os detalhes completos do curso.
- */
 function abrirModalDetalhes(turmaId) {
     const curso = cacheMeusCursos.find(c => c.turma_id === turmaId);
     if (!curso) return;
@@ -416,10 +379,6 @@ function abrirModalDetalhes(turmaId) {
     modal.show();
 }
 
-
-/**
- * Abre o modal de seleção de tipo de inscrição.
- */
 async function abrirModalInscricao(turmaId) {
     const btnParaMim = document.getElementById('btnInscreverParaMim');
     if (btnParaMim) {
@@ -432,9 +391,6 @@ async function abrirModalInscricao(turmaId) {
     modal.show();
 }
 
-/**
- * Alterna a visibilidade e o estado do formulário de inscrição.
- */
 function toggleFormularioExterno(isExterno) {
     const form = document.getElementById('inscricaoForm');
     const inputs = form.querySelectorAll('input:not([type=hidden]):not([type=checkbox])');
@@ -448,7 +404,7 @@ function toggleFormularioExterno(isExterno) {
 
     if (isExterno) {
         document.getElementById('dataNascimento').type = 'date';
-        // Habilita a edição de todos os campos para inscrição de terceiros
+        
         inputs.forEach(input => input.readOnly = false);
         document.getElementById('nome').focus();
     } else {
@@ -457,24 +413,22 @@ function toggleFormularioExterno(isExterno) {
         }
 
         if (dadosUsuarioLogado) {
-            // Preenche todos os campos com os dados do usuário logado
+            
             document.getElementById('nome').value = dadosUsuarioLogado.nome || '';
             document.getElementById('email').value = dadosUsuarioLogado.email || '';
             document.getElementById('cpf').value = dadosUsuarioLogado.cpf || '';
             document.getElementById('dataNascimento').value = dadosUsuarioLogado.data_nascimento || '';
             document.getElementById('empresa').value = dadosUsuarioLogado.empresa || '';
 
-            // Mantém os campos principais como somente leitura
             document.getElementById('nome').readOnly = true;
             document.getElementById('email').readOnly = true;
 
-            // Permite a edição dos campos complementares caso não estejam preenchidos
             document.getElementById('cpf').readOnly = !!dadosUsuarioLogado.cpf;
             document.getElementById('dataNascimento').readOnly = !!dadosUsuarioLogado.data_nascimento;
             document.getElementById('empresa').readOnly = !!dadosUsuarioLogado.empresa;
         }
         document.getElementById('dataNascimento').type = 'date';
-        // Foco no primeiro campo editável, se houver
+        
         if (!dadosUsuarioLogado.cpf) {
              document.getElementById('cpf').focus();
         } else if (!dadosUsuarioLogado.data_nascimento) {
@@ -483,9 +437,6 @@ function toggleFormularioExterno(isExterno) {
     }
 }
 
-/**
- * Envia a requisição para inscrever o próprio usuário.
- */
 async function enviarInscricaoPropria() {
     const turmaId = document.getElementById('turmaId').value;
     const body = {
@@ -515,9 +466,6 @@ async function enviarInscricaoPropria() {
     }
 }
 
-/**
- * Envia a requisição para inscrever um participante externo.
- */
 async function enviarInscricaoExterna() {
     const turmaId = document.getElementById('turmaId').value;
     const body = {

@@ -1,6 +1,3 @@
-// Gestão de usuários com paginação
-/* global bootstrap, chamarAPI, showToast, verificarAutenticacao, verificarPermissaoAdmin, escapeHTML */
-
 function obterConfiguracaoTipoUsuario(tipo) {
     switch (tipo) {
         case 'admin':

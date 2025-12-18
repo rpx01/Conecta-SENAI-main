@@ -1,5 +1,3 @@
-"""Rotinas de convocação automática de turmas."""
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -13,8 +11,6 @@ from conecta_senai.services.email_service import enviar_convocacao
 
 
 def _carregar_inscricoes_pendentes() -> Iterable[InscricaoTreinamento]:
-    """Retorna as inscrições que ainda não receberam convocação."""
-
     return (
         InscricaoTreinamento.query.options(
             joinedload(InscricaoTreinamento.usuario),
@@ -31,8 +27,6 @@ def _carregar_inscricoes_pendentes() -> Iterable[InscricaoTreinamento]:
 
 
 def convocacao_automatica_job() -> None:
-    """Executa a convocação automática de participantes."""
-
     logger = current_app.logger
 
     inscricoes_a_convocar = _carregar_inscricoes_pendentes()
@@ -59,7 +53,7 @@ def convocacao_automatica_job() -> None:
                 exc,
             )
             continue
-        except Exception:  # pragma: no cover - apenas log
+        except Exception:
             logger.exception(
                 "Falha ao enviar convocação automática para inscrição %s.",
                 getattr(inscricao, "id", "?"),
@@ -70,7 +64,7 @@ def convocacao_automatica_job() -> None:
 
     try:
         db.session.commit()
-    except Exception:  # pragma: no cover - apenas log
+    except Exception:
         db.session.rollback()
         logger.exception(
             "Erro ao salvar o status das convocações automáticas no banco de dados.",

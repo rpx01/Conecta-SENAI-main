@@ -16,4 +16,3 @@ class HorarioOut(BaseModel):
 
     class Config:
         from_attributes = True
-

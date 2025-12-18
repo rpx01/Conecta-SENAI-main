@@ -1,14 +1,9 @@
-# flake8: noqa
-"""Modelos relacionados a treinamentos."""
-
 from datetime import datetime
 from sqlalchemy import text
 from conecta_senai.models import db
 
 
 class LocalRealizacao(db.Model):
-    """Locais disponíveis para realização de treinamentos."""
-
     __tablename__ = "locais_realizacao"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -20,9 +15,8 @@ class LocalRealizacao(db.Model):
     def __repr__(self):
         return f"<LocalRealizacao {self.nome}>"
 
-class Treinamento(db.Model):
-    """Modelo de treinamento oferecido."""
 
+class Treinamento(db.Model):
     __tablename__ = "treinamentos"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -32,9 +26,8 @@ class Treinamento(db.Model):
     carga_horaria = db.Column(db.Integer)
     tem_pratica = db.Column(db.Boolean, nullable=False, default=False)
     links_materiais = db.Column(db.JSON)
-    
-    # NOVOS CAMPOS ADICIONADOS AQUI
-    tipo = db.Column(db.String(50), nullable=True, default='Inicial') # Para 'Inicial' ou 'Periódico'
+
+    tipo = db.Column(db.String(50), nullable=True, default="Inicial")
     conteudo_programatico = db.Column(db.Text, nullable=True)
 
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
@@ -42,7 +35,9 @@ class Treinamento(db.Model):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
-    turmas = db.relationship('TurmaTreinamento', back_populates='treinamento', lazy='dynamic')
+    turmas = db.relationship(
+        "TurmaTreinamento", back_populates="treinamento", lazy="dynamic"
+    )
 
     def to_dict(self):
         return {
@@ -68,8 +63,6 @@ class Treinamento(db.Model):
 
 
 class TurmaTreinamento(db.Model):
-    """Turmas associadas a um treinamento."""
-
     __tablename__ = "turmas_treinamento"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -79,29 +72,25 @@ class TurmaTreinamento(db.Model):
     data_inicio = db.Column(db.Date, nullable=False)
     data_fim = db.Column(db.Date, nullable=False)
 
-    # Novos campos
     local_realizacao = db.Column(db.String(100))
     horario = db.Column(db.String(50))
-    instrutor_id = db.Column(db.Integer, db.ForeignKey('instrutores.id'), nullable=True)
+    instrutor_id = db.Column(db.Integer, db.ForeignKey("instrutores.id"), nullable=True)
     teoria_online = db.Column(
-        db.Boolean, nullable=False, server_default=text('FALSE'), default=False
+        db.Boolean, nullable=False, server_default=text("FALSE"), default=False
     )
 
-    # Relacionamentos
-    treinamento = db.relationship(
-        "Treinamento", back_populates='turmas'
+    treinamento = db.relationship("Treinamento", back_populates="turmas")
+    instrutor = db.relationship("Instrutor")
+    inscricoes = db.relationship(
+        "InscricaoTreinamento", backref="turma", lazy="dynamic"
     )
-    instrutor = db.relationship('Instrutor')
-    inscricoes = db.relationship('InscricaoTreinamento', backref='turma', lazy='dynamic')
 
     def to_dict(self):
         return {
             "id": self.id,
             "treinamento_id": self.treinamento_id,
             "data_inicio": self.data_inicio.isoformat() if self.data_inicio else None,
-            "data_fim": (
-                self.data_fim.isoformat() if self.data_fim else None
-            ),
+            "data_fim": (self.data_fim.isoformat() if self.data_fim else None),
             "local_realizacao": self.local_realizacao,
             "horario": self.horario,
             "instrutor_id": self.instrutor_id,
@@ -114,8 +103,6 @@ class TurmaTreinamento(db.Model):
 
 
 class InscricaoTreinamento(db.Model):
-    """Inscricoes de usuarios em turmas de treinamento."""
-
     __tablename__ = "inscricoes_treinamento"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -130,14 +117,12 @@ class InscricaoTreinamento(db.Model):
     empresa = db.Column(db.String(150))
     data_inscricao = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # --- NOVOS CAMPOS ADICIONADOS AQUI ---
     nota_teoria = db.Column(db.Float, nullable=True)
     nota_pratica = db.Column(db.Float, nullable=True)
     status_aprovacao = db.Column(db.String(20), nullable=True)
-    # --- NOVOS CAMPOS DE PRESENCA ---
+
     presenca_teoria = db.Column(db.Boolean, default=False, nullable=False)
     presenca_pratica = db.Column(db.Boolean, default=False, nullable=False)
-    # ------------------------------------
 
     convocado_em = db.Column(db.DateTime, nullable=True)
 
@@ -158,14 +143,14 @@ class InscricaoTreinamento(db.Model):
             "data_inscricao": (
                 self.data_inscricao.isoformat() if self.data_inscricao else None
             ),
-            # --- NOVOS CAMPOS ADICIONADOS AO DICIONÁRIO ---
             "nota_teoria": self.nota_teoria,
             "nota_pratica": self.nota_pratica,
             "status_aprovacao": self.status_aprovacao,
             "presenca_teoria": self.presenca_teoria,
             "presenca_pratica": self.presenca_pratica,
-            "convocado_em": self.convocado_em.isoformat() if self.convocado_em else None,
-            # ---------------------------------------------
+            "convocado_em": (
+                self.convocado_em.isoformat() if self.convocado_em else None
+            ),
         }
 
     def __repr__(self):

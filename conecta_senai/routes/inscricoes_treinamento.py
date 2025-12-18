@@ -5,10 +5,12 @@ from conecta_senai.models.inscricao_treinamento import (
 )
 from conecta_senai.schemas.inscricao_treinamento import InscricaoTreinamentoCreate
 
-bp = Blueprint('inscricoes_treinamento', __name__, url_prefix='/api/inscricoes-treinamento')
+bp = Blueprint(
+    "inscricoes_treinamento", __name__, url_prefix="/api/inscricoes-treinamento"
+)
 
 
-@bp.post('')
+@bp.post("")
 def criar():
     data = request.get_json() or {}
     payload = InscricaoTreinamentoCreate(**data)
@@ -27,4 +29,4 @@ def criar():
     )
     db.session.add(ent)
     db.session.commit()
-    return jsonify({'id': ent.id}), 201
+    return jsonify({"id": ent.id}), 201

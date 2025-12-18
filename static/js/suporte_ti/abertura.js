@@ -1,5 +1,3 @@
-/* global bootstrap, chamarAPI, verificarAutenticacao, getUsuarioLogado, showToast */
-
 (function () {
     const modalEl = document.getElementById('modalNovoChamado');
     const modal = modalEl ? new bootstrap.Modal(modalEl) : null;

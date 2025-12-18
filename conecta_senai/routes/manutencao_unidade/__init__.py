@@ -1,5 +1,3 @@
-"""Blueprints do módulo de manutenção da unidade."""
-
 from conecta_senai.routes.manutencao_unidade.admin import manutencao_unidade_admin_bp
 from conecta_senai.routes.manutencao_unidade.publico import manutencao_public_bp
 from conecta_senai.routes.manutencao_unidade.visitante import (

@@ -30,10 +30,10 @@ def test_address_normalization(monkeypatch):
             bcc=["b@example.com"],
         )
         params = mock_send.call_args[0][0]
-        assert params["to"] == ["a@example.com"]  # nosec B101
-        assert params["cc"] == ["c@example.com"]  # nosec B101
-        assert params["bcc"] == ["b@example.com"]  # nosec B101
-        assert params["reply_to"] == "reply@example.com"  # nosec B101
+        assert params["to"] == ["a@example.com"]
+        assert params["cc"] == ["c@example.com"]
+        assert params["bcc"] == ["b@example.com"]
+        assert params["reply_to"] == "reply@example.com"
 
 
 def test_attachments(monkeypatch):
@@ -51,7 +51,7 @@ def test_attachments(monkeypatch):
             attachments=attachments,
         )
         params = mock_send.call_args[0][0]
-        assert params["attachments"] == attachments  # nosec B101
+        assert params["attachments"] == attachments
 
 
 def test_error_propagation(monkeypatch):
@@ -90,5 +90,5 @@ def test_send_email_retries_on_rate_limit(monkeypatch, app):
     ) as mock_send:
         with app.app_context():
             result = svc.send_email("a@example.com", "Oi", "<p>oi</p>")
-        assert result["id"] == "123"  # nosec B101
-        assert mock_send.call_count == 2  # nosec B101
+        assert result["id"] == "123"
+        assert mock_send.call_count == 2

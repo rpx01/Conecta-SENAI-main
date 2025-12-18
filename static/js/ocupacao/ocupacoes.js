@@ -295,7 +295,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     aplicarFiltros();
 });
 
-// ===== Modal e funções de instrutor =====
 let instrutoresCache = [];
 let modalInstrutorBootstrap = null;
 
@@ -362,7 +361,6 @@ async function salvarInstrutorOcupacao() {
     }
 }
 
-// Adicionar event listener para o botão salvar quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     const btnSalvar = document.getElementById('btnSalvarInstrutor');
     if (btnSalvar) {
@@ -370,6 +368,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Expor função globalmente para uso no onclick
 window.abrirModalInstrutor = abrirModalInstrutor;
 

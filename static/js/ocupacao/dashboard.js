@@ -1,6 +1,3 @@
-// Funções para o dashboard de salas
-
-// Variáveis globais
 let estatisticasGerais = {};
 let proximasOcupacoes = [];
 let relatorioMensal = {};
@@ -42,7 +39,6 @@ async function obterSalasAtivas() {
     return salasAtivasPromise;
 }
 
-// Carrega indicadores de salas por mês
 function setTextContentIfExists(elementId, value) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -96,10 +92,9 @@ async function carregarIndicadoresMensais() {
     }
 }
 
-// Carrega estatísticas gerais
 async function carregarEstatisticasGerais() {
     try {
-        // Carrega total de salas ativas
+        
         try {
             const salas = await obterSalasAtivas();
             document.getElementById('totalSalasAtivas').textContent = salas.length;
@@ -107,7 +102,6 @@ async function carregarEstatisticasGerais() {
             console.error('Erro ao carregar salas ativas:', error);
         }
         
-        // Carrega total de instrutores ativos
         const responseInstrutores = await fetch(`${API_URL}/instrutores?status=ativo`, {
             headers: {
             }
@@ -118,7 +112,6 @@ async function carregarEstatisticasGerais() {
             document.getElementById('totalInstrutoresAtivos').textContent = instrutores.length;
         }
         
-        // Carrega ocupações de hoje
         const hoje = new Date().toISOString().split('T')[0];
         const responseHoje = await fetch(`${API_URL}/ocupacoes?data_inicio=${hoje}&data_fim=${hoje}&status=confirmado`, {
             headers: {
@@ -130,7 +123,6 @@ async function carregarEstatisticasGerais() {
             document.getElementById('ocupacoesHoje').textContent = ocupacoesHoje.length;
         }
         
-        // Carrega ocupações desta semana
         const inicioSemana = getInicioSemana();
         const fimSemana = getFimSemana();
         const responseSemana = await fetch(`${API_URL}/ocupacoes?data_inicio=${inicioSemana}&data_fim=${fimSemana}&status=confirmado`, {
@@ -149,7 +141,6 @@ async function carregarEstatisticasGerais() {
     }
 }
 
-// Carrega próximas ocupações
 async function carregarProximasOcupacoes() {
     try {
         const hoje = new Date().toISOString().split('T')[0];
@@ -165,7 +156,6 @@ async function carregarProximasOcupacoes() {
         if (response.ok) {
             proximasOcupacoes = await response.json();
             
-            // Ordena por data e horário
             proximasOcupacoes.sort((a, b) => {
                 const dataA = new Date(`${a.data}T${a.horario_inicio}`);
                 const dataB = new Date(`${b.data}T${b.horario_inicio}`);
@@ -182,7 +172,6 @@ async function carregarProximasOcupacoes() {
     }
 }
 
-// Renderiza próximas ocupações
 function renderizarProximasOcupacoes() {
     const container = document.getElementById('proximasOcupacoes');
     
@@ -193,7 +182,6 @@ function renderizarProximasOcupacoes() {
     
     container.innerHTML = '';
     
-    // Mostra apenas as próximas 5 ocupações
     const ocupacoesLimitadas = proximasOcupacoes.slice(0, 5);
     
     ocupacoesLimitadas.forEach(ocupacao => {
@@ -234,10 +222,9 @@ function renderizarProximasOcupacoes() {
     document.getElementById('proximasOcupacoes').style.display = 'block';
 }
 
-// Carrega relatório mensal
 async function carregarRelatorioMensal() {
     try {
-        // Calcula primeiro e último dia do mês atual
+        
         const hoje = new Date();
         const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
         const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
@@ -245,7 +232,6 @@ async function carregarRelatorioMensal() {
         const dataInicio = primeiroDia.toISOString().split('T')[0];
         const dataFim = ultimoDia.toISOString().split('T')[0];
         
-        // Verifica se é admin para acessar relatório
         if (isAdmin()) {
             const response = await fetch(`${API_URL}/ocupacoes/relatorio?data_inicio=${dataInicio}&data_fim=${dataFim}`, {
                 headers: {
@@ -258,7 +244,7 @@ async function carregarRelatorioMensal() {
                 renderizarOcupacoesPorTipo();
             }
         } else {
-            // Para usuários não-admin, carrega dados básicos
+            
             await carregarDadosBasicos(dataInicio, dataFim);
         }
     } catch (error) {
@@ -270,10 +256,9 @@ async function carregarRelatorioMensal() {
     }
 }
 
-// Carrega dados básicos para usuários não-admin
 async function carregarDadosBasicos(dataInicio, dataFim) {
     try {
-        // Carrega ocupações do usuário no período
+        
         const response = await fetch(`${API_URL}/ocupacoes?data_inicio=${dataInicio}&data_fim=${dataFim}`, {
             headers: {
             }
@@ -282,7 +267,6 @@ async function carregarDadosBasicos(dataInicio, dataFim) {
         if (response.ok) {
             const ocupacoes = await response.json();
             
-            // Processa dados para exibição
             const salasMaisUtilizadas = processarSalasMaisUtilizadas(ocupacoes);
             const ocupacoesPorTipo = processarOcupacoesPorTipo(ocupacoes);
             
@@ -295,7 +279,6 @@ async function carregarDadosBasicos(dataInicio, dataFim) {
     }
 }
 
-// Processa salas mais utilizadas para usuários não-admin
 function processarSalasMaisUtilizadas(ocupacoes) {
     const contadorSalas = {};
     
@@ -310,7 +293,6 @@ function processarSalasMaisUtilizadas(ocupacoes) {
         .slice(0, 5);
 }
 
-// Processa ocupações por tipo para usuários não-admin
 function processarOcupacoesPorTipo(ocupacoes) {
     const contadorTipos = {};
     
@@ -323,7 +305,6 @@ function processarOcupacoesPorTipo(ocupacoes) {
         .map(([tipo, total]) => ({ tipo, total }));
 }
 
-// Renderiza salas mais utilizadas
 function renderizarSalasMaisUtilizadas() {
     const container = document.getElementById('salasMaisUtilizadas');
     
@@ -355,7 +336,6 @@ function renderizarSalasMaisUtilizadas() {
     document.getElementById('salasMaisUtilizadas').style.display = 'block';
 }
 
-// Renderiza salas mais utilizadas (versão básica)
 function renderizarSalasMaisUtilizadasBasico(salas) {
     const container = document.getElementById('salasMaisUtilizadas');
     
@@ -387,7 +367,6 @@ function renderizarSalasMaisUtilizadasBasico(salas) {
     document.getElementById('salasMaisUtilizadas').style.display = 'block';
 }
 
-// Renderiza ocupações por tipo
 function renderizarOcupacoesPorTipo() {
     const container = document.getElementById('ocupacoesPorTipo');
     
@@ -434,7 +413,6 @@ function renderizarOcupacoesPorTipo() {
     document.getElementById('ocupacoesPorTipo').style.display = 'block';
 }
 
-// Renderiza ocupações por tipo (versão básica)
 function renderizarOcupacoesPorTipoBasico(tipos) {
     const container = document.getElementById('ocupacoesPorTipo');
     
@@ -481,11 +459,10 @@ function renderizarOcupacoesPorTipoBasico(tipos) {
     document.getElementById('ocupacoesPorTipo').style.display = 'block';
 }
 
-// Funções auxiliares
 function getInicioSemana() {
     const hoje = new Date();
     const dia = hoje.getDay();
-    const diff = hoje.getDate() - dia + (dia === 0 ? -6 : 1); // Ajusta para segunda-feira
+    const diff = hoje.getDate() - dia + (dia === 0 ? -6 : 1); 
     const inicioSemana = new Date(hoje.setDate(diff));
     return inicioSemana.toISOString().split('T')[0];
 }
@@ -493,7 +470,7 @@ function getInicioSemana() {
 function getFimSemana() {
     const hoje = new Date();
     const dia = hoje.getDay();
-    const diff = hoje.getDate() - dia + (dia === 0 ? 0 : 7); // Ajusta para domingo
+    const diff = hoje.getDate() - dia + (dia === 0 ? 0 : 7); 
     const fimSemana = new Date(hoje.setDate(diff));
     return fimSemana.toISOString().split('T')[0];
 }
@@ -506,7 +483,6 @@ function formatarDataCurta(dataStr) {
     });
 }
 
-// Carrega tendência mensal de ocupações e renderiza gráfico
 async function carregarTendenciaMensal() {
     if (!isAdmin()) return;
     try {

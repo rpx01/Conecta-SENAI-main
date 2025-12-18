@@ -1,13 +1,9 @@
-// Funções para nova ocupação
-
-// Variáveis globais
 let salasDisponiveis = [];
 let turmasDisponiveis = [];
 let tiposOcupacaoData = [];
 let ocupacaoEditando = null;
 let disponibilidadeAtual = null;
 
-// Converte o retorno de erros da API em uma mensagem legível
 function formatarErros(erro) {
     if (Array.isArray(erro)) {
         return erro.map(e => {
@@ -20,7 +16,6 @@ function formatarErros(erro) {
     return erro;
 }
 
-// Retorna o turno baseado nos horários
 function obterTurnoPorHorario(inicio, fim) {
     const mapa = {
         '08:00': 'Manhã',
@@ -30,13 +25,12 @@ function obterTurnoPorHorario(inicio, fim) {
     if (mapa[inicio]) {
         return mapa[inicio];
     }
-    // fallback
+    
     if (inicio < '12:00') return 'Manhã';
     if (inicio < '18:30') return 'Tarde';
     return 'Noite';
 }
 
-// Carrega tipos de ocupação
 async function carregarTiposOcupacao() {
     try {
         const response = await fetch(`${API_URL}/ocupacoes/tipos`, {
@@ -59,7 +53,6 @@ async function carregarTiposOcupacao() {
     }
 }
 
-// Carrega salas disponíveis
 async function carregarSalas() {
     try {
         const response = await fetch(`${API_URL}/salas?status=ativa`, {
@@ -101,7 +94,6 @@ async function carregarTurmasSelect() {
     }
 }
 
-// Adiciona listeners de validação
 function adicionarListenersValidacao() {
     document.getElementById('dataInicio').addEventListener('change', validarDatas);
     document.getElementById('dataFim').addEventListener('change', validarDatas);
@@ -110,22 +102,18 @@ function adicionarListenersValidacao() {
     document.getElementById('turno').addEventListener('change', verificarDisponibilidade);
     document.getElementById('salaOcupacao').addEventListener('change', verificarDisponibilidade);
 
-    // Verifica se há parâmetros na URL
     verificarParametrosURL();
 }
 
-// Verifica parâmetros da URL
 function verificarParametrosURL() {
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Data pré-selecionada
     const data = urlParams.get('data');
     if (data) {
         document.getElementById('dataInicio').value = data;
         document.getElementById('dataFim').value = data;
     }
     
-    // Edição de ocupação
     const editarId = urlParams.get('editar');
     if (editarId) {
         carregarOcupacaoParaEdicao(editarId);
@@ -134,7 +122,6 @@ function verificarParametrosURL() {
     verificarDisponibilidade();
 }
 
-// Carrega ocupação para edição
 async function carregarOcupacaoParaEdicao(id) {
     try {
         const response = await fetch(`${API_URL}/ocupacoes/${encodeURIComponent(id)}`, {
@@ -145,7 +132,6 @@ async function carregarOcupacaoParaEdicao(id) {
         if (response.ok) {
             ocupacaoEditando = await response.json();
             
-            // Preenche o formulário
             document.getElementById('cursoEvento').value = ocupacaoEditando.curso_evento;
             document.getElementById('tipoOcupacao').value = ocupacaoEditando.tipo_ocupacao;
             document.getElementById('dataInicio').value = ocupacaoEditando.data_inicio || ocupacaoEditando.data;
@@ -154,7 +140,6 @@ async function carregarOcupacaoParaEdicao(id) {
             document.getElementById('salaOcupacao').value = ocupacaoEditando.sala_id;
             document.getElementById('observacoesOcupacao').value = ocupacaoEditando.observacoes || '';
 
-            // Atualiza título
             document.querySelector('h1').textContent = 'Editar Ocupação';
             verificarDisponibilidade();
         } else {
@@ -166,7 +151,6 @@ async function carregarOcupacaoParaEdicao(id) {
     }
 }
 
-// Valida datas de início e fim
 function validarDatas() {
     const inicio = document.getElementById('dataInicio').value;
     const fim = document.getElementById('dataFim').value;
@@ -179,7 +163,6 @@ function validarDatas() {
     document.getElementById('dataInicio').setCustomValidity('');
 }
 
-// Verifica disponibilidade de forma dinâmica
 async function verificarDisponibilidade() {
     const salaId = document.getElementById('salaOcupacao').value;
     const dataInicio = document.getElementById('dataInicio').value;
@@ -235,7 +218,6 @@ async function verificarDisponibilidade() {
     }
 }
 
-// Salva a ocupação
 async function salvarOcupacao() {
     
     try {
@@ -282,7 +264,6 @@ async function salvarOcupacao() {
     }
 }
 
-// Valida formulário
 function validarFormulario() {
     const campos = [
         'cursoEvento',
@@ -305,7 +286,6 @@ function validarFormulario() {
         }
     });
     
-    // Valida datas
     validarDatas();
 
     if (document.getElementById('dataInicio').validationMessage || document.getElementById('dataFim').validationMessage) {
@@ -319,11 +299,6 @@ function validarFormulario() {
     return valido;
 }
 
-// Avança para próximo passo
-
-// Removido: alertas em linha substituídos por toasts globais
-
-// Exibe aviso quando "Aula Regular" é selecionada
 function monitorarSelecaoAulaRegular() {
     const tipoOcupacaoSelect = document.getElementById('tipoOcupacao');
     const dataInicioInput = document.getElementById('dataInicio');
@@ -347,7 +322,6 @@ function monitorarSelecaoAulaRegular() {
     verificarAviso();
 }
 
-// Garante envio correto do formulário em modo de edição ou criação
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formNovaOcupacao');
     if (form) {
@@ -357,7 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Inicia monitoramento para avisos de "Aula Regular"
     monitorarSelecaoAulaRegular();
 });
 

@@ -1,5 +1,3 @@
-"""Regras de negócio para o módulo de notícias."""
-
 from __future__ import annotations
 
 import logging
@@ -65,7 +63,7 @@ def _remover_arquivo(caminho_relativo: str | None) -> None:
         return
     try:
         caminho.unlink(missing_ok=True)
-    except TypeError:  # Python < 3.8 compatibility
+    except TypeError:
         if caminho.exists():
             caminho.unlink()
     except OSError:
@@ -104,14 +102,16 @@ def _tabela_imagens_disponivel(force_refresh: bool = False) -> bool:
                 current_app.logger.warning(
                     "Tabela 'imagens_noticias' ausente; criando automaticamente."
                 )
-            except RuntimeError:  # pragma: no cover - logger fora do contexto Flask
-                log.warning("Tabela 'imagens_noticias' ausente; criando automaticamente.")
+            except RuntimeError:
+                log.warning(
+                    "Tabela 'imagens_noticias' ausente; criando automaticamente."
+                )
 
             ImagemNoticia.__table__.create(bind, checkfirst=True)
 
             inspector = inspect(bind)
             resultado = inspector.has_table(ImagemNoticia.__tablename__)
-    except SQLAlchemyError as exc:  # pragma: no cover - introspecção defensiva
+    except SQLAlchemyError as exc:
         _registrar_tabela_imagens_indisponivel(exc)
         return False
 
@@ -155,19 +155,26 @@ def _carregar_imagem_relacionada(
                 caminho_relativo = getattr(imagem_relacionada, "caminho_relativo", None)
 
     if caminho_relativo is None:
-        caminho_relativo = _extrair_caminho_relativo_de_url(getattr(noticia, "imagem_url", None))
+        caminho_relativo = _extrair_caminho_relativo_de_url(
+            getattr(noticia, "imagem_url", None)
+        )
 
     return imagem_relacionada, caminho_relativo, tabela_disponivel
 
 
-def _aplicar_imagem(noticia: Noticia, arquivo: FileStorage | None) -> Tuple[str | None, str | None]:
-    """Aplica uma nova imagem à notícia e retorna o caminho removido."""
+def _aplicar_imagem(
+    noticia: Noticia, arquivo: FileStorage | None
+) -> Tuple[str | None, str | None]:
 
     if not arquivo or not arquivo.filename:
         return None, None
 
-    nome_arquivo, caminho_relativo, conteudo, content_type = _salvar_arquivo_imagem(arquivo)
-    imagem_relacionada, caminho_antigo, tabela_disponivel = _carregar_imagem_relacionada(noticia)
+    nome_arquivo, caminho_relativo, conteudo, content_type = _salvar_arquivo_imagem(
+        arquivo
+    )
+    imagem_relacionada, caminho_antigo, tabela_disponivel = (
+        _carregar_imagem_relacionada(noticia)
+    )
 
     if tabela_disponivel and imagem_relacionada is not None:
         imagem_relacionada.nome_arquivo = nome_arquivo
@@ -204,8 +211,9 @@ def _aplicar_imagem(noticia: Noticia, arquivo: FileStorage | None) -> Tuple[str 
     return caminho_antigo, caminho_relativo
 
 
-def criar_noticia(dados: Dict[str, Any], arquivo_imagem: FileStorage | None = None) -> Noticia:
-    """Persiste uma nova notícia validada."""
+def criar_noticia(
+    dados: Dict[str, Any], arquivo_imagem: FileStorage | None = None
+) -> Noticia:
 
     caminho_salvo = None
     noticia = Noticia(**dados)
@@ -214,7 +222,7 @@ def criar_noticia(dados: Dict[str, Any], arquivo_imagem: FileStorage | None = No
             _, caminho_salvo = _aplicar_imagem(noticia, arquivo_imagem)
         noticia = NoticiaRepository.add(noticia)
         return noticia
-    except SQLAlchemyError as exc:  # pragma: no cover - erros de banco são delegados
+    except SQLAlchemyError as exc:
         NoticiaRepository.rollback()
         if caminho_salvo:
             _remover_arquivo(caminho_salvo)
@@ -226,7 +234,6 @@ def atualizar_noticia(
     dados: Dict[str, Any],
     arquivo_imagem: FileStorage | None = None,
 ) -> Noticia:
-    """Atualiza a notícia informada com os dados fornecidos."""
 
     caminho_antigo = None
     caminho_novo = None
@@ -241,7 +248,7 @@ def atualizar_noticia(
         if caminho_antigo and caminho_antigo != caminho_novo:
             _remover_arquivo(caminho_antigo)
         return noticia
-    except SQLAlchemyError as exc:  # pragma: no cover
+    except SQLAlchemyError as exc:
         NoticiaRepository.rollback()
         if caminho_novo:
             _remover_arquivo(caminho_novo)
@@ -249,21 +256,17 @@ def atualizar_noticia(
 
 
 def excluir_noticia(noticia: Noticia) -> None:
-    """Remove a notícia do banco de dados."""
-
     _, caminho_antigo, _ = _carregar_imagem_relacionada(noticia)
     try:
         NoticiaRepository.delete(noticia)
         if caminho_antigo:
             _remover_arquivo(caminho_antigo)
-    except SQLAlchemyError as exc:  # pragma: no cover
+    except SQLAlchemyError as exc:
         NoticiaRepository.rollback()
         raise exc
 
 
 def publicar_noticias_agendadas() -> dict[str, int]:
-    """Ativa notícias agendadas cuja data de publicação já passou."""
-
     agora = datetime.now(timezone.utc)
     noticias_para_publicar = Noticia.query.filter(
         Noticia.ativo.is_(False),
@@ -329,18 +332,16 @@ def _dias_uteis_decorridos(inicio: datetime, fim: datetime) -> int:
 
 
 def remover_destaques_expirados() -> dict[str, int]:
-    """Remove o destaque de notícias cuja data ultrapassou cinco dias úteis."""
-
     try:
-        noticias_em_destaque = (
-            Noticia.query.filter(
-                Noticia.destaque.is_(True),
-                Noticia.data_publicacao.isnot(None),
-            ).all()
-        )
+        noticias_em_destaque = Noticia.query.filter(
+            Noticia.destaque.is_(True),
+            Noticia.data_publicacao.isnot(None),
+        ).all()
     except SQLAlchemyError:
         db.session.rollback()
-        log.exception("Erro ao buscar notícias em destaque para verificação de expiração.")
+        log.exception(
+            "Erro ao buscar notícias em destaque para verificação de expiração."
+        )
         return {"total": 0, "ajustados": 0, "falhas": 0}
 
     total = len(noticias_em_destaque)

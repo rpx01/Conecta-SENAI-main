@@ -1,12 +1,8 @@
-"""Inicializa a conexão com o Redis usada pela aplicação."""
-
 import os
 from redis import Redis
 
 
 class DummyRedis:
-    """Implementação simplificada usada durante testes quando o Redis não está disponível."""
-
     def ping(self):
         return True
 
@@ -18,7 +14,6 @@ class DummyRedis:
 
 
 def init_redis(app=None):
-    """Cria o cliente Redis e o registra opcionalmente no app."""
     url = (
         app.config.get("REDIS_URL")
         if app is not None
@@ -31,7 +26,7 @@ def init_redis(app=None):
         try:
             client = Redis.from_url(url)
             client.ping()
-        except Exception as e:  # pragma: no cover - fallback quando redis indisponível
+        except Exception as e:
             if app is not None:
                 app.logger.warning("Redis indisponível: %s", str(e))
             client = DummyRedis()
@@ -44,4 +39,3 @@ def init_redis(app=None):
 
 
 redis_conn = DummyRedis()
-

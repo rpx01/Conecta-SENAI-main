@@ -1,6 +1,3 @@
-# flake8: noqa
-"""Rotas para gerenciamento de treinamentos e inscricoes."""
-
 from flask import Blueprint, request, jsonify, g, current_app
 from sqlalchemy.exc import SQLAlchemyError
 import math
@@ -66,16 +63,13 @@ treinamento_bp = Blueprint("treinamento", __name__)
 
 
 def _get_logo_path() -> Path:
-    """Retorna o caminho absoluto do logo do SENAI dentro da pasta estática."""
     static_folder = current_app.static_folder
     if not static_folder:
         static_folder = str(Path(current_app.root_path) / "static")
     return Path(static_folder) / "img" / "senai-logo.png"
 
 
-# Função auxiliar para coletar dados da turma
 def coletar_dados_turma(turma: TurmaTreinamento) -> dict:
-    """Coleta e formata os dados de um objeto TurmaTreinamento em um dicionário."""
     periodo = ""
     if turma.data_inicio and turma.data_fim:
         periodo = f"{turma.data_inicio.strftime('%d/%m/%Y')} a {turma.data_fim.strftime('%d/%m/%Y')}"
@@ -94,11 +88,9 @@ def coletar_dados_turma(turma: TurmaTreinamento) -> dict:
     }
 
 
-# NOVO: Endpoint para listar turmas futuras (agendadas)
 @treinamento_bp.route("/treinamentos/agendadas", methods=["GET"])
 @login_required
 def listar_turmas_agendadas():
-    """Lista as turmas de treinamento que ainda não começaram."""
     hoje = date.today()
     turmas = (
         TurmaTreinamento.query.filter(TurmaTreinamento.data_inicio > hoje)
@@ -119,7 +111,9 @@ def listar_turmas_agendadas():
                 "data_fim": turma.data_fim.isoformat() if turma.data_fim else None,
                 "local_realizacao": turma.local_realizacao,
                 "horario": turma.horario,
-                "instrutor_nome": turma.instrutor.nome if turma.instrutor else "A definir",
+                "instrutor_nome": (
+                    turma.instrutor.nome if turma.instrutor else "A definir"
+                ),
                 "teoria_online": turma.teoria_online,
                 "has_pratica": bool(getattr(turma.treinamento, "tem_pratica", False)),
             }
@@ -127,11 +121,9 @@ def listar_turmas_agendadas():
     return jsonify(dados)
 
 
-# NOVO: Endpoint para as turmas ativas (em andamento)
 @treinamento_bp.route("/treinamentos/turmas-ativas", methods=["GET"])
 @login_required
 def listar_turmas_ativas():
-    """Lista as turmas de treinamento que estão atualmente em andamento."""
     hoje = date.today()
     turmas = (
         TurmaTreinamento.query.filter(
@@ -164,11 +156,9 @@ def listar_turmas_ativas():
     return jsonify(dados)
 
 
-# MODIFICADO: Endpoint para o histórico de turmas (concluídas)
 @treinamento_bp.route("/treinamentos/historico", methods=["GET"])
 @login_required
 def listar_historico_turmas():
-    """Lista as turmas de treinamento que já foram concluídas."""
     hoje = date.today()
     turmas = (
         TurmaTreinamento.query.filter(TurmaTreinamento.data_fim < hoje)
@@ -197,11 +187,9 @@ def listar_historico_turmas():
     return jsonify(dados)
 
 
-# Se precisar retornar todas as turmas, mantém a rota original com novo nome
 @treinamento_bp.route("/treinamentos/todas", methods=["GET"])
 @login_required
 def listar_todas_as_turmas():
-    """Lista TODAS as turmas de treinamento (futuras, presentes e passadas)."""
     turmas = TurmaTreinamento.query.join(Treinamento).order_by(Treinamento.nome).all()
     dados = []
     for turma in turmas:
@@ -226,7 +214,6 @@ def listar_todas_as_turmas():
 @treinamento_bp.route("/treinamentos/<int:turma_id>/inscricoes", methods=["POST"])
 @login_required
 def inscrever_usuario(turma_id):
-    """Realiza a inscricao do usuario logado em uma turma."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -243,7 +230,6 @@ def inscrever_usuario(turma_id):
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
 
-    # Preenche dados a partir do perfil do usuário, se disponíveis
     usuario = g.current_user
     cpf = usuario.cpf or payload.cpf
     data_nascimento = usuario.data_nascimento or payload.data_nascimento
@@ -261,7 +247,9 @@ def inscrever_usuario(turma_id):
         )
         db.session.add(insc)
         db.session.commit()
-        log_action(g.current_user.id, 'create', 'InscricaoTreinamento', insc.id, insc.to_dict())
+        log_action(
+            g.current_user.id, "create", "InscricaoTreinamento", insc.id, insc.to_dict()
+        )
         return jsonify(insc.to_dict()), 201
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -271,8 +259,6 @@ def inscrever_usuario(turma_id):
 @treinamento_bp.route("/treinamentos/minhas", methods=["GET"])
 @login_required
 def listar_meus_cursos():
-    """Lista cursos em que o usuario esta inscrito."""
-    # Usando joinedload para otimizar a busca e evitar múltiplas queries (problema N+1)
     inscricoes = (
         InscricaoTreinamento.query.filter_by(usuario_id=g.current_user.id)
         .join(TurmaTreinamento)
@@ -282,7 +268,9 @@ def listar_meus_cursos():
             )
         )
         .options(
-            db.joinedload(InscricaoTreinamento.turma).joinedload(TurmaTreinamento.instrutor)
+            db.joinedload(InscricaoTreinamento.turma).joinedload(
+                TurmaTreinamento.instrutor
+            )
         )
         .all()
     )
@@ -295,9 +283,10 @@ def listar_meus_cursos():
                 "id": inc.id,
                 "turma_id": turma.id,
                 "treinamento": turma.treinamento.to_dict(),
-                "data_inicio": turma.data_inicio.isoformat() if turma.data_inicio else None,
+                "data_inicio": (
+                    turma.data_inicio.isoformat() if turma.data_inicio else None
+                ),
                 "data_fim": turma.data_fim.isoformat() if turma.data_fim else None,
-                # Campos que estavam faltando e foram adicionados
                 "horario": turma.horario,
                 "local_realizacao": turma.local_realizacao,
                 "instrutor_nome": turma.instrutor.nome if turma.instrutor else None,
@@ -311,20 +300,19 @@ def listar_meus_cursos():
 @treinamento_bp.route("/treinamentos/catalogo", methods=["GET"])
 @login_required
 def listar_catalogo_treinamentos():
-    """Lista os treinamentos cadastrados."""
     treins = Treinamento.query.order_by(Treinamento.nome).all()
     return jsonify([t.to_dict() for t in treins])
+
+
 @treinamento_bp.route("/treinamentos/catalogo", methods=["POST"])
 @admin_required
 def criar_treinamento():
-    """Cadastra um novo treinamento."""
     data = request.json or {}
     try:
         payload = TreinamentoCreateSchema(**data)
     except ValidationError as e:
         return jsonify({"erro": e.errors()}), 400
 
-    # Verificação de duplicidade de código
     if Treinamento.query.filter_by(codigo=payload.codigo).first():
         return jsonify({"erro": "Já existe um treinamento com este código"}), 400
     try:
@@ -340,7 +328,7 @@ def criar_treinamento():
         )
         db.session.add(novo)
         db.session.commit()
-        log_action(g.current_user.id, 'create', 'Treinamento', novo.id, novo.to_dict())
+        log_action(g.current_user.id, "create", "Treinamento", novo.id, novo.to_dict())
         return jsonify(novo.to_dict()), 201
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -350,7 +338,6 @@ def criar_treinamento():
 @treinamento_bp.route("/treinamentos/catalogo/<int:treinamento_id>", methods=["GET"])
 @login_required
 def obter_treinamento(treinamento_id):
-    """Obtém um treinamento específico."""
     treino = db.session.get(Treinamento, treinamento_id)
     if not treino:
         return jsonify({"erro": "Treinamento não encontrado"}), 404
@@ -360,7 +347,6 @@ def obter_treinamento(treinamento_id):
 @treinamento_bp.route("/treinamentos/catalogo/<int:treinamento_id>", methods=["PUT"])
 @admin_required
 def atualizar_treinamento(treinamento_id):
-    """Atualiza um treinamento existente."""
     treino = db.session.get(Treinamento, treinamento_id)
     if not treino:
         return jsonify({"erro": "Treinamento não encontrado"}), 404
@@ -392,7 +378,13 @@ def atualizar_treinamento(treinamento_id):
 
     try:
         db.session.commit()
-        log_action(g.current_user.id, 'update', 'Treinamento', treino.id, payload.model_dump(exclude_unset=True))
+        log_action(
+            g.current_user.id,
+            "update",
+            "Treinamento",
+            treino.id,
+            payload.model_dump(exclude_unset=True),
+        )
         return jsonify(treino.to_dict())
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -402,7 +394,6 @@ def atualizar_treinamento(treinamento_id):
 @treinamento_bp.route("/treinamentos/catalogo/<int:treinamento_id>", methods=["DELETE"])
 @admin_required
 def remover_treinamento(treinamento_id):
-    """Exclui um treinamento."""
     treino = db.session.get(Treinamento, treinamento_id)
     if not treino:
         return jsonify({"erro": "Treinamento não encontrado"}), 404
@@ -418,7 +409,6 @@ def remover_treinamento(treinamento_id):
 @treinamento_bp.route("/treinamentos/turmas", methods=["POST"])
 @admin_required
 def criar_turma_treinamento():
-    """Cria uma turma para um treinamento."""
     data = request.json or {}
     try:
         payload = TurmaTreinamentoCreateSchema(**data)
@@ -444,7 +434,7 @@ def criar_turma_treinamento():
     turma = TurmaTreinamento(
         treinamento_id=payload.treinamento_id,
         data_inicio=payload.data_inicio,
-       data_fim=payload.data_fim,
+        data_fim=payload.data_fim,
         local_realizacao=payload.local_realizacao,
         horario=payload.horario,
         instrutor_id=payload.instrutor_id,
@@ -455,7 +445,7 @@ def criar_turma_treinamento():
         db.session.commit()
         try:
             notificar_nova_turma(turma)
-        except Exception as exc:  # pragma: no cover - log apenas
+        except Exception as exc:
             log.error(f"Erro ao notificar nova turma: {exc}")
         return jsonify(turma.to_dict()), 201
     except SQLAlchemyError as e:
@@ -466,7 +456,6 @@ def criar_turma_treinamento():
 @treinamento_bp.route("/treinamentos/turmas/<int:turma_id>", methods=["PUT"])
 @admin_required
 def atualizar_turma_treinamento(turma_id):
-    """Atualiza uma turma."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -484,12 +473,9 @@ def atualizar_turma_treinamento(turma_id):
             403,
         )
 
-    # Captura o estado ANTES de qualquer modificação
     periodo_antigo = ""
     if turma.data_inicio and turma.data_fim:
-        periodo_antigo = (
-            f"De {turma.data_inicio.strftime('%d/%m/%Y')} a {turma.data_fim.strftime('%d/%m/%Y')}"
-        )
+        periodo_antigo = f"De {turma.data_inicio.strftime('%d/%m/%Y')} a {turma.data_fim.strftime('%d/%m/%Y')}"
     dados_antigos = {
         "treinamento_nome": turma.treinamento.nome if turma.treinamento else "",
         "treinamento_codigo": turma.treinamento.codigo if turma.treinamento else "",
@@ -523,13 +509,17 @@ def atualizar_turma_treinamento(turma_id):
     instrutor_antigo = turma.instrutor
 
     treinamento_id = (
-        payload.treinamento_id if payload.treinamento_id is not None else turma.treinamento_id
+        payload.treinamento_id
+        if payload.treinamento_id is not None
+        else turma.treinamento_id
     )
     treinamento = db.session.get(Treinamento, treinamento_id)
     if not treinamento:
         return jsonify({"erro": "Treinamento não encontrado"}), 404
 
-    data_inicio = payload.data_inicio if payload.data_inicio is not None else turma.data_inicio
+    data_inicio = (
+        payload.data_inicio if payload.data_inicio is not None else turma.data_inicio
+    )
     data_fim = payload.data_fim if payload.data_fim is not None else turma.data_fim
 
     if treinamento.carga_horaria and treinamento.carga_horaria > 0:
@@ -564,19 +554,21 @@ def atualizar_turma_treinamento(turma_id):
         db.session.refresh(turma)
         periodo_novo = ""
         if turma.data_inicio and turma.data_fim:
-            periodo_novo = (
-                f"De {turma.data_inicio.strftime('%d/%m/%Y')} a {turma.data_fim.strftime('%d/%m/%Y')}"
-            )
+            periodo_novo = f"De {turma.data_inicio.strftime('%d/%m/%Y')} a {turma.data_fim.strftime('%d/%m/%Y')}"
         dados_novos = {
             "treinamento_nome": turma.treinamento.nome if turma.treinamento else "",
             "treinamento_codigo": turma.treinamento.codigo if turma.treinamento else "",
             "periodo": periodo_novo,
             "horario": turma.horario,
-            "carga_horaria": turma.treinamento.carga_horaria if turma.treinamento else None,
+            "carga_horaria": (
+                turma.treinamento.carga_horaria if turma.treinamento else None
+            ),
             "instrutor_nome": turma.instrutor.nome if turma.instrutor else "A definir",
             "local_realizacao": turma.local_realizacao,
             "teoria_online": turma.teoria_online,
-            "tem_pratica": turma.treinamento.tem_pratica if turma.treinamento else False,
+            "tem_pratica": (
+                turma.treinamento.tem_pratica if turma.treinamento else False
+            ),
             "local_pratica": (
                 getattr(turma.treinamento, "local_pratica", None)
                 if turma.treinamento and turma.treinamento.tem_pratica
@@ -587,16 +579,20 @@ def atualizar_turma_treinamento(turma_id):
         fmt = "%d/%m/%Y"
         if valores_antes["data_inicio"] != turma.data_inicio:
             diff["data_inicio"] = (
-                valores_antes["data_inicio"].strftime(fmt)
-                if valores_antes["data_inicio"]
-                else None,
+                (
+                    valores_antes["data_inicio"].strftime(fmt)
+                    if valores_antes["data_inicio"]
+                    else None
+                ),
                 turma.data_inicio.strftime(fmt) if turma.data_inicio else None,
             )
         if valores_antes["data_fim"] != turma.data_fim:
             diff["data_fim"] = (
-                valores_antes["data_fim"].strftime(fmt)
-                if valores_antes["data_fim"]
-                else None,
+                (
+                    valores_antes["data_fim"].strftime(fmt)
+                    if valores_antes["data_fim"]
+                    else None
+                ),
                 turma.data_fim.strftime(fmt) if turma.data_fim else None,
             )
         if valores_antes["local_realizacao"] != turma.local_realizacao:
@@ -619,7 +615,7 @@ def atualizar_turma_treinamento(turma_id):
         if diff:
             try:
                 send_turma_alterada_email(dados_antigos, dados_novos)
-            except Exception as e:  # pragma: no cover - log apenas
+            except Exception as e:
                 current_app.logger.error(
                     f"Erro ao enfileirar e-mail de alteração para turma {turma_id}: {e}"
                 )
@@ -627,14 +623,14 @@ def atualizar_turma_treinamento(turma_id):
                 notificar_atualizacao_turma(
                     turma, diff, instrutor_antigo, notificar_secretaria=False
                 )
-            except Exception as exc:  # pragma: no cover - log apenas
+            except Exception as exc:
                 log.error(f"Erro ao notificar atualização de turma: {exc}")
         log_action(
             g.current_user.id,
-            'update',
-            'TurmaTreinamento',
+            "update",
+            "TurmaTreinamento",
             turma.id,
-            payload.model_dump(exclude_unset=True)
+            payload.model_dump(exclude_unset=True),
         )
         return jsonify(turma.to_dict())
     except SQLAlchemyError as e:
@@ -645,7 +641,6 @@ def atualizar_turma_treinamento(turma_id):
 @treinamento_bp.route("/treinamentos/turmas/<int:turma_id>", methods=["DELETE"])
 @admin_required
 def remover_turma_treinamento(turma_id):
-    """Remove uma turma."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -698,12 +693,8 @@ def remover_turma_treinamento(turma_id):
         dados_log = {
             "id": turma.id,
             "treinamento_id": turma.treinamento_id,
-            "treinamento_nome": (
-                turma.treinamento.nome if turma.treinamento else None
-            ),
-            "data_inicio": turma.data_inicio.isoformat()
-            if turma.data_inicio
-            else None,
+            "treinamento_nome": (turma.treinamento.nome if turma.treinamento else None),
+            "data_inicio": turma.data_inicio.isoformat() if turma.data_inicio else None,
             "data_fim": turma.data_fim.isoformat() if turma.data_fim else None,
             "instrutor_id": turma.instrutor_id,
             "instrutor_nome": turma.instrutor.nome if turma.instrutor else None,
@@ -715,8 +706,8 @@ def remover_turma_treinamento(turma_id):
 
         log_action(
             g.current_user.id,
-            'delete',
-            'TurmaTreinamento',
+            "delete",
+            "TurmaTreinamento",
             dados_log["id"],
             dados_log,
         )
@@ -724,10 +715,8 @@ def remover_turma_treinamento(turma_id):
         if unique_recipients:
             try:
                 send_treinamento_desmarcado_email(unique_recipients, turma_email_ctx)
-            except Exception as exc:  # pragma: no cover - log apenas
-                log.error(
-                    "Erro ao enviar e-mail de treinamento desmarcado: %s", exc
-                )
+            except Exception as exc:
+                log.error("Erro ao enviar e-mail de treinamento desmarcado: %s", exc)
 
         return jsonify({"mensagem": "Turma removida com sucesso"})
     except SQLAlchemyError as e:
@@ -738,7 +727,6 @@ def remover_turma_treinamento(turma_id):
 @treinamento_bp.route("/treinamentos/turmas/<int:turma_id>/inscricoes", methods=["GET"])
 @admin_required
 def listar_inscricoes(turma_id):
-    """Lista inscrições de uma turma."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -751,7 +739,6 @@ def listar_inscricoes(turma_id):
 )
 @admin_required
 def criar_inscricao_admin(turma_id):
-    """Adiciona manualmente uma inscrição em uma turma."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -778,7 +765,9 @@ def criar_inscricao_admin(turma_id):
             "turma_id": turma.id,
             "nome_treinamento": turma.treinamento.nome if turma.treinamento else "N/A",
         }
-        log_action(g.current_user.id, 'create', 'InscricaoTreinamento', insc.id, dados_log)
+        log_action(
+            g.current_user.id, "create", "InscricaoTreinamento", insc.id, dados_log
+        )
         return jsonify(insc.to_dict()), 201
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -790,7 +779,6 @@ def criar_inscricao_admin(turma_id):
 )
 @admin_required
 def exportar_inscricoes(turma_id):
-    """Exporta inscrições de uma turma em CSV, XLSX ou PDF."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -810,7 +798,6 @@ def exportar_inscricoes(turma_id):
     def format_date(dt):
         return dt.strftime("%d/%m/%Y") if dt else ""
 
-    # --- LÓGICA PARA CSV ---
     if formato == "csv":
         si = StringIO()
         writer = csv.writer(si)
@@ -846,13 +833,11 @@ def exportar_inscricoes(turma_id):
         output.headers["Content-Type"] = "text/csv"
         return output
 
-    # --- LÓGICA PARA XLSX ---
     if formato == "xlsx":
         wb = Workbook()
         ws = wb.active
         ws.title = "Lista de Presença"
 
-        # --- Estilos ---
         cor_azul_senai_hex = "00539F"
         fill_azul = PatternFill(
             start_color=cor_azul_senai_hex,
@@ -869,11 +854,9 @@ def exportar_inscricoes(turma_id):
             bottom=thin_border_side,
         )
 
-        # --- Cabeçalho ---
         ws.merge_cells("A1:B2")
         ws.merge_cells("C1:K2")
 
-        # Logo
         logo_path = _get_logo_path()
         try:
             if logo_path.exists():
@@ -890,19 +873,16 @@ def exportar_inscricoes(turma_id):
             logo_cell.font = font_white_bold
             logo_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Título
         title_cell = ws["C1"]
         title_cell.value = "Lista de Presença"
         title_cell.font = Font(color="FFFFFF", bold=True, size=20)
         title_cell.fill = fill_azul
         title_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Cor de fundo na célula da logo
         for row in ws["A1:B2"]:
             for cell in row:
                 cell.fill = fill_azul
 
-        # --- Tabela de Dados do Treinamento ---
         row_idx = 4
         dados_treinamento = {
             "Unidade:": "SENAI - Conceição do Mato Dentro",
@@ -921,12 +901,10 @@ def exportar_inscricoes(turma_id):
             "Horário:": turma.horario or "N/D",
         }
 
-        # Aplicar borda em toda a área da tabela de dados
         for col in "ABCDEFGHIJ":
             for row in range(row_idx, row_idx + 6):
                 ws[f"{col}{row}"].border = thin_border
 
-        # Preencher dados
         for i, (label, value) in enumerate(dados_treinamento.items()):
             current_row = row_idx + i
             label_cell = ws[f"A{current_row}"]
@@ -944,7 +922,6 @@ def exportar_inscricoes(turma_id):
             else:
                 ws.merge_cells(f"B{current_row}:I{current_row}")
 
-        # Lado direito
         ws["G6"].value = "Período:"
         ws["H6"].value = dados_treinamento_lado_direito["Período:"]
         ws["G7"].value = "Duração:"
@@ -967,7 +944,6 @@ def exportar_inscricoes(turma_id):
 
         row_idx += 7
 
-        # --- Tabela de Participantes ---
         ws.merge_cells(f"A{row_idx}:F{row_idx}")
         info_cell = ws[f"A{row_idx}"]
         info_cell.value = "Informações dos participantes"
@@ -1022,7 +998,6 @@ def exportar_inscricoes(turma_id):
             ws.cell(row=row_idx, column=6, value=inscricao.empresa)
             row_idx += 1
 
-        # Borda na tabela de participantes
         for col in "ABCDEFGHIJK":
             for row in range(row_idx - len(inscricoes) - 2, row_idx):
                 ws[f"{col}{row}"].border = thin_border
@@ -1030,7 +1005,6 @@ def exportar_inscricoes(turma_id):
                     horizontal="center", vertical="center"
                 )
 
-        # --- Observações e Assinatura ---
         row_idx += 1
         ws.merge_cells(f"A{row_idx}:K{row_idx+2}")
         obs_cell = ws[f"A{row_idx}"]
@@ -1047,7 +1021,6 @@ def exportar_inscricoes(turma_id):
         ass_cell.alignment = Alignment(horizontal="left", vertical="top")
         ass_cell.border = Border(bottom=thin_border_side)
 
-        # --- Ajustar tamanho das colunas e linhas ---
         ws.column_dimensions["A"].width = 5
         ws.column_dimensions["B"].width = 18
         ws.column_dimensions["C"].width = 15
@@ -1061,7 +1034,6 @@ def exportar_inscricoes(turma_id):
         ws.column_dimensions["K"].width = 15
         ws.row_dimensions[9].height = 40
 
-        # --- Salvar em buffer ---
         buf = BytesIO()
         wb.save(buf)
         buf.seek(0)
@@ -1072,10 +1044,9 @@ def exportar_inscricoes(turma_id):
             download_name=f"{nome_arquivo_final}.xlsx",
         )
 
-    # --- LÓGICA PARA PDF ---
     if formato == "pdf":
         buffer = BytesIO()
-        # Redução das margens e ajuste dos tamanhos de fonte
+
         doc = SimpleDocTemplate(
             buffer,
             pagesize=letter,
@@ -1091,9 +1062,7 @@ def exportar_inscricoes(turma_id):
             red=(0 / 255), green=(83 / 255), blue=(159 / 255)
         )
 
-        style_normal = ParagraphStyle(
-            name="Normal", fontSize=6.5, leading=7.5
-        )  # Fonte reduzida
+        style_normal = ParagraphStyle(name="Normal", fontSize=6.5, leading=7.5)
         style_bold_white = ParagraphStyle(
             name="BoldWhite",
             parent=style_normal,
@@ -1105,14 +1074,14 @@ def exportar_inscricoes(turma_id):
             parent=styles["h1"],
             alignment=1,
             textColor=colors.white,
-            fontSize=14,  # Fonte reduzida
+            fontSize=14,
         )
 
         try:
             logo_path = _get_logo_path()
             if logo_path.exists():
                 logo = ReportlabImage(
-                    str(logo_path), width=1.2 * inch, height=0.4 * inch  # Logo menor
+                    str(logo_path), width=1.2 * inch, height=0.4 * inch
                 )
                 logo.hAlign = "CENTER"
             else:
@@ -1137,9 +1106,8 @@ def exportar_inscricoes(turma_id):
             )
         )
         elements.append(header_table)
-        elements.append(Spacer(1, 0.05 * inch))  # Espaçamento reduzido
+        elements.append(Spacer(1, 0.05 * inch))
 
-        # Tabela de dados do treinamento
         dados_treinamento = [
             [
                 Paragraph("<b>Unidade:</b>", style_bold_white),
@@ -1218,19 +1186,17 @@ def exportar_inscricoes(turma_id):
             )
         )
         elements.append(tabela_dados)
-        elements.append(Spacer(1, 0.1 * inch))  # Espaçamento reduzido
+        elements.append(Spacer(1, 0.1 * inch))
 
-        # Estilo para cabeçalhos da tabela de participantes
         style_header_participantes = ParagraphStyle(
             name="HeaderParticipantes",
-            fontSize=5.8,  # Fonte reduzida
+            fontSize=5.8,
             leading=6.6,
             alignment=1,
             fontName="Helvetica-Bold",
             textColor=colors.white,
         )
 
-        # Cabeçalhos com quebra de linha
         tabela_header = [
             "Nº",
             "Nome do Participante",
@@ -1292,12 +1258,11 @@ def exportar_inscricoes(turma_id):
             0.09 * doc.width,
         ]
 
-        # Define a altura das linhas para economizar espaço
         num_participantes = len(dados_alunos)
         alturas_linhas = [
             0.28 * inch,
             0.26 * inch,
-        ] + [0.18 * inch] * num_participantes  # Alturas reduzidas
+        ] + [0.18 * inch] * num_participantes
 
         tabela_alunos = Table(
             cabecalhos_agrupados + dados_alunos,
@@ -1320,11 +1285,10 @@ def exportar_inscricoes(turma_id):
             )
         )
 
-        # Observações e Assinatura
         obs_table = Table(
             [[Paragraph("<b>Observações:</b>", style_normal)], [""]],
             colWidths=[doc.width],
-            rowHeights=[0.14 * inch, 0.35 * inch],  # Alturas reduzidas
+            rowHeights=[0.14 * inch, 0.35 * inch],
         )
         obs_table.setStyle(
             TableStyle(
@@ -1346,7 +1310,7 @@ def exportar_inscricoes(turma_id):
                 [""],
             ],
             colWidths=[doc.width],
-            rowHeights=[0.14 * inch, 0.22 * inch],  # Alturas reduzidas
+            rowHeights=[0.14 * inch, 0.22 * inch],
         )
         ass_table.setStyle(
             TableStyle(
@@ -1358,13 +1322,12 @@ def exportar_inscricoes(turma_id):
             )
         )
 
-        # Agrupa os últimos elementos para evitar quebra de página
         conteudo_final = KeepTogether(
             [
                 tabela_alunos,
-                Spacer(1, 0.1 * inch),  # Espaçamento reduzido
+                Spacer(1, 0.1 * inch),
                 obs_table,
-                Spacer(1, 0.1 * inch),  # Espaçamento reduzido
+                Spacer(1, 0.1 * inch),
                 ass_table,
             ]
         )
@@ -1386,7 +1349,6 @@ def exportar_inscricoes(turma_id):
 @treinamento_bp.route("/treinamentos/turmas/<int:turma_id>", methods=["GET"])
 @admin_required
 def obter_turma_treinamento(turma_id):
-    """Obtém detalhes de uma turma de treinamento."""
     turma = db.session.get(TurmaTreinamento, turma_id)
     if not turma:
         return jsonify({"erro": "Turma não encontrada"}), 404
@@ -1405,7 +1367,6 @@ def obter_turma_treinamento(turma_id):
 )
 @admin_required
 def avaliar_inscricao(inscricao_id):
-    """Atualiza as notas e o status de aprovação de uma inscrição."""
     inscricao = db.session.get(InscricaoTreinamento, inscricao_id)
     if not inscricao:
         return jsonify({"erro": "Inscrição não encontrada"}), 404
@@ -1426,7 +1387,6 @@ def avaliar_inscricao(inscricao_id):
         )
         inscricao.status_aprovacao = data.get("status_aprovacao")
 
-        # Campos de presença
         inscricao.presenca_teoria = data.get("presenca_teoria", False)
         inscricao.presenca_pratica = data.get("presenca_pratica", False)
 
@@ -1444,7 +1404,6 @@ def avaliar_inscricao(inscricao_id):
 @treinamento_bp.route("/treinamentos/inscricoes/<int:inscricao_id>", methods=["DELETE"])
 @admin_required
 def remover_inscricao(inscricao_id):
-    """Remove uma inscrição de uma turma."""
     inscricao = db.session.get(InscricaoTreinamento, inscricao_id)
     if not inscricao:
         return jsonify({"erro": "Inscrição não encontrada"}), 404
@@ -1454,14 +1413,18 @@ def remover_inscricao(inscricao_id):
             "id": inscricao.id,
             "nome_inscrito": inscricao.nome,
             "turma_id": inscricao.turma_id,
-            "nome_treinamento": inscricao.turma.treinamento.nome if inscricao.turma and inscricao.turma.treinamento else "N/A",
+            "nome_treinamento": (
+                inscricao.turma.treinamento.nome
+                if inscricao.turma and inscricao.turma.treinamento
+                else "N/A"
+            ),
         }
         db.session.delete(inscricao)
         db.session.commit()
         log_action(
             g.current_user.id,
-            'delete',
-            'InscricaoTreinamento',
+            "delete",
+            "InscricaoTreinamento",
             inscricao.id,
             dados_log,
         )
@@ -1474,7 +1437,6 @@ def remover_inscricao(inscricao_id):
 @treinamento_bp.post("/inscricoes/<int:inscricao_id>/convocar")
 @admin_required
 def convocar_inscrito(inscricao_id: int):
-    """Envia e-mail de convocação para o inscrito."""
     insc = db.session.get(InscricaoTreinamento, inscricao_id)
     if not insc or not insc.email:
         return jsonify({"erro": "Inscrição não encontrada ou sem e-mail"}), 404
@@ -1501,7 +1463,6 @@ def convocar_inscrito(inscricao_id: int):
 )
 @login_required
 def create_inscricao_treinamento_externo(turma_id):
-    """Cria uma nova inscrição para participante externo."""
     data = request.get_json()
 
     payload = InscricaoTreinamentoCreateSchema(**data)
@@ -1527,17 +1488,18 @@ def create_inscricao_treinamento_externo(turma_id):
 @treinamento_bp.route("/treinamentos/logs", methods=["GET"])
 @admin_required
 def listar_logs_treinamentos():
-    """Lista os logs de auditoria relacionados a treinamentos e inscrições."""
     try:
         logs = (
             db.session.query(AuditLog, User.nome)
             .join(User, User.id == AuditLog.user_id)
             .filter(
-                AuditLog.entity.in_([
-                    'Treinamento',
-                    'TurmaTreinamento',
-                    'InscricaoTreinamento',
-                ])
+                AuditLog.entity.in_(
+                    [
+                        "Treinamento",
+                        "TurmaTreinamento",
+                        "InscricaoTreinamento",
+                    ]
+                )
             )
             .order_by(AuditLog.timestamp.desc())
             .all()
@@ -1548,25 +1510,25 @@ def listar_logs_treinamentos():
             detalhes = log.details or {}
             info = ""
 
-            if log.entity == 'InscricaoTreinamento' and log.action == 'create':
-                nome_treinamento = detalhes.get('nome_treinamento', 'N/A')
-                nome_inscrito = detalhes.get('nome_inscrito', 'N/A')
-                turma_id = detalhes.get('turma_id', 'N/A')
+            if log.entity == "InscricaoTreinamento" and log.action == "create":
+                nome_treinamento = detalhes.get("nome_treinamento", "N/A")
+                nome_inscrito = detalhes.get("nome_inscrito", "N/A")
+                turma_id = detalhes.get("turma_id", "N/A")
                 info = (
                     f"Inscrito '{nome_inscrito}' adicionado ao treinamento "
                     f"'{nome_treinamento}' (Turma ID: {turma_id})"
                 )
-            elif log.entity == 'InscricaoTreinamento' and log.action == 'delete':
-                nome_treinamento = detalhes.get('nome_treinamento', 'N/A')
-                nome_inscrito = detalhes.get('nome_inscrito', 'N/A')
-                turma_id = detalhes.get('turma_id', 'N/A')
+            elif log.entity == "InscricaoTreinamento" and log.action == "delete":
+                nome_treinamento = detalhes.get("nome_treinamento", "N/A")
+                nome_inscrito = detalhes.get("nome_inscrito", "N/A")
+                turma_id = detalhes.get("turma_id", "N/A")
                 info = (
                     f"Inscrito '{nome_inscrito}' removido do treinamento "
                     f"'{nome_treinamento}' (Turma ID: {turma_id})"
                 )
-            elif log.entity == 'InscricaoTreinamento':
+            elif log.entity == "InscricaoTreinamento":
                 info = f"Inscrição '{detalhes.get('nome', '')}' (ID: {log.entity_id})"
-            elif log.entity == 'TurmaTreinamento':
+            elif log.entity == "TurmaTreinamento":
                 info = (
                     f"Turma do treinamento '{detalhes.get('treinamento_nome', 'N/A')}' "
                     f"(ID: {log.entity_id})"
@@ -1574,13 +1536,15 @@ def listar_logs_treinamentos():
             else:
                 info = f"Treinamento '{detalhes.get('nome', '')}' (ID: {log.entity_id})"
 
-            resultado.append({
-                "id": log.id,
-                "timestamp": log.timestamp.isoformat(),
-                "usuario": nome_usuario,
-                "acao": log.action,
-                "info": info,
-            })
+            resultado.append(
+                {
+                    "id": log.id,
+                    "timestamp": log.timestamp.isoformat(),
+                    "usuario": nome_usuario,
+                    "acao": log.action,
+                    "info": info,
+                }
+            )
 
         return jsonify(resultado)
     except SQLAlchemyError as e:

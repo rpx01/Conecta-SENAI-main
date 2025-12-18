@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
+
 class OcupacaoCreateSchema(BaseModel):
     sala_id: int
     curso_evento: str
@@ -8,9 +9,10 @@ class OcupacaoCreateSchema(BaseModel):
     data_fim: str
     turno: str
     tipo_ocupacao: Optional[str] = None
-    recorrencia: Optional[str] = 'unica'
-    status: Optional[str] = 'confirmado'
+    recorrencia: Optional[str] = "unica"
+    status: Optional[str] = "confirmado"
     observacoes: Optional[str] = None
+
 
 class OcupacaoUpdateSchema(BaseModel):
     sala_id: Optional[int] = None

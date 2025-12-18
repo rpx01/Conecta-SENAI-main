@@ -1,4 +1,3 @@
-"""Rotas públicas (usuários autenticados) do módulo de manutenção da unidade."""
 from __future__ import annotations
 
 import os
@@ -12,7 +11,10 @@ from werkzeug.utils import secure_filename
 from conecta_senai.auth import login_required
 from conecta_senai.models import db
 from conecta_senai.models.manutencao_anexo import ManutencaoAnexo
-from conecta_senai.models.manutencao_basedados import ManutencaoArea, ManutencaoTipoServico
+from conecta_senai.models.manutencao_basedados import (
+    ManutencaoArea,
+    ManutencaoTipoServico,
+)
 from conecta_senai.models.manutencao_chamado import ManutencaoChamado
 from conecta_senai.routes.manutencao_unidade.utils import ensure_tables_exist
 
@@ -72,13 +74,14 @@ def criar_chamado():
     tipo_servico_id = form.get("tipo_equipamento_id") or form.get("tipoEquipamentoId")
     patrimonio = form.get("patrimonio") or None
     numero_serie = form.get("numero_serie") or form.get("numeroSerie") or None
-    descricao = (form.get("descricao_problema") or form.get("descricaoProblema") or "").strip()
-    nivel_urgencia = (form.get("nivel_urgencia") or form.get("nivelUrgencia") or "").strip()
+    descricao = (
+        form.get("descricao_problema") or form.get("descricaoProblema") or ""
+    ).strip()
+    nivel_urgencia = (
+        form.get("nivel_urgencia") or form.get("nivelUrgencia") or ""
+    ).strip()
     local_unidade = (
-        form.get("local_unidade")
-        or form.get("local")
-        or form.get("unidade")
-        or ""
+        form.get("local_unidade") or form.get("local") or form.get("unidade") or ""
     ).strip()
 
     erros: list[str] = []
@@ -102,10 +105,9 @@ def criar_chamado():
 
     area_registro = None
     if area:
-        area_registro = (
-            ManutencaoArea.query.filter(func.lower(ManutencaoArea.nome) == area.lower())
-            .first()
-        )
+        area_registro = ManutencaoArea.query.filter(
+            func.lower(ManutencaoArea.nome) == area.lower()
+        ).first()
         if not area_registro:
             erros.append("Área selecionada não está cadastrada.")
 
@@ -203,9 +205,7 @@ def obter_base_dados_formulario():
 
     return jsonify(
         {
-            "tipos_equipamento": [
-                {"id": tipo.id, "nome": tipo.nome} for tipo in tipos
-            ],
+            "tipos_equipamento": [{"id": tipo.id, "nome": tipo.nome} for tipo in tipos],
             "areas": [{"id": area.id, "nome": area.nome} for area in areas],
         }
     )

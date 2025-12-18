@@ -16,7 +16,7 @@ async function carregarLogs() {
             return;
         }
 
-        tbody.innerHTML = ''; // Limpa a tabela
+        tbody.innerHTML = ''; 
         logs.forEach(log => {
             const tr = document.createElement('tr');
             tr.innerHTML = `

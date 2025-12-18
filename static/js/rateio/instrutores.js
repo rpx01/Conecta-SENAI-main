@@ -66,8 +66,6 @@ class GerenciadorInstrutores {
         }
     }
 
-
-
     badgesDisponibilidade(list) {
         const disp = list || [];
         return `
@@ -139,7 +137,6 @@ class GerenciadorInstrutores {
         document.getElementById('instrutorArea').value = instr.area_atuacao || '';
         document.getElementById('instrutorStatus').value = instr.status || 'ativo';
         document.getElementById('instrutorObservacoes').value = instr.observacoes || '';
-
 
         const disp = instr.disponibilidade || [];
         document.getElementById('dispManha').checked = disp.includes('manha');

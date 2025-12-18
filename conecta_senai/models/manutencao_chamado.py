@@ -1,18 +1,14 @@
-"""Modelos de chamados do módulo de manutenção da unidade."""
 from datetime import datetime, timedelta, timezone
 
 from conecta_senai.models import db
 
 
 def _get_brasilia_time():
-    """Retorna o horário atual de Brasília (UTC-3)."""
     tz_brasilia = timezone(timedelta(hours=-3))
     return datetime.now(tz_brasilia).replace(tzinfo=None)
 
 
 class ManutencaoChamado(db.Model):
-    """Representa um chamado aberto pelos usuários para manutenção da unidade."""
-
     __tablename__ = "manutencao_chamados"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -50,5 +46,5 @@ class ManutencaoChamado(db.Model):
         cascade="all, delete-orphan",
     )
 
-    def __repr__(self) -> str:  # pragma: no cover - representação simples
+    def __repr__(self) -> str:
         return f"<ManutencaoChamado id={self.id} status={self.status!r}>"

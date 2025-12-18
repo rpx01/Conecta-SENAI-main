@@ -1,4 +1,3 @@
-"""Ponto de entrada para execução local da aplicação."""
 import logging
 import os
 import traceback
@@ -7,11 +6,9 @@ from conecta_senai import create_app
 
 
 def main() -> None:
-    """Cria a aplicação Flask e inicia o servidor de desenvolvimento."""
-
     try:
         app = create_app()
-    except Exception as exc:  # pragma: no cover - log detalhado para diagnósticos
+    except Exception as exc:
         logging.error("!!!!!! FALHA CRÍTICA AO INICIAR A APLICAÇÃO !!!!!!")
         logging.error("Erro: %s", exc)
         logging.error("Traceback: %s", traceback.format_exc())
@@ -22,5 +19,5 @@ def main() -> None:
     app.run(debug=debug, host="127.0.0.1", port=port)
 
 
-if __name__ == "__main__":  # pragma: no cover - execução manual
+if __name__ == "__main__":
     main()

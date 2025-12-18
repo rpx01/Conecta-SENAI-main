@@ -50,7 +50,6 @@ class GerenciadorInstrutores {
         document.getElementById('confirmarExcluirInstrutor')
             .addEventListener('click', () => this.confirmarExclusao());
 
-        // Adiciona o listener para limpar o formulário sempre que o modal for fechado
         this.modalEl.addEventListener('hidden.bs.modal', () => {
             this.form.reset();
             document.getElementById('instrutorId').value = '';
@@ -73,8 +72,6 @@ class GerenciadorInstrutores {
             console.error('Erro ao carregar áreas', e);
         }
     }
-
-
 
     badgesDisponibilidade(list) {
         const disp = list || [];
@@ -146,7 +143,6 @@ class GerenciadorInstrutores {
         document.getElementById('instrutorArea').value = instr.area_atuacao || '';
         document.getElementById('instrutorStatus').value = instr.status || 'ativo';
         document.getElementById('instrutorObservacoes').value = instr.observacoes || '';
-
 
         const disp = instr.disponibilidade || [];
         document.getElementById('dispManha').checked = disp.includes('manha');

@@ -1,18 +1,16 @@
-"""Inicialização do pacote de modelos."""
-
 from conecta_senai.extensions import db
 
-from .refresh_token import RefreshToken  # noqa: E402
-from .recurso import Recurso  # noqa: E402
-from .audit_log import AuditLog  # noqa: E402
-from .rateio import RateioConfig, LancamentoRateio  # noqa: E402
-from .log_rateio import LogLancamentoRateio  # noqa: E402
-from .user import User  # noqa: E402
-from .sala import Sala  # noqa: E402
-from .agendamento import Agendamento, Notificacao  # noqa: E402
-from .instrutor import Instrutor  # noqa: E402
-from .ocupacao import Ocupacao  # noqa: E402
-from .treinamento import (  # noqa: E402
+from .refresh_token import RefreshToken
+from .recurso import Recurso
+from .audit_log import AuditLog
+from .rateio import RateioConfig, LancamentoRateio
+from .log_rateio import LogLancamentoRateio
+from .user import User
+from .sala import Sala
+from .agendamento import Agendamento, Notificacao
+from .instrutor import Instrutor
+from .ocupacao import Ocupacao
+from .treinamento import (
     LocalRealizacao,
     Treinamento,
     TurmaTreinamento,
@@ -20,18 +18,18 @@ from .treinamento import (  # noqa: E402
 )
 from .inscricao_treinamento import (
     InscricaoTreinamentoFormulario,
-)  # noqa: E402
-from .email_secretaria import EmailSecretaria  # noqa: E402
-from .secretaria_treinamentos import SecretariaTreinamentos  # noqa: E402
-from .horario import Horario  # noqa: E402
-from .noticia import Noticia  # noqa: E402
-from .imagem_noticia import ImagemNoticia  # noqa: E402
-from .suporte_chamado import SuporteChamado  # noqa: E402
-from .suporte_anexo import SuporteAnexo  # noqa: E402
-from .suporte_basedados import SuporteTipoEquipamento, SuporteArea  # noqa: E402
-from .manutencao_chamado import ManutencaoChamado  # noqa: E402
-from .manutencao_anexo import ManutencaoAnexo  # noqa: E402
-from .manutencao_basedados import ManutencaoTipoServico, ManutencaoArea  # noqa: E402
+)
+from .email_secretaria import EmailSecretaria
+from .secretaria_treinamentos import SecretariaTreinamentos
+from .horario import Horario
+from .noticia import Noticia
+from .imagem_noticia import ImagemNoticia
+from .suporte_chamado import SuporteChamado
+from .suporte_anexo import SuporteAnexo
+from .suporte_basedados import SuporteTipoEquipamento, SuporteArea
+from .manutencao_chamado import ManutencaoChamado
+from .manutencao_anexo import ManutencaoAnexo
+from .manutencao_basedados import ManutencaoTipoServico, ManutencaoArea
 
 __all__ = [
     "db",
@@ -50,9 +48,9 @@ __all__ = [
     "LocalRealizacao",
     "Treinamento",
     "TurmaTreinamento",
-    "InscricaoTreinamento", 
-    "InscricaoTreinamentoFormulario", 
-    "EmailSecretaria", 
+    "InscricaoTreinamento",
+    "InscricaoTreinamentoFormulario",
+    "EmailSecretaria",
     "SecretariaTreinamentos",
     "Noticia",
     "ImagemNoticia",

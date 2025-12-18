@@ -1,14 +1,12 @@
-"""Endpoints REST do módulo de notícias."""
-
 import hmac
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
-try:  # pragma: no cover - import opcional para ambientes sem psycopg2
+try:
     from psycopg2 import errors as psycopg2_errors
-except Exception:  # pragma: no cover - fallback se psycopg2 não estiver disponível
+except Exception:
     psycopg2_errors = None
 
 from flask import Blueprint, current_app, jsonify, request, send_file
@@ -21,8 +19,15 @@ from conecta_senai.models.imagem_noticia import ImagemNoticia
 from conecta_senai.models.noticia import Noticia
 from conecta_senai.repositories.noticia_repository import NoticiaRepository
 from conecta_senai.schemas.noticia import NoticiaSchema
-from conecta_senai.schemas.noticia_validacao import NoticiaCreateSchema, NoticiaUpdateSchema
-from conecta_senai.services.noticia_service import criar_noticia, atualizar_noticia, excluir_noticia
+from conecta_senai.schemas.noticia_validacao import (
+    NoticiaCreateSchema,
+    NoticiaUpdateSchema,
+)
+from conecta_senai.services.noticia_service import (
+    criar_noticia,
+    atualizar_noticia,
+    excluir_noticia,
+)
 from conecta_senai.utils.error_handler import handle_internal_error
 
 log = logging.getLogger(__name__)
@@ -63,14 +68,18 @@ def _extrair_dados_form(expect_update: bool = False) -> Tuple[Dict[str, Any], An
     dados_brutos.pop("csrfmiddlewaretoken", None)
     dados_brutos.pop("_method", None)
 
-    data_agendamento = dados_brutos.pop("dataAgendamento", None) or dados_brutos.pop("data_agendamento", None)
+    data_agendamento = dados_brutos.pop("dataAgendamento", None) or dados_brutos.pop(
+        "data_agendamento", None
+    )
     _sentinel = object()
     data_evento = dados_brutos.pop("dataEvento", _sentinel)
     if data_evento is _sentinel:
         data_evento = dados_brutos.pop("data_evento", _sentinel)
 
     if "destaque" in dados_brutos:
-        valor = _normalizar_booleano(dados_brutos.get("destaque"), False if not expect_update else None)
+        valor = _normalizar_booleano(
+            dados_brutos.get("destaque"), False if not expect_update else None
+        )
         if valor is None and expect_update:
             dados_brutos.pop("destaque", None)
         else:
@@ -79,7 +88,9 @@ def _extrair_dados_form(expect_update: bool = False) -> Tuple[Dict[str, Any], An
         dados_brutos["destaque"] = False
 
     if "ativo" in dados_brutos:
-        valor = _normalizar_booleano(dados_brutos.get("ativo"), True if not expect_update else None)
+        valor = _normalizar_booleano(
+            dados_brutos.get("ativo"), True if not expect_update else None
+        )
         if valor is None and expect_update:
             dados_brutos.pop("ativo", None)
         else:
@@ -91,7 +102,9 @@ def _extrair_dados_form(expect_update: bool = False) -> Tuple[Dict[str, Any], An
     if marcar_calendario is None:
         marcar_calendario = dados_brutos.pop("marcar_calendario", None)
     if marcar_calendario is not None or not expect_update:
-        valor = _normalizar_booleano(marcar_calendario, False if not expect_update else None)
+        valor = _normalizar_booleano(
+            marcar_calendario, False if not expect_update else None
+        )
         if valor is None and expect_update:
             dados_brutos.pop("marcar_calendario", None)
         else:
@@ -101,11 +114,15 @@ def _extrair_dados_form(expect_update: bool = False) -> Tuple[Dict[str, Any], An
 
     imagem_url = dados_brutos.get("imagem_url")
     if not expect_update:
-        dados_brutos.setdefault("imagem_url", imagem_url if imagem_url is not None else None)
+        dados_brutos.setdefault(
+            "imagem_url", imagem_url if imagem_url is not None else None
+        )
     else:
         dados_brutos.pop("imagem_url", None)
 
-    data_publicacao = dados_brutos.get("dataPublicacao") or dados_brutos.pop("data_publicacao", None)
+    data_publicacao = dados_brutos.get("dataPublicacao") or dados_brutos.pop(
+        "data_publicacao", None
+    )
     if data_publicacao:
         dados_brutos["dataPublicacao"] = data_publicacao
     if data_agendamento:
@@ -117,32 +134,39 @@ def _extrair_dados_form(expect_update: bool = False) -> Tuple[Dict[str, Any], An
 
 
 def _serialize_validation_errors(err: ValidationError) -> list[dict]:
-    """Converte erros de validação do Pydantic em estruturas JSON serializáveis."""
     serialized: list[dict] = []
     for error in err.errors():
         ctx = error.get("ctx")
         if isinstance(ctx, dict):
-            error = {**error, "ctx": {k: str(v) if isinstance(v, Exception) else v for k, v in ctx.items()}}
+            error = {
+                **error,
+                "ctx": {
+                    k: str(v) if isinstance(v, Exception) else v for k, v in ctx.items()
+                },
+            }
         serialized.append(error)
     return serialized
 
 
 @api_noticias_bp.before_request
 def proteger_csrf():
-    """Valida o token CSRF em requisições mutáveis."""
     if request.method not in {"POST", "PUT", "DELETE"}:
         return None
     token_cookie = request.cookies.get("csrf_token")
-    token_header = request.headers.get("X-CSRF-Token") or request.headers.get("X-CSRFToken")
-    if not token_cookie or not token_header or not hmac.compare_digest(token_cookie, token_header):
+    token_header = request.headers.get("X-CSRF-Token") or request.headers.get(
+        "X-CSRFToken"
+    )
+    if (
+        not token_cookie
+        or not token_header
+        or not hmac.compare_digest(token_cookie, token_header)
+    ):
         return jsonify({"erro": "CSRF token inválido"}), 403
     return None
 
 
 @api_noticias_bp.route("/noticias/imagens/<int:imagem_id>", methods=["GET"])
 def obter_imagem(imagem_id: int):
-    """Retorna o binário da imagem associada à notícia."""
-
     imagem = ImagemNoticia.query.get(imagem_id)
     if not imagem:
         return jsonify({"erro": "Imagem não encontrada"}), 404
@@ -155,7 +179,9 @@ def obter_imagem(imagem_id: int):
     if caminho_relativo:
         static_folder = Path(current_app.static_folder).resolve()
         caminho = (static_folder / caminho_relativo).resolve()
-        if caminho.exists() and (static_folder in caminho.parents or caminho == static_folder):
+        if caminho.exists() and (
+            static_folder in caminho.parents or caminho == static_folder
+        ):
             return send_file(
                 caminho,
                 mimetype=imagem.content_type or "application/octet-stream",
@@ -166,8 +192,6 @@ def obter_imagem(imagem_id: int):
 
 
 def _estrutura_noticias_desatualizada(exc: BaseException) -> bool:
-    """Detecta erros decorrentes de schema desatualizado da tabela de notícias."""
-
     mensagem = str(exc).lower()
     if "no such table" in mensagem:
         return True
@@ -186,7 +210,6 @@ def _estrutura_noticias_desatualizada(exc: BaseException) -> bool:
 
 @api_noticias_bp.route("/noticias", methods=["GET"])
 def listar_noticias():
-    """Lista notícias paginadas, permitindo filtros básicos."""
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 12, type=int)
     per_page = max(1, min(per_page, 50))
@@ -206,7 +229,13 @@ def listar_noticias():
             status_normalizado = status_param.lower()
             if status_normalizado in {"true", "1", "ativos", "publicado", "publicada"}:
                 consulta = consulta.filter(Noticia.ativo.is_(True))
-            elif status_normalizado in {"false", "0", "inativos", "rascunho", "desativado"}:
+            elif status_normalizado in {
+                "false",
+                "0",
+                "inativos",
+                "rascunho",
+                "desativado",
+            }:
                 consulta = consulta.filter(Noticia.ativo.is_(False))
         elif not incluir_inativas:
             consulta = consulta.filter(Noticia.ativo.is_(True))
@@ -230,15 +259,18 @@ def listar_noticias():
         consulta = consulta.order_by(Noticia.data_publicacao.desc(), Noticia.id.desc())
         paginacao = consulta.paginate(page=page, per_page=per_page, error_out=False)
         itens = noticias_schema.dump(paginacao.items)
-        return jsonify(
-            {
-                "items": itens,
-                "page": paginacao.page,
-                "per_page": paginacao.per_page,
-                "total": paginacao.total,
-                "pages": paginacao.pages,
-            }
-        ), 200
+        return (
+            jsonify(
+                {
+                    "items": itens,
+                    "page": paginacao.page,
+                    "per_page": paginacao.per_page,
+                    "total": paginacao.total,
+                    "pages": paginacao.pages,
+                }
+            ),
+            200,
+        )
     except (ProgrammingError, SQLAlchemyError) as exc:
         if _estrutura_noticias_desatualizada(exc):
             current_app.logger.error(
@@ -262,7 +294,6 @@ def listar_noticias():
 
 @api_noticias_bp.route("/noticias/<int:noticia_id>", methods=["GET"])
 def obter_noticia(noticia_id: int):
-    """Retorna os detalhes de uma notícia específica."""
     incluir_inativas = request.args.get("include_inativas", "false").lower() == "true"
     try:
         noticia = NoticiaRepository.get_by_id(noticia_id)
@@ -295,7 +326,6 @@ def obter_noticia(noticia_id: int):
 @api_noticias_bp.route("/noticias", methods=["POST"])
 @admin_required
 def criar():
-    """Cria uma nova notícia."""
     dados_brutos, arquivo_imagem = _extrair_dados_form()
     try:
         payload = NoticiaCreateSchema.model_validate(dados_brutos)
@@ -313,7 +343,7 @@ def criar():
 
     try:
         noticia = criar_noticia(dados, arquivo_imagem=arquivo_imagem)
-    except SQLAlchemyError as exc:  # pragma: no cover
+    except SQLAlchemyError as exc:
         log.exception("Erro ao criar notícia")
         return handle_internal_error(exc)
 
@@ -323,7 +353,6 @@ def criar():
 @api_noticias_bp.route("/noticias/<int:noticia_id>", methods=["PUT"])
 @admin_required
 def atualizar(noticia_id: int):
-    """Atualiza os dados de uma notícia existente."""
     noticia = NoticiaRepository.get_by_id(noticia_id)
     if not noticia:
         return jsonify({"erro": "Notícia não encontrada"}), 404
@@ -350,7 +379,7 @@ def atualizar(noticia_id: int):
             dados,
             arquivo_imagem=arquivo_imagem,
         )
-    except SQLAlchemyError as exc:  # pragma: no cover
+    except SQLAlchemyError as exc:
         log.exception("Erro ao atualizar notícia %s", noticia_id)
         return handle_internal_error(exc)
 
@@ -360,14 +389,13 @@ def atualizar(noticia_id: int):
 @api_noticias_bp.route("/noticias/<int:noticia_id>", methods=["DELETE"])
 @admin_required
 def remover(noticia_id: int):
-    """Remove uma notícia."""
     noticia = NoticiaRepository.get_by_id(noticia_id)
     if not noticia:
         return jsonify({"erro": "Notícia não encontrada"}), 404
 
     try:
         excluir_noticia(noticia)
-    except SQLAlchemyError as exc:  # pragma: no cover
+    except SQLAlchemyError as exc:
         log.exception("Erro ao remover notícia %s", noticia_id)
         return handle_internal_error(exc)
 

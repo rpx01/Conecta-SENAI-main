@@ -1,5 +1,3 @@
-/* global chamarAPI, showToast, getUsuarioLogado, sanitizeHTML */
-
 document.addEventListener('DOMContentLoaded', () => {
     const heroSection = document.querySelector('.news-hero');
     const heroTitleEl = document.getElementById('newsHeroTitle');
@@ -327,8 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const noticiasDoMes = await fetchNoticiasDoCalendario(date.getFullYear(), date.getMonth() + 1);
 
             noticiasDoMes.forEach((noticia) => {
-                // A data_evento vem como 'YYYY-MM-DDTHH:mm:ss'
-                // Precisamos tratar para evitar problemas de fuso horário
+                
                 const [dataParte] = noticia.data_evento.split("T");
                 const [ano, mes, dia] = dataParte.split("-");
                 const dataEvento = new Date(ano, mes - 1, dia);
@@ -593,7 +590,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return null;
             }
 
-            // Normaliza separador de data/hora e timezone
             texto = texto.replace(' ', 'T');
             texto = texto.replace(/([+-]\d{2})(\d{2})$/, '$1:$2');
 
@@ -862,7 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function transformarUrlsEmLinks(texto = '') {
         const urlRegex = /((https?:\/\/|www\.)[^\s<]+)/gi;
         return texto.replace(urlRegex, urlOriginal => {
-            const possuiProtocolo = /^https?:\/\//i.test(urlOriginal);
+            const possuiProtocolo = /^https?:\/\
             const href = possuiProtocolo ? urlOriginal : `https://${urlOriginal}`;
             const hrefSeguro = escapeHTML(href);
             return `<a href="${hrefSeguro}" target="_blank" rel="noopener noreferrer">${urlOriginal}</a>`;

@@ -3,8 +3,6 @@ from sqlalchemy.inspection import inspect
 
 
 class SerializerMixin:
-    """Mixin providing simple SQLAlchemy model serialization."""
-
     def _serialize_value(self, value):
         if isinstance(value, (datetime, date)):
             return value.isoformat()
@@ -13,7 +11,6 @@ class SerializerMixin:
         return value
 
     def to_dict(self):
-        """Return the model's columns as a dict of native types."""
         mapper = inspect(self.__class__)
         data = {}
         for column in mapper.columns:

@@ -1,5 +1,3 @@
-"""Esquemas de validação para o módulo de notícias."""
-
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -18,7 +16,7 @@ def _parse_datetime(value: Optional[str | datetime]) -> Optional[datetime]:
         texto = f"{texto[:-1]}+00:00"
     try:
         parsed = datetime.fromisoformat(texto)
-    except (TypeError, ValueError) as exc:  # pragma: no cover - validação explícita
+    except (TypeError, ValueError) as exc:
         raise ValueError("Data inválida. Use o formato ISO 8601.") from exc
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
@@ -38,7 +36,9 @@ class NoticiaBaseSchema(BaseModel):
     data_agendamento: Optional[datetime] = Field(default=None, alias="dataAgendamento")
     data_evento: Optional[datetime] = Field(default=None, alias="dataEvento")
 
-    @field_validator("titulo", "resumo", "conteudo", "autor", "imagem_url", mode="before")
+    @field_validator(
+        "titulo", "resumo", "conteudo", "autor", "imagem_url", mode="before"
+    )
     @classmethod
     def sanitize_strings(cls, value: Optional[str]):
         if isinstance(value, str):
@@ -52,10 +52,14 @@ class NoticiaBaseSchema(BaseModel):
     @classmethod
     def validar_resumo(cls, value: Optional[str]):
         if value is not None and len(value) < 10:
-            raise ValueError("O resumo deve conter ao menos 10 caracteres ou ser omitido.")
+            raise ValueError(
+                "O resumo deve conter ao menos 10 caracteres ou ser omitido."
+            )
         return value
 
-    @field_validator("data_publicacao", "data_agendamento", "data_evento", mode="before")
+    @field_validator(
+        "data_publicacao", "data_agendamento", "data_evento", mode="before"
+    )
     @classmethod
     def validar_data_publicacao(cls, value):
         return _parse_datetime(value)
@@ -81,7 +85,9 @@ class NoticiaUpdateSchema(BaseModel):
     data_agendamento: Optional[datetime] = Field(default=None, alias="dataAgendamento")
     data_evento: Optional[datetime] = Field(default=None, alias="dataEvento")
 
-    @field_validator("titulo", "resumo", "conteudo", "autor", "imagem_url", mode="before")
+    @field_validator(
+        "titulo", "resumo", "conteudo", "autor", "imagem_url", mode="before"
+    )
     @classmethod
     def sanitize_strings(cls, value: Optional[str]):
         if isinstance(value, str):
@@ -95,10 +101,14 @@ class NoticiaUpdateSchema(BaseModel):
     @classmethod
     def validar_resumo(cls, value: Optional[str]):
         if value is not None and len(value) < 10:
-            raise ValueError("O resumo deve conter ao menos 10 caracteres ou ser omitido.")
+            raise ValueError(
+                "O resumo deve conter ao menos 10 caracteres ou ser omitido."
+            )
         return value
 
-    @field_validator("data_publicacao", "data_agendamento", "data_evento", mode="before")
+    @field_validator(
+        "data_publicacao", "data_agendamento", "data_evento", mode="before"
+    )
     @classmethod
     def validar_data_publicacao(cls, value):
         return _parse_datetime(value)

@@ -5,8 +5,6 @@ from conecta_senai.models.agendamento import Notificacao
 
 
 class UserRepository:
-    """Encapsula operações de banco relacionadas a usuários."""
-
     @staticmethod
     def get_by_email(email: str):
         return User.query.filter_by(email=email).first()
@@ -45,8 +43,6 @@ class UserRepository:
 
     @staticmethod
     def delete(user: User):
-        """Remove um usuário e seus registros dependentes."""
-
         if user.id is not None:
             Notificacao.query.filter_by(usuario_id=user.id).delete(
                 synchronize_session=False

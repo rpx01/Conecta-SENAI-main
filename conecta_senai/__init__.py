@@ -1,4 +1,3 @@
-"""Fábrica principal da aplicação Flask Conecta SENAI."""
 from __future__ import annotations
 
 import logging
@@ -11,12 +10,13 @@ from flasgger import Swagger
 from flask import Flask, abort, render_template, send_from_directory
 from flask_wtf.csrf import CSRFProtect
 from jinja2 import TemplateNotFound
+
 try:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
-except ImportError:  # pragma: no cover - sentry opcional em desenvolvimento
-    sentry_sdk = None  # type: ignore[assignment]
-    FlaskIntegration = None  # type: ignore[assignment]
+except ImportError:
+    sentry_sdk = None
+    FlaskIntegration = None
 
 from conecta_senai.auth import auth_bp, auth_reset_bp
 from conecta_senai.cli import register_cli
@@ -65,8 +65,6 @@ STATIC_DIR = PROJECT_ROOT / "static"
 
 
 def _setup_observability() -> None:
-    """Inicializa logging e Sentry com filtros de dados sensíveis."""
-
     global OBSERVABILITY_CONFIGURED
     if OBSERVABILITY_CONFIGURED:
         return
@@ -103,17 +101,15 @@ def _setup_observability() -> None:
 
 
 def _configure_database(app: Flask) -> None:
-    """Configura SQLAlchemy e a migração de banco."""
-
     migrations_dir = str(PROJECT_ROOT / "migrations")
     db.init_app(app)
     migrate.init_app(app, db, directory=migrations_dir)
 
 
 def _configure_security(app: Flask) -> None:
-    """Ajusta parâmetros relacionados a segurança e cookies."""
-
-    secret_key = (os.getenv("SECRET_KEY") or os.getenv("FLASK_SECRET_KEY") or "").strip()
+    secret_key = (
+        os.getenv("SECRET_KEY") or os.getenv("FLASK_SECRET_KEY") or ""
+    ).strip()
     if not secret_key or secret_key.lower() == "changeme":
         raise RuntimeError(
             "SECRET_KEY environment variable must be set to a secure value for JWT signing"
@@ -143,8 +139,6 @@ def _configure_security(app: Flask) -> None:
 
 
 def _configure_flask(app: Flask) -> None:
-    """Registra blueprints, CLI e integrações diversas."""
-
     app.register_blueprint(request_id_bp)
     instrument(app)
 
@@ -183,8 +177,6 @@ def _configure_flask(app: Flask) -> None:
 
 
 def _configure_swagger(app: Flask) -> None:
-    """Habilita a documentação Swagger/Flasgger."""
-
     swagger_template = {
         "components": {
             "schemas": {
@@ -243,8 +235,6 @@ def _configure_swagger(app: Flask) -> None:
 
 
 def _configure_database_url(app: Flask) -> None:
-    """Normaliza a URL do banco de dados a partir das variáveis de ambiente."""
-
     db_uri = os.getenv("DATABASE_URL", "sqlite:///agenda_laboratorio.db").strip()
     if db_uri.startswith("postgres://"):
         db_uri = db_uri.replace("postgres://", "postgresql://", 1)
@@ -253,8 +243,6 @@ def _configure_database_url(app: Flask) -> None:
 
 
 def _configure_recaptcha(app: Flask) -> None:
-    """Carrega as chaves do reCAPTCHA a partir do ambiente."""
-
     recaptcha_site_key = (
         os.getenv("RECAPTCHA_SITE_KEY") or os.getenv("SITE_KEY") or ""
     ).strip()
@@ -268,8 +256,6 @@ def _configure_recaptcha(app: Flask) -> None:
 
 
 def _register_default_routes(app: Flask) -> None:
-    """Define rotas básicas de saúde e entrega de arquivos estáticos."""
-
     @app.route("/")
     def index():
         return render_template("admin/login.html")
@@ -297,7 +283,9 @@ def _register_default_routes(app: Flask) -> None:
     def favicon():
         static_img_dir = Path(app.static_folder or STATIC_DIR) / "img"
         try:
-            return send_from_directory(str(static_img_dir), "senai-logo.png", mimetype="image/png")
+            return send_from_directory(
+                str(static_img_dir), "senai-logo.png", mimetype="image/png"
+            )
         except FileNotFoundError:
             return "", 204
 
@@ -311,8 +299,6 @@ def _register_default_routes(app: Flask) -> None:
 
 
 def create_admin(app: Flask) -> None:
-    """Cria o usuário administrador padrão de forma idempotente."""
-
     from conecta_senai.models.user import User
     from sqlalchemy.exc import SQLAlchemyError
 
@@ -327,7 +313,10 @@ def create_admin(app: Flask) -> None:
                 )
                 return
 
-            if admin_email in {"admin@example.com", "<definir_em_producao>"} or admin_password in {
+            if admin_email in {
+                "admin@example.com",
+                "<definir_em_producao>",
+            } or admin_password in {
                 "senha-segura",
                 "<definir_em_producao>",
             }:
@@ -357,8 +346,6 @@ def create_admin(app: Flask) -> None:
 
 
 def create_default_recursos(app: Flask) -> None:
-    """Garante que recursos padrão existam no banco de dados."""
-
     from conecta_senai.models.recurso import Recurso
 
     with app.app_context():
@@ -380,8 +367,6 @@ def create_default_recursos(app: Flask) -> None:
 
 
 def create_app() -> Flask:
-    """Fábrica de aplicação usada pelo Flask."""
-
     _setup_observability()
 
     app = Flask(

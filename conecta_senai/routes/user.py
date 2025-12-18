@@ -1,5 +1,3 @@
-"""Rotas para gerenciamento de usuarios."""
-
 from flask import Blueprint, request, jsonify, current_app, g, redirect
 import os
 import hmac
@@ -21,7 +19,7 @@ import requests
 from werkzeug.security import check_password_hash
 from conecta_senai.utils.error_handler import handle_internal_error
 from conecta_senai.auth import (
-    verificar_autenticacao,  # noqa: F401 - reexportado para outros módulos
+    verificar_autenticacao,
     verificar_admin,
     login_required,
     admin_required,
@@ -31,18 +29,26 @@ from conecta_senai.services import user_service
 from pydantic import ValidationError
 from conecta_senai.schemas.user import UserCreateSchema, UserUpdateSchema
 
-# Reexporta a expressão regular para compatibilidade
+
 PASSWORD_REGEX = user_service.PASSWORD_REGEX
 
 user_bp = Blueprint("user", __name__)
 
+
 @user_bp.before_request
 def verificar_csrf():
-    if request.method in {"POST", "PUT", "DELETE"} and request.endpoint != "user.get_csrf_token":
+    if (
+        request.method in {"POST", "PUT", "DELETE"}
+        and request.endpoint != "user.get_csrf_token"
+    ):
         token_cookie = request.cookies.get("csrf_token")
-        token_header = request.headers.get("X-CSRF-Token") or request.headers.get("X-CSRFToken")
-        if not token_cookie or not token_header or not hmac.compare_digest(
-            token_cookie, token_header
+        token_header = request.headers.get("X-CSRF-Token") or request.headers.get(
+            "X-CSRFToken"
+        )
+        if (
+            not token_cookie
+            or not token_header
+            or not hmac.compare_digest(token_cookie, token_header)
         ):
             return jsonify({"erro": "CSRF token inválido"}), 403
 
@@ -59,16 +65,11 @@ def get_csrf_token():
 
 @user_bp.route("/recaptcha/site-key", methods=["GET"])
 def obter_site_key():
-    """Retorna a site key pública do reCAPTCHA."""
     site_key = current_app.config.get("RECAPTCHA_SITE_KEY")
     return jsonify({"site_key": site_key or ""})
 
 
-# Funções auxiliares para geração de tokens
-
-
 def gerar_token_acesso(usuario):
-    """Gera um token JWT de acesso para o usuário."""
     payload = {
         "user_id": usuario.id,
         "nome": usuario.nome,
@@ -80,12 +81,10 @@ def gerar_token_acesso(usuario):
 
 
 def _hash_token(token: str) -> str:
-    """Return SHA-256 hexadecimal hash for a token."""
     return hashlib.sha256(token.encode()).hexdigest()
 
 
 def gerar_refresh_token(usuario):
-    """Gera e persiste um refresh token para o usuário."""
     exp = datetime.utcnow() + timedelta(days=7)
     payload = {
         "user_id": usuario.id,
@@ -95,7 +94,6 @@ def gerar_refresh_token(usuario):
     }
     token = jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")
 
-    # Confirma que o usuário ainda existe antes de salvar o token
     if not UserRepository.get_by_id(usuario.id):
         current_app.logger.error("Usuário inválido ao gerar refresh token")
         raise ValueError("Usuário inválido")
@@ -109,7 +107,7 @@ def gerar_refresh_token(usuario):
     try:
         db.session.add(rt)
         db.session.commit()
-    except Exception as e:  # pragma: no cover - proteção contra falhas de banco
+    except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Erro ao salvar refresh token: {str(e)}")
         raise
@@ -118,7 +116,6 @@ def gerar_refresh_token(usuario):
 
 
 def verificar_refresh_token(token):
-    """Valida um refresh token e retorna o usuário associado ou None."""
     try:
         dados = jwt.decode(
             token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
@@ -141,46 +138,10 @@ def verificar_refresh_token(token):
 @user_bp.route("/usuarios", methods=["GET"])
 @admin_required
 def listar_usuarios():
-    """Lista todos os usuários com paginação.
-
-    ---
-    tags:
-      - Usuários
-    parameters:
-      - in: query
-        name: page
-        schema:
-          type: integer
-        description: Página atual
-      - in: query
-        name: per_page
-        schema:
-          type: integer
-        description: Itens por página
-    responses:
-      200:
-        description: Lista paginada de usuários
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/User'
-                page:
-                  type: integer
-                per_page:
-                  type: integer
-                total:
-                  type: integer
-                pages:
-                  type: integer
-    """
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
     per_page = min(per_page, 100)
+
     def _normalizar_valor(valor: str | None, *, to_lower: bool = False) -> str | None:
         if not valor:
             return None
@@ -194,9 +155,7 @@ def listar_usuarios():
     filtros = {
         "nome": _normalizar_valor(request.args.get("nome", type=str)),
         "email": _normalizar_valor(request.args.get("email", type=str)),
-        "tipo": _normalizar_valor(
-            request.args.get("tipo", type=str), to_lower=True
-        ),
+        "tipo": _normalizar_valor(request.args.get("tipo", type=str), to_lower=True),
     }
 
     if filtros["tipo"] not in {None, "admin", "comum", "secretaria"}:
@@ -223,30 +182,6 @@ def listar_usuarios():
 @user_bp.route("/usuarios/<int:id>", methods=["GET"])
 @login_required
 def obter_usuario(id):
-    """Obtém detalhes de um usuário específico.
-
-    ---
-    tags:
-      - Usuários
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-        description: ID do usuário
-    responses:
-      200:
-        description: Usuário encontrado
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      403:
-        description: Permissão negada
-      404:
-        description: Usuário não encontrado
-    """
     user = g.current_user
     if not verificar_admin(user) and user.id != id:
         return jsonify({"erro": "Permissão negada"}), 403
@@ -261,36 +196,15 @@ def obter_usuario(id):
 @user_bp.route("/usuarios", methods=["POST"])
 @limiter.limit("5 per minute")
 def criar_usuario():
-    """Cria um novo usuário.
-    Usuários não autenticados podem criar apenas usuários comuns.
-    Administradores podem criar qualquer tipo de usuário.
-
-    ---
-    tags:
-      - Usuários
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UserCreate'
-    responses:
-      201:
-        description: Usuário criado
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      400:
-        description: Erro de validação
-    """
     try:
         payload = UserCreateSchema(**(request.get_json() or {}))
     except ValidationError as e:
         return jsonify({"erro": e.errors()[0]["msg"]}), 400
 
     try:
-        novo_usuario, erro = user_service.criar_usuario(payload.model_dump(by_alias=True))
+        novo_usuario, erro = user_service.criar_usuario(
+            payload.model_dump(by_alias=True)
+        )
     except SQLAlchemyError as e:
         return handle_internal_error(e)
 
@@ -302,7 +216,6 @@ def criar_usuario():
 
 @user_bp.route("/registrar", methods=["POST"])
 def registrar_usuario():
-    """Registra um usuário a partir de um formulário HTML ou JSON."""
     origem = request.get_json() if request.is_json else request.form
     dados = {
         "nome": (origem.get("nome") or "").strip(),
@@ -319,7 +232,7 @@ def registrar_usuario():
 
     try:
         _, erro = user_service.criar_usuario(payload.model_dump(by_alias=True))
-    except SQLAlchemyError as e:  # pragma: no cover
+    except SQLAlchemyError as e:
         return handle_internal_error(e)
 
     if erro:
@@ -333,14 +246,8 @@ def registrar_usuario():
 @user_bp.route("/usuarios/<int:id>", methods=["PUT"])
 @login_required
 def atualizar_usuario(id):
-    """
-    Atualiza um usuário existente.
-    Usuários comuns só podem atualizar seus próprios dados.
-    Administradores podem atualizar dados de qualquer usuário.
-    """
     user = g.current_user
 
-    # Verifica permissões
     if not verificar_admin(user) and user.id != id:
         return jsonify({"erro": "Permissão negada"}), 403
 
@@ -355,7 +262,6 @@ def atualizar_usuario(id):
 
     data = dados.model_dump(exclude_unset=True)
 
-    # Atualiza os campos fornecidos
     if "nome" in data:
         usuario.nome = data["nome"]
 
@@ -388,11 +294,7 @@ def atualizar_usuario(id):
                 403,
             )
 
-        if (
-            usuario.tipo == "admin"
-            and novo_tipo != "admin"
-            and not is_root_solicitante
-        ):
+        if usuario.tipo == "admin" and novo_tipo != "admin" and not is_root_solicitante:
             return (
                 jsonify(
                     {
@@ -426,14 +328,8 @@ def atualizar_usuario(id):
 @user_bp.route("/usuarios/<int:id>", methods=["DELETE"])
 @admin_required
 def remover_usuario(id):
-    """
-    Remove um usuário.
-    Apenas administradores podem remover usuários.
-    Um usuário não pode remover a si mesmo.
-    """
     user = g.current_user
 
-    # Impede que um usuário remova a si mesmo
     if user.id == id:
         return jsonify({"erro": "Não é possível remover o próprio usuário"}), 400
 
@@ -447,19 +343,22 @@ def remover_usuario(id):
     is_root_solicitante = bool(admin_email) and solicitante_email == admin_email
     is_root_alvo = bool(admin_email) and alvo_email == admin_email
 
-    # Protege o administrador raiz contra remoção por outros usuários
     if is_root_alvo and not is_root_solicitante:
         return (
-            jsonify({"erro": "Você não tem permissão para remover o Administrador raiz"}),
+            jsonify(
+                {"erro": "Você não tem permissão para remover o Administrador raiz"}
+            ),
             403,
         )
 
     try:
         if is_root_solicitante:
-            # O admin raiz pode remover usuários mesmo com vínculos; limpar dependências antes
+
             agendamento_ids = [
                 row.id
-                for row in Agendamento.query.with_entities(Agendamento.id).filter_by(usuario_id=id)
+                for row in Agendamento.query.with_entities(Agendamento.id).filter_by(
+                    usuario_id=id
+                )
             ]
 
             if agendamento_ids:
@@ -470,14 +369,15 @@ def remover_usuario(id):
             Agendamento.query.filter_by(usuario_id=id).delete(synchronize_session=False)
             Ocupacao.query.filter_by(usuario_id=id).delete(synchronize_session=False)
         else:
-            # Apenas o administrador raiz pode remover outros administradores
+
             if usuario.tipo == "admin":
                 return (
-                    jsonify({"erro": "Você não tem permissão para remover um administrador"}),
+                    jsonify(
+                        {"erro": "Você não tem permissão para remover um administrador"}
+                    ),
                     403,
                 )
 
-            # Impede a exclusão de usuários com vínculos obrigatórios
             agendamentos_count = Agendamento.query.filter_by(usuario_id=id).count()
             ocupacoes_count = Ocupacao.query.filter_by(usuario_id=id).count()
 
@@ -505,42 +405,6 @@ def remover_usuario(id):
 @user_bp.route("/login", methods=["POST"])
 @limiter.limit("10 per minute")
 def login():
-    """Autentica um usuário e retorna tokens JWT.
-
-    ---
-    tags:
-      - Autenticação
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              email:
-                type: string
-              senha:
-                type: string
-              recaptcha_token:
-                type: string
-            required:
-              - email
-              - senha
-    responses:
-      200:
-        description: Tokens de acesso e refresh
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                access_token:
-                  type: string
-                refresh_token:
-                  type: string
-      400:
-        description: Requisição inválida
-    """
     try:
         dados = request.get_json(silent=True)
 
@@ -551,9 +415,12 @@ def login():
         senha = dados.get("senha")
         recaptcha_token = dados.get("recaptcha_token")
 
-        # Valida reCAPTCHA caso a chave esteja configurada
-        recaptcha_secret = (current_app.config.get("RECAPTCHA_SECRET_KEY") or "").strip()
-        recaptcha_site_key = (current_app.config.get("RECAPTCHA_SITE_KEY") or "").strip()
+        recaptcha_secret = (
+            current_app.config.get("RECAPTCHA_SECRET_KEY") or ""
+        ).strip()
+        recaptcha_site_key = (
+            current_app.config.get("RECAPTCHA_SITE_KEY") or ""
+        ).strip()
         if recaptcha_secret and recaptcha_site_key:
             if not recaptcha_token:
                 return (
@@ -615,7 +482,9 @@ def login():
         csrf_token = generate_csrf()
         admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
         usuario_dict = usuario.to_dict()
-        is_root = bool(admin_email) and (usuario.email or "").strip().lower() == admin_email
+        is_root = (
+            bool(admin_email) and (usuario.email or "").strip().lower() == admin_email
+        )
         usuario_dict["is_root"] = is_root
         resp = jsonify(
             message="Login successful",
@@ -686,7 +555,6 @@ def refresh_token():
 
 @user_bp.route("/logout", methods=["POST"])
 def logout():
-    """Revoga o token de acesso atual e/ou o refresh token."""
     auth_header = request.headers.get("Authorization")
     token = (
         auth_header.split(" ")[1]
