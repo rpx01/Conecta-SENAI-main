@@ -43,6 +43,8 @@ COPY static ./static
 COPY templates ./templates
 # Pacote de compatibilidade ``src`` (utilizado em alguns entrypoints)
 COPY src ./src
+# Pacote de compatibilidade ``scr`` (corrige configurações com typo no módulo)
+COPY scr ./scr
 # (copie também outros arquivos necessários ao runtime)
 COPY gunicorn.conf.py .
 COPY alembic.ini .
