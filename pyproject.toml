@@ -49,6 +49,8 @@ packages = [
     { include = "conecta_senai" },
     # Pacote de compatibilidade para ambientes que importam ``src``
     { include = "src" },
+    # Pacote de compatibilidade para ambientes que importam erroneamente ``scr``
+    { include = "scr" },
 ]
 
 [tool.poetry.dependencies]
